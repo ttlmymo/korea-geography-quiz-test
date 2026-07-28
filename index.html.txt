@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>전국 지리 마스터 퀴즈</title>
+
+<!-- 애드센스 메타 태그 (소유권 확인용) -->
+<meta name="google-adsense-account" content="ca-pub-1946710813485758">
+  
+<!-- 애드센스 코드 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1946710813485758"
+     crossorigin="anonymous"></script>
+  
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #e8e2d5;
+    --panel:     #ded7c8;
+    --card:      #f0ebe0;
+    --card-2:    #e4ddce;
+    --line:      #d8cfbd;
+    --text:      #5f5749;
+    --muted:     #a59c89;
+    --sage:      #9cb98f;
+    --sage-d:    #8aa97e;
+    --peach:     #e3a183;
+    --peach-d:   #d68f6e;
+    --cream:     #eccf6f;
+    --cream-d:   #e3c259;
+    --gold:      #d9a93f;
+    --green:     #8aa97e;
+    --red:       #d68f6e;
+    --radius:    26px;
+    --radius-sm: 20px;
+    --soft:      0 8px 20px rgba(150,135,108,.28);
+    --soft-sm:   0 5px 13px rgba(150,135,108,.22);
+    --soft-btn:  0 6px 14px rgba(150,135,108,.30), 0 1px 2px rgba(150,135,108,.20);
+    --inset:     inset 0 3px 7px rgba(150,135,108,.22);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; font-family: "Jua", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  #app { display: flex; width: 100vw; height: 100vh; height: 100dvh; }
+  #map-container { flex: 1; height: 100%; background: #e8eef3; }
+
+  #panel {
+    width: clamp(380px, 38%, 600px); height: 100%;
+    background: var(--bg);
+    color: var(--text); display: flex; flex-direction: column;
+    padding: 22px 20px; overflow-y: auto;
+  }
+  #panel-card {
+    background: var(--card);
+    border-radius: 34px;
+    box-shadow: 0 14px 34px rgba(150,135,108,.30);
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  #panel::-webkit-scrollbar { width: 8px; }
+  #panel::-webkit-scrollbar-thumb { background: #cabfa9; border-radius: 4px; }
+  #panel h1 { font-size: 24px; font-weight: 400; letter-spacing: 0; display:flex; align-items:center; gap:10px; color:var(--text); justify-content:center; margin-bottom:2px; }
+
+  .row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--muted); }
+
+  #progress-bar { height: 14px; background: var(--card-2); border-radius: 999px; overflow: hidden; box-shadow: var(--inset); }
+  #progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--sage), var(--sage-d)); border-radius:999px; transition: width .35s ease; }
+
+  .badge { display:inline-block; padding:6px 16px; border-radius:999px; font-size:13px; font-weight:400; margin-bottom:10px; box-shadow:var(--soft-sm); }
+  .badge.gu { background:var(--sage); color:#fff; }
+  .badge.dong { background:var(--cream); color:#7a6420; }
+
+  #question { font-size: 18px; line-height: 1.6; min-height: 50px; background: var(--card); padding: 20px; border-radius: var(--radius); box-shadow: var(--soft); color:var(--text); }
+
+  #legend { font-size:13px; color:var(--text); display:flex; flex-direction:column; gap:7px; }
+  #legend .lg { display:flex; align-items:center; gap:9px; }
+  #legend .sw { width:16px; height:16px; border-radius:6px; box-shadow:var(--soft-sm); }
+
+  #options { display: flex; flex-direction: column; gap: 13px; }
+  .option-btn { text-align: left; padding: 17px 20px; border: none; background: var(--card); color: var(--text); border-radius: var(--radius-sm); font-size: 17px; font-weight:400; cursor: pointer; transition: all .15s ease; box-shadow: var(--soft-sm); }
+  .option-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--soft); }
+  .option-btn:active:not(:disabled) { transform: translateY(0); box-shadow: var(--inset); }
+  .option-btn:disabled { cursor: default; }
+  .option-btn.correct { background: linear-gradient(145deg,var(--sage),var(--sage-d)); color:#fff; }
+  .option-btn.wrong { background: linear-gradient(145deg,var(--peach),var(--peach-d)); color:#fff; }
+
+  #explain { font-size:14px; line-height:1.6; padding:16px 18px; border-radius:var(--radius-sm); background: var(--card); box-shadow: var(--soft-sm); border-left:5px solid var(--sage); color:var(--text); }
+
+  button.primary { padding: 18px; background: var(--peach); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 19px; font-weight: 400; cursor: pointer; transition: all .18s ease; box-shadow: var(--soft-btn); text-shadow:0 1px 2px rgba(0,0,0,.13); }
+  button.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(150,135,108,.34); }
+  button.primary:active { transform: translateY(1px); box-shadow: var(--inset); }
+  button.secondary { padding: 14px; background: var(--card); color: var(--text); border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 400; cursor: pointer; transition: all .15s; box-shadow: var(--soft-sm); }
+  button.secondary:hover { transform: translateY(-2px); box-shadow: var(--soft); }
+  button.secondary:active { transform:translateY(0); box-shadow: var(--inset); }
+  #next-btn:disabled { background: var(--card-2); color:#aaa08c; box-shadow:var(--inset); cursor: default; transform:none; text-shadow:none; }
+
+  #result .score { font-size: 56px; font-weight: 400; color:var(--peach-d); text-align:center; }
+  #result-msg { text-align:center; font-size:15px; color:var(--text); }
+  #report { display:flex; flex-direction:column; gap:11px; margin-top:8px; }
+  .report-item { background:var(--card); border-radius:var(--radius-sm); padding:14px 16px; font-size:14px; line-height:1.6; box-shadow:var(--soft-sm); border-left:5px solid var(--line); cursor:pointer; transition: all .15s; }
+  .report-item:hover { transform:translateY(-2px); box-shadow:var(--soft); }
+  .report-item:active { transform:translateY(0); box-shadow:var(--inset); }
+  .report-item.ok { border-left-color:var(--sage); }
+  .report-item.no { border-left-color:var(--peach); }
+  .report-item.active { outline: 3px solid var(--peach-d); }
+  .report-item .head { font-weight:400; margin-bottom:3px; }
+  .report-item .sub { color:var(--muted); }
+  .report-item .replay { color:var(--gold); font-size:12px; margin-top:4px; }
+
+  #loading { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: center; background: rgba(232,226,213,.95); color: var(--text); font-size: 17px; z-index: 50; text-align: center; padding: 20px; }
+  .spinner { width: 42px; height: 42px; border: 5px solid #d4c9b3; border-top-color: var(--peach-d); border-radius: 50%; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hidden { display: none !important; }
+  #learn-screen:not(.hidden) { display:flex; flex-direction:column; flex:1; min-height:0; }
+  #verify-result { margin-top: 8px; font-size: 13px; line-height: 1.6; }
+  #diag { font-size: 13px; color: var(--peach-d); margin-top: 8px; }
+
+  .setup-block { background:var(--card); border-radius:var(--radius); padding:18px 20px; display:flex; flex-direction:column; gap:14px; box-shadow:var(--soft); margin-bottom:16px; }
+  .setup-block .label { font-size:14px; color:var(--muted); font-weight:400; letter-spacing:.02em; }
+  .seg { display:flex; gap:10px; flex-wrap:wrap; }
+  .seg button { flex:1; min-width:62px; padding:13px 6px; background:var(--card-2); color:var(--muted); border:none; border-radius:999px; font-size:15px; font-weight:400; cursor:pointer; transition:all .15s; box-shadow:var(--soft-btn); }
+  .seg button:hover { transform:translateY(-2px); }
+  .seg button:active { transform:translateY(0); box-shadow:var(--inset); }
+  .seg button.sel { background:var(--sage); color:#fff; box-shadow:var(--soft-btn); text-shadow:0 1px 1px rgba(0,0,0,.1); }
+
+  #seg-type, #seg-dir { background:var(--card-2); border-radius:999px; padding:5px; gap:0; box-shadow:var(--inset); }
+  #seg-type button, #seg-dir button { box-shadow:none; background:transparent; border-radius:999px; }
+  #seg-type button:hover, #seg-dir button:hover { transform:none; }
+  #seg-type button.sel, #seg-dir button.sel { background:var(--sage); color:#fff; box-shadow:var(--soft-btn); }
+
+  #seg-count { gap:22px; }
+  #seg-count button { flex:none; min-width:0; display:flex; align-items:center; gap:9px; background:transparent; box-shadow:none; color:var(--text); padding:6px 4px; }
+  #seg-count button:hover { transform:none; }
+  #seg-count button:active { box-shadow:none; }
+  #seg-count button::before { content:""; width:22px; height:22px; border-radius:50%; background:var(--card-2); box-shadow:var(--inset); flex:none; transition:all .15s; }
+  #seg-count button.sel { color:var(--text); }
+  #seg-count button.sel::before { background:var(--sage); box-shadow:0 0 0 4px var(--card) inset, var(--soft-sm); }
+
+  #timer-toggle-row { display:flex; align-items:center; justify-content:space-between; }
+  #timer-toggle-row .label { margin:0; }
+  .toggle { width:62px; height:34px; border-radius:999px; background:var(--card-2); box-shadow:var(--inset); border:none; cursor:pointer; position:relative; transition:background .2s; flex:none; padding:0; }
+  .toggle::after { content:""; position:absolute; top:4px; left:4px; width:26px; height:26px; border-radius:50%; background:#fff; box-shadow:var(--soft-sm); transition:left .2s; }
+  .toggle.on { background:var(--sage); }
+  .toggle.on::after { left:32px; }
+
+  #setup-area { display:flex; flex-direction:column; }
+  #mode-buttons { display:flex; flex-direction:column; gap:14px; margin-bottom:16px; }
+  #learn-btn { background:var(--cream); color:#6e5a16; text-shadow:none; }
+  #game-mode-btn { background:var(--peach); color:#fff; }
+  #game-setup { display:flex; flex-direction:column; }
+
+  .nick-input { width:100%; padding:15px 17px; background:var(--card-2); color:var(--text); border:none; border-radius:15px; font-size:16px; font-family:"Jua",sans-serif; box-shadow:var(--inset); }
+  .nick-input:focus { outline:none; }
+  .nick-input::placeholder { color:#aaa08c; }
+
+  #inline-best { background:var(--sage); color:#fff; border-radius:16px; padding:8px 16px; box-shadow:var(--soft-sm); white-space:nowrap; flex:none; display:flex; flex-direction:column; align-items:center; line-height:1.2; }
+  #inline-best .ib-label { font-size:18px; opacity:.92; }
+  #inline-best .ib-num { font-size:18px; }
+
+  #timer-wrap .row { margin-bottom:7px; }
+  #timer-bar-wrap { height:14px; background:var(--card-2); border-radius:999px; overflow:hidden; box-shadow:var(--inset); }
+  #timer-fill { height:100%; width:100%; background:var(--sage); border-radius:999px; transition:width 1s linear; }
+  #timer-fill.warn { background:var(--peach-d); }
+
+  #home-rank, #rank-screen .rank-wrap { background:var(--panel); border-radius:var(--radius); padding:20px; box-shadow:var(--soft); }
+  #home-rank .hr-title { font-size:17px; font-weight:400; color:var(--text); margin-bottom:14px; text-align:center; }
+  #home-rank-list, #rank-list { display:flex; flex-direction:column; gap:9px; }
+  #home-rank-status, #rank-status { font-size:13px; color:var(--muted); text-align:center; padding:18px; background:var(--card); border-radius:var(--radius-sm); box-shadow:var(--inset); }
+  .rank-item { display:flex; align-items:center; gap:12px; background:var(--card); border-radius:16px; padding:14px 17px; font-size:15px; box-shadow:var(--soft-sm); transition:transform .12s; }
+  .rank-item:hover { transform:translateX(3px); }
+  .rank-item .pos { font-weight:400; width:32px; text-align:center; font-size:18px; }
+  .rank-item.me { outline:3px solid var(--peach); }
+  .rank-item .nick { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:400; }
+  .rank-item .pts { font-weight:400; color:var(--peach-d); font-size:16px; }
+  .rank-item .date { font-size:11px; color:var(--muted); margin-left:6px; }
+  #rank-note { font-size:12px; color:var(--muted); line-height:1.6; margin-top:8px; }
+
+  #auth-box { background:var(--card-2); border-radius:var(--radius); padding:18px; display:flex; flex-direction:column; gap:12px; box-shadow:var(--inset); }
+  #auth-box .label { font-size:16px; color:var(--muted); font-weight:400; text-align:center; }
+  #login-area { display:flex; flex-direction:column; gap:14px; }
+  .login-btn { width:100%; padding:15px; border:none; border-radius:16px; font-size:16px; font-weight:400; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:transform .15s; box-shadow:var(--soft-sm); }
+  .login-btn:hover { transform:translateY(-2px); box-shadow:var(--soft); }
+  .login-btn:active { transform:translateY(0); box-shadow:var(--inset); }
+  .login-btn.google { background:#fff; color:#3c4043; }
+  .login-btn.kakao { background:#fee500; color:#191600; }
+  .login-btn svg { width:20px; height:20px; flex:none; }
+  #user-info { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:15px; }
+  #user-info .uname { font-size:20px; font-weight:400; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #logout-btn { background:var(--card-2); color:var(--muted); border:none; border-radius:12px; padding:9px 14px; font-size:18px; font-weight:400; cursor:pointer; flex:none; box-shadow:var(--soft-sm); }
+  #nick-setup { display:flex; flex-direction:column; gap:12px; }
+  #nick-edit-btn { background:none; border:none; color:var(--peach-d); font-size:18px; cursor:pointer; text-decoration:underline; padding:0; font-weight:400; }
+
+  #start-screen > * { margin-bottom: 16px; }
+  #start-screen > *:last-child { margin-bottom: 0; }
+  #open-setup-btn { width: 100%; }
+
+  /* ── 검색 박스 ── */
+  #search-box { position: relative; }
+  #search-input, #learn-search-input { width:100%; padding:15px 17px; background:var(--card-2); color:var(--text); border:none; border-radius:15px; font-size:16px; font-family:"Jua",sans-serif; box-shadow:var(--inset); }
+  #search-input:focus, #learn-search-input:focus { outline:none; }
+  #search-input::placeholder, #learn-search-input::placeholder { color:#aaa08c; }
+  #search-results, #learn-search-results { display:flex; flex-direction:column; gap:7px; margin-top:8px; }
+  .search-item { background:var(--card); border:none; border-radius:15px; padding:13px 16px; font-size:15px; font-weight:400; cursor:pointer; transition:all .15s; box-shadow:var(--soft-sm); text-align:left; color:var(--text); }
+  .search-item:hover { transform:translateY(-2px); box-shadow:var(--soft); }
+  .search-item:active { transform:translateY(0); box-shadow:var(--inset); }
+  .search-item .si-name { font-weight:400; }
+  .search-item .si-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+
+  #learn-dir-select { display:flex; flex-direction:column; gap:14px; }
+  #learn-dir-select .dir-btn { padding:20px; border:none; border-radius:var(--radius-sm); font-size:18px; font-weight:400; cursor:pointer; box-shadow:var(--soft-btn); transition:all .15s; text-align:left; line-height:1.5; }
+  #learn-dir-select .dir-btn:hover { transform:translateY(-2px); box-shadow:var(--soft); }
+  #learn-dir-select .dir-btn.a { background:var(--cream); color:#6e5a16; }
+  #learn-dir-select .dir-btn.b { background:var(--sage); color:#fff; }
+  #learn-dir-select .dir-btn .sub { font-size:13px; opacity:.85; display:block; margin-top:5px; }
+
+  #learn-list { display:flex; flex-direction:column; gap:9px; margin-top:4px; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-right:4px; }
+  .learn-item { background:var(--card); border:none; border-radius:16px; padding:15px 17px; font-size:16px; font-weight:400; cursor:pointer; transition:all .15s; display:flex; justify-content:space-between; align-items:center; flex:none; box-shadow:var(--soft-sm); }
+  .learn-item:hover { transform:translateY(-2px); box-shadow:var(--soft); }
+  .learn-item.sel { background:var(--card-2); box-shadow:var(--inset); }
+  .learn-item .arrow { color:var(--muted); font-size:13px; }
+  .learn-dong-wrap { display:flex; flex-direction:column; gap:6px; margin:4px 0 8px 10px; padding-left:12px; border-left:3px solid var(--line); flex:none; }
+  .learn-dong { background:var(--card-2); border-radius:13px; padding:12px 15px; font-size:15px; cursor:pointer; transition:all .15s; box-shadow:var(--soft-sm); }
+  .learn-dong:hover { transform:translateY(-1px); color:var(--peach-d); }
+  .learn-dong.sel { color:var(--peach-d); box-shadow:var(--inset); }
+  #info-card { background:var(--card); border-radius:var(--radius); padding:19px 21px; border-left:5px solid var(--sage); font-size:15px; line-height:1.7; flex:none; box-shadow:var(--soft); }
+  #info-card .ic-title { font-size:21px; font-weight:400; margin-bottom:9px; }
+  #info-card .ic-row { margin-bottom:6px; }
+  #info-card .ic-label { color:var(--sage-d); font-weight:400; margin-right:7px; }
+  #info-card .ic-empty { color:var(--muted); font-size:13px; }
+  #learn-hint { background:var(--card-2); border-radius:15px; padding:14px 16px; font-size:13px; color:var(--text); line-height:1.6; flex:none; box-shadow:var(--inset); }
+
+  #locate-panel { display:flex; flex-direction:column; gap:14px; flex:1; min-height:0; }
+  #locate-question { font-size:18px; line-height:1.6; background:var(--card); padding:20px; border-radius:var(--radius); box-shadow:var(--soft); color:var(--text); }
+  #locate-feedback { font-size:14px; line-height:1.6; padding:16px 18px; border-radius:var(--radius-sm); background:var(--card); box-shadow:var(--soft-sm); border-left:5px solid var(--sage); color:var(--text); }
+
+  @media (max-width: 768px) {
+    #app { flex-direction: column; height: 100dvh; }
+    #map-container { width: 100%; height: 54dvh; flex: none; }
+    #panel { width: 100%; flex: 1; min-height: 0; padding: 14px 12px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    #panel-card { border-radius: 26px; padding: 18px 16px; gap: 12px; }
+    #panel h1 { font-size: 19px; }
+    .row { font-size: 13px; }
+    #user-info { gap:6px; flex-wrap:wrap; }
+    #user-info .uname { font-size:15px; }
+    #inline-best { padding:7px 14px; }
+    #inline-best .ib-label { font-size:11px; }
+    #inline-best .ib-num { font-size:18px; }
+    #nick-edit-btn { font-size:12px; }
+    #logout-btn { font-size:13px; padding:9px 14px; }
+    #auth-box .label { font-size:14px; }
+    .badge { margin-bottom: 5px; padding: 5px 12px; font-size: 12px; }
+    #question, #locate-question { font-size: 15px; line-height: 1.5; padding: 14px 16px; min-height: 0; }
+    #legend { font-size: 11px; gap: 4px; }
+    #legend .sw { width: 13px; height: 13px; }
+    #options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .option-btn { padding: 14px 9px; font-size: 15px; border-radius: 15px; text-align: center; }
+    button.primary { padding: 15px; font-size: 16px; }
+    #explain, #locate-feedback { font-size: 12px; padding: 12px 14px; line-height: 1.5; }
+    #result .score { font-size: 40px; }
+    #result-msg { font-size: 13px; }
+    .report-item { font-size: 12px; padding: 11px 13px; }
+    .setup-block { padding: 14px 15px; gap: 11px; margin-bottom: 12px; }
+    .seg button { font-size: 14px; padding: 11px 5px; }
+    .learn-item { padding: 13px 15px; font-size: 15px; }
+    #info-card { font-size: 14px; padding: 15px 17px; }
+    #start-screen > * { margin-bottom: 12px; }
+    #learn-dir-select .dir-btn { padding:16px; font-size:16px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="map-container"></div>
+  <div id="panel">
+   <div id="panel-card">
+    <h1>🗺️ 전국 지리 마스터</h1>
+
+    <div id="start-screen">
+      <div id="search-box">
+        <input id="search-input" type="text" placeholder="🔍 지역명 검색 (예: 강서구, 만세구, 역삼동)" autocomplete="off" />
+        <div id="search-results"></div>
+      </div>
+
+      <div id="auth-box">
+        <div id="login-area">
+          <span class="label">로그인하면 점수가 랭킹에 등록돼요</span>
+          <button id="google-login-btn" class="login-btn google">
+            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+            구글 로그인
+          </button>
+          <button id="kakao-login-btn" class="login-btn kakao">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#191600" d="M12 3C6.477 3 2 6.582 2 11c0 2.86 1.92 5.37 4.81 6.78-.21.74-.76 2.68-.87 3.1-.14.52.19.51.4.37.16-.11 2.6-1.77 3.66-2.49.64.09 1.31.14 2 .14 5.523 0 10-3.582 10-8S17.523 3 12 3z"/></svg>
+            카카오 로그인
+          </button>
+        </div>
+        <div id="nick-setup" class="hidden">
+          <span class="label">랭킹에 표시할 닉네임을 정해주세요</span>
+          <input id="nick-input" class="nick-input" type="text" maxlength="10" placeholder="닉네임 (최대 10자)" />
+          <button id="nick-save-btn" class="primary" style="padding:12px;">닉네임 저장</button>
+        </div>
+        <div id="user-info" class="hidden">
+          <span class="uname">👤 <span id="user-nick">-</span></span>
+          <span id="inline-best" class="hidden">
+            <span class="ib-label">🏆 내 최고 점수</span>
+            <span class="ib-num"><span id="inline-best-score">0</span>점</span>
+          </span>
+          <div style="display:flex; gap:6px; align-items:center; flex:none;">
+            <button id="nick-edit-btn">닉네임 변경</button>
+            <button id="logout-btn">로그아웃</button>
+          </div>
+        </div>
+      </div>
+
+
+      <button id="open-setup-btn" class="primary">시작하기</button>
+
+      <div id="setup-area" class="hidden">
+        <div id="mode-buttons">
+          <button id="learn-btn" class="primary">📚 학습 모드</button>
+          <button id="game-mode-btn" class="primary">🎮 게임 모드</button>
+        </div>
+
+        <div id="game-setup" class="hidden">
+          <div class="setup-block">
+            <span class="label">출제 방향</span>
+            <div class="seg" id="seg-dir">
+              <button data-val="name" class="sel">위치→이름</button>
+              <button data-val="locate">이름→위치</button>
+              <button data-val="mix">혼합</button>
+            </div>
+          </div>
+
+          <div class="setup-block">
+            <span class="label">출제 지역</span>
+            <div class="seg" id="seg-region">
+              <button data-val="all" class="sel">전체</button>
+              <button data-val="seoul">서울</button>
+              <button data-val="incheon">인천</button>
+              <button data-val="gg">경기</button>
+            </div>
+          </div>
+
+          <div class="setup-block">
+            <span class="label">문제 유형</span>
+            <div class="seg" id="seg-type">
+              <button data-val="mix" class="sel">혼합</button>
+              <button data-val="gu">구·시·군만</button>
+              <button data-val="dong">읍·면·동만</button>
+            </div>
+          </div>
+
+          <div class="setup-block">
+            <span class="label">문제 수</span>
+            <div class="seg" id="seg-count">
+              <button data-val="10" class="sel">10문제</button>
+              <button data-val="20">20문제</button>
+            </div>
+          </div>
+
+          <div class="setup-block">
+            <div id="timer-toggle-row">
+              <span class="label">타이머 (문제당 15초)</span>
+              <button id="timer-toggle" class="toggle" aria-label="타이머 켜기/끄기"></button>
+            </div>
+          </div>
+
+          <button id="start-btn" class="primary">🎮 게임 시작!</button>
+        </div>
+      </div>
+
+      <div id="home-rank">
+        <div class="hr-title">🏅 실시간 랭킹 TOP 10</div>
+        <div id="home-rank-status">불러오는 중…</div>
+        <div id="home-rank-list"></div>
+      </div>
+
+      <button id="verify-btn" class="secondary">🔍 전체 검증 (구 + 읍·면·동)</button>
+      <button id="adj-verify-btn" class="secondary">🔗 인접 검증 (비대칭 의심 쌍)</button>
+      <div id="diag"></div>
+      <div id="verify-result"></div>
+    </div>
+
+    <div id="learn-screen" class="hidden">
+      <div class="row" style="margin-bottom:2px;">
+        <span style="font-size:18px; font-weight:400; color:var(--text);">📚 학습 모드</span>
+      </div>
+
+      <div id="learn-dir-select">
+        <button class="dir-btn a" id="learn-dir-name">🗺️ 위치 → 이름
+          <span class="sub">지도에서 구·동을 골라 이름과 정보를 확인해요</span>
+        </button>
+        <button class="dir-btn b" id="learn-dir-locate">📍 이름 → 위치
+          <span class="sub">이름을 보고 지도에서 위치를 직접 찾아요 (연습)</span>
+        </button>
+      </div>
+
+      <div id="learn-explore" class="hidden" style="display:flex; flex-direction:column; flex:1; min-height:0; gap:14px;">
+        <div id="learn-hint">👆 지도를 직접 누르면 그곳이 어느 구·동인지 알려줘요. 또는 아래 목록에서 골라도 됩니다.</div>
+
+        <div id="learn-search-box">
+          <input id="learn-search-input" type="text" placeholder="🔍 지역명 검색 (예: 강서구, 만세구, 역삼동)" autocomplete="off" />
+          <div id="learn-search-results"></div>
+        </div>
+
+        <div class="setup-block" style="flex:none; margin-bottom:0;">
+          <span class="label">지역 선택</span>
+          <div class="seg" id="learn-region">
+            <button data-val="seoul" class="sel">서울</button>
+            <button data-val="incheon">인천</button>
+            <button data-val="gg">경기</button>
+          </div>
+        </div>
+
+        <div id="info-card" class="hidden"></div>
+        <div id="learn-list"></div>
+      </div>
+
+      <div id="locate-panel" class="hidden">
+        <div class="setup-block" style="flex:none; margin-bottom:0;">
+          <span class="label">지역 선택</span>
+          <div class="seg" id="locate-region">
+            <button data-val="seoul" class="sel">서울</button>
+            <button data-val="incheon">인천</button>
+            <button data-val="gg">경기</button>
+          </div>
+        </div>
+        <div class="setup-block" style="flex:none; margin-bottom:0;">
+          <span class="label">문제 유형</span>
+          <div class="seg" id="locate-type">
+            <button data-val="gu" class="sel">구·시·군</button>
+            <button data-val="dong">읍·면·동</button>
+          </div>
+        </div>
+        <span id="q-badge-locate" class="badge gu" style="align-self:flex-start;">구·시·군</span>
+        <div id="locate-question">아래 "다음 문제"를 눌러 시작하세요.</div>
+        <div id="locate-feedback" class="hidden"></div>
+        <button id="locate-next-btn" class="primary" style="flex:none;">문제 시작 / 다음 문제</button>
+      </div>
+
+      <button id="learn-back-btn" class="primary" style="margin-top:10px; flex:none;">← 처음으로</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="row">
+        <span id="q-counter">1 / 10</span>
+        <span id="score-label">점수 0</span>
+      </div>
+      <div id="progress-bar"><div id="progress-fill"></div></div>
+
+      <div id="timer-wrap" class="hidden">
+        <div class="row"><span>⏱ 남은 시간</span><span id="timer-num">15</span></div>
+        <div id="timer-bar-wrap"><div id="timer-fill"></div></div>
+      </div>
+
+      <div>
+        <span id="q-badge" class="badge gu">구·시·군</span>
+        <div id="question"></div>
+      </div>
+      <div id="legend" class="hidden">
+        <div class="lg"><span class="sw" style="background:#fed7aa;"></span> 시 전체</div>
+        <div class="lg"><span class="sw" style="background:#f97316;"></span> 소속 구</div>
+        <div class="lg"><span class="sw" style="background:#7dd3fc;"></span> 정답 읍·면·동 (빨간 점)</div>
+      </div>
+      <div id="options"></div>
+      <div id="explain" class="hidden"></div>
+      <button id="next-btn" class="primary" disabled>다음 문제</button>
+      <button id="quit-btn" class="secondary">그만두기</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <div id="result">
+        <div style="text-align:center; color:var(--muted);">최종 점수</div>
+        <div class="score"><span id="final-score">0</span> / <span id="max-score">100</span></div>
+        <div id="result-msg"></div>
+        <div id="new-best" class="hidden" style="text-align:center; color:var(--sage-d); font-weight:400; margin-top:6px;">🎉 내 최고 점수 갱신!</div>
+        <div id="rank-save-status" style="text-align:center; color:var(--muted); font-size:12px; margin-top:6px;"></div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button id="wrong-only-btn" class="secondary" style="flex:1;">❌ 틀린 문제만</button>
+        <button id="to-rank-btn" class="secondary" style="flex:1;">🏅 랭킹 보기</button>
+      </div>
+
+      <h2 style="font-size:16px; margin-top:8px; font-weight:400; color:var(--text);">📋 결과지 <span style="font-size:12px; color:var(--muted); font-weight:400;">(항목을 누르면 지도에 다시 표시)</span></h2>
+      <div id="report"></div>
+      <button id="restart-btn" class="primary" style="margin-top:8px;">다시 하기</button>
+    </div>
+
+    <div id="rank-screen" class="hidden">
+      <h2 style="font-size:18px; font-weight:400; color:var(--text);">🏅 실시간 랭킹 TOP 10</h2>
+      <div class="rank-wrap" style="margin-top:10px;">
+        <div id="rank-status" class="hidden">불러오는 중…</div>
+        <div id="rank-list"></div>
+      </div>
+      <div id="rank-note">※ 전 세계 모든 플레이어의 점수가 실시간으로 반영됩니다. 로그인 후 닉네임을 정하고 게임하면 자동 등록돼요.</div>
+      <button id="rank-refresh-btn" class="secondary" style="margin-top:10px;">🔄 새로고침</button>
+      <button id="rank-back-btn" class="primary" style="margin-top:6px;">← 처음으로</button>
+    </div>
+   </div>
+
+   <!-- ▼▼▼ 여기에 콘텐츠 섹션을 붙여넣으세요 ▼▼▼ -->
+   <section id="content-guide" style="max-width:820px; margin:40px auto 0; padding:24px 18px 40px; line-height:1.9; color:#333; font-size:15px; border-top:1px solid #ddd;">
+
+     <h2 style="font-size:22px; margin-bottom:8px;">전국 지리 마스터 퀴즈란?</h2>
+     <p>전국 지리 마스터 퀴즈는 대한민국의 행정구역을 지도와 함께 재미있게 익힐 수 있는 학습형 퀴즈입니다. 지도에서 직접 위치를 찾거나 이름을 맞추는 방식으로, 초등학생부터 성인까지 누구나 우리나라의 시·도·구·군·읍·면·동 체계를 자연스럽게 배울 수 있도록 만들었습니다. 단순 암기가 아니라 실제 지도를 보며 위치 감각을 익히기 때문에 사회 과목 공부나 상식 향상에 특히 도움이 됩니다.</p>
+
+     <h2 style="font-size:22px; margin:28px 0 8px;">대한민국 행정구역의 구조</h2>
+     <p>우리나라의 행정구역은 크게 광역자치단체와 기초자치단체로 나뉩니다. 광역자치단체에는 1개의 특별시(서울), 6개의 광역시(부산·대구·인천·광주·대전·울산), 1개의 특별자치시(세종), 그리고 여러 개의 도와 특별자치도가 있습니다. 그 아래 기초자치단체로 시·군·구가 있고, 다시 그 하위 행정구역으로 읍·면·동이 자리합니다. 이 계층 구조를 이해하면 어떤 지역이 어디에 속하는지 훨씬 쉽게 파악할 수 있습니다.</p>
+
+     <h2 style="font-size:22px; margin:28px 0 8px;">지역별 특징 살펴보기</h2>
+     <p><strong>서울특별시</strong>는 대한민국의 수도로 25개의 자치구로 이루어져 있습니다. 한강을 기준으로 강북과 강남으로 나뉘며, 종로구·중구 같은 도심부터 강남구·송파구 같은 신도심까지 다양한 지역이 모여 있습니다.</p>
+     <p><strong>인천광역시</strong>는 서해에 접한 항구 도시로, 인천국제공항과 항만을 중심으로 발전했습니다. 강화군과 옹진군처럼 섬으로 이루어진 지역도 포함하고 있어 행정구역 학습에 좋은 예시가 됩니다.</p>
+     <p><strong>경기도</strong>는 서울을 둘러싼 가장 인구가 많은 광역자치단체로, 수원시·성남시·고양시·용인시 등 인구 100만 명이 넘는 특례시들이 자리하고 있습니다. 도시와 농촌, 산과 바다가 고루 분포해 지역 구성이 매우 다양합니다.</p>
+
+     <h2 style="font-size:22px; margin:28px 0 8px;">이 퀴즈로 무엇을 배울 수 있나요?</h2>
+     <p>이 퀴즈를 반복해서 풀다 보면 각 지역의 정확한 위치, 소속 관계, 그리고 이름을 자연스럽게 익힐 수 있습니다. 지도를 직접 눌러 확인하는 학습 모드에서는 특정 구나 동이 어디에 있는지 즉시 확인할 수 있어, 시험 준비뿐 아니라 여행이나 일상생활에서도 유용한 지리 감각을 기를 수 있습니다.</p>
+
+     <h2 style="font-size:22px; margin:28px 0 8px;">자주 묻는 질문 (FAQ)</h2>
+     <p><strong>Q. 회원가입을 꼭 해야 하나요?</strong><br>
+     아니요, 로그인 없이도 모든 퀴즈를 자유롭게 즐길 수 있습니다. 다만 로그인 후 닉네임을 정하면 점수가 실시간 랭킹에 자동으로 등록됩니다.</p>
+     <p><strong>Q. 어떤 지역까지 학습할 수 있나요?</strong><br>
+     서울을 비롯한 여러 지역의 시·군·구 및 읍·면·동 단위까지 세부적으로 학습할 수 있으며, 지역은 계속 추가되고 있습니다.</p>
+     <p><strong>Q. 모바일에서도 이용할 수 있나요?</strong><br>
+     네, 스마트폰 브라우저에서도 그대로 접속해 이용할 수 있으며 홈 화면에 추가해 앱처럼 사용할 수도 있습니다.</p>
+
+   </section>
+   <!-- ▲▲▲ 콘텐츠 섹션 끝 ▲▲▲ -->
+
+   <div id="site-footer" style="text-align:center; margin-top:20px; padding:0 8px 8px; font-size:12px; color:var(--muted); line-height:2;">
+     <a href="mailto:koquiz.support@gmail.com" style="color:var(--muted); text-decoration:none;">문의하기</a>
+     &nbsp;·&nbsp;
+     <a href="/korea-geography-quiz/privacy.html" style="color:var(--muted); text-decoration:none;">개인정보처리방침</a>
+     <div style="margin-top:4px;">Copyright 2026. koquiz.support@gmail.com All rights reserved.</div>
+   </div>
+  </div>
+</div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div id="loading-text">지도 및 경계 데이터를 불러오는 중…</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=kizfnbhv3q&submodules=geocoder"></script>
+<script>
+/* ===========================================================
+   Supabase 초기화
+=========================================================== */
+const SUPABASE_URL = "https://vldlgpeuuptuvgjtirsz.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsZGxncGV1dXB0dXZnanRpcnN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4ODgxNDgsImV4cCI6MjA5NzQ2NDE0OH0.-87MHEDl1KkjdwUynpEB8fJVkdDATw5O_rDFaTsHXZE";
+
+let sb = null;
+try {
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) {
+  console.error("Supabase 초기화 실패:", e);
+}
+
+let currentUser = null;
+let currentNick = null;
+
+async function loginGoogle() {
+  if (!sb) return;
+  await sb.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: window.location.href.split("#")[0] }
+  });
+}
+
+async function loginKakao() {
+  if (!sb) return;
+  await sb.auth.signInWithOAuth({
+    provider: "kakao",
+    options: {
+      redirectTo: window.location.href.split("#")[0],
+      queryParams: { scope: "profile_nickname" }
+    }
+  });
+}
+
+async function logout() {
+  if (!sb) return;
+  await sb.auth.signOut();
+  currentUser = null;
+  currentNick = null;
+  refreshAuthUI();
+}
+
+async function fetchMyNick() {
+  if (!sb || !currentUser) return null;
+  try {
+    const { data, error } = await sb
+      .from("ranking")
+      .select("nick")
+      .eq("user_id", currentUser.id)
+      .maybeSingle();
+    if (error) { console.error(error); return null; }
+    return data ? data.nick : null;
+  } catch (e) { console.error(e); return null; }
+}
+
+async function saveNick(nick) {
+  const clean = (nick || "").trim().slice(0, 10);
+  if (!clean) return false;
+  if (sb && currentUser) {
+    try {
+      const { data: dup } = await sb
+        .from("ranking")
+        .select("user_id")
+        .eq("nick", clean)
+        .neq("user_id", currentUser.id)
+        .maybeSingle();
+      if (dup) {
+        alert("이미 사용 중인 닉네임이에요. 다른 닉네임을 정해주세요.");
+        return false;
+      }
+    } catch (e) { console.error(e); }
+  }
+  currentNick = clean;
+  localStorage.setItem(LS_NICK, clean);
+  if (sb && currentUser) {
+    try {
+      const { data } = await sb.from("ranking").select("user_id").eq("user_id", currentUser.id).maybeSingle();
+      if (data) {
+        const { error } = await sb.from("ranking").update({ nick: clean }).eq("user_id", currentUser.id);
+        if (error) {
+          alert("이미 사용 중인 닉네임이에요. 다른 닉네임을 정해주세요.");
+          currentNick = null;
+          return false;
+        }
+      }
+    } catch (e) { console.error(e); }
+  }
+  return true;
+}
+
+async function saveRankScore(sc) {
+  if (!sb || !currentUser || !currentNick) return false;
+  try {
+    const { error } = await sb.rpc("add_score", { p_nick: currentNick, p_score: sc });
+    if (error) { console.error("랭킹 저장 실패:", error); return false; }
+    return true;
+  } catch (e) {
+    console.error("랭킹 저장 실패:", e);
+    return false;
+  }
+}
+
+async function fetchTopRanks() {
+  if (!sb) return null;
+  try {
+    const { data, error } = await sb
+      .from("ranking")
+      .select("nick, total_score, plays, best")
+      .order("total_score", { ascending: false })
+      .limit(10);
+    if (error) { console.error("랭킹 불러오기 실패:", error); return null; }
+    return data || [];
+  } catch (e) {
+    console.error("랭킹 불러오기 실패:", e);
+    return null;
+  }
+}
+
+function refreshAuthUI() {
+  const loginArea = document.getElementById("login-area");
+  const nickSetup = document.getElementById("nick-setup");
+  const userInfo = document.getElementById("user-info");
+  const inlineBest = document.getElementById("inline-best");
+
+  if (!currentUser) {
+    loginArea.classList.remove("hidden");
+    nickSetup.classList.add("hidden");
+    userInfo.classList.add("hidden");
+    if (inlineBest) inlineBest.classList.add("hidden");
+  } else if (!currentNick) {
+    loginArea.classList.add("hidden");
+    nickSetup.classList.remove("hidden");
+    userInfo.classList.add("hidden");
+    if (inlineBest) inlineBest.classList.add("hidden");
+  } else {
+    loginArea.classList.add("hidden");
+    nickSetup.classList.add("hidden");
+    userInfo.classList.remove("hidden");
+    document.getElementById("user-nick").textContent = currentNick;
+    if (inlineBest) {
+      inlineBest.classList.remove("hidden");
+      document.getElementById("inline-best-score").textContent = localStorage.getItem(LS_BEST) || "0";
+    }
+  }
+}
+
+/* ===========================================================
+   설정
+=========================================================== */
+const CDN_BASE = "https://cdn.jsdelivr.net/gh/ttlmymo/korea-geography-quiz@main";
+
+const REGION_FILES = {
+  "11": { bjd: CDN_BASE + "/bjd/bjd_11_seoul.geojson",    hjd: CDN_BASE + "/hjd/hjd_11_seoul.geojson",    gu: CDN_BASE + "/gu/gu_11_seoul.geojson"    },
+  "28": { bjd: CDN_BASE + "/bjd/bjd_28_incheon.geojson",  hjd: CDN_BASE + "/hjd/hjd_28_incheon.geojson",  gu: CDN_BASE + "/gu/gu_28_incheon.geojson"  },
+  "41": { bjd: CDN_BASE + "/bjd/bjd_41_gyeonggi.geojson", hjd: CDN_BASE + "/hjd/hjd_41_gyeonggi.geojson", gu: CDN_BASE + "/gu/gu_41_gyeonggi.geojson" }
+};
+
+const ACTIVE_SIDOS = ["11", "28", "41"];
+
+let SGG_MAP = {};
+
+const SGG_MAP_FALLBACK = {
+  "41590": { sido: "41", sidonm: "경기도", sggnm: "화성시" }
+};
+
+const DONG_RATIO = 0.5;
+const TIMER_SECONDS = 15;
+
+const COLOR_SI   = { fillColor:"#fed7aa", fillOpacity:0.45, strokeColor:"#fb923c", strokeWeight:1, strokeOpacity:0.7 };
+const COLOR_GU   = { fillColor:"#f97316", fillOpacity:0.55, strokeColor:"#ea580c", strokeWeight:2, strokeOpacity:0.95 };
+const COLOR_DONG = { fillColor:"#7dd3fc", fillOpacity:0.75, strokeColor:"#0ea5e9", strokeWeight:2, strokeOpacity:1 };
+const COLOR_CANDIDATE = { fillColor:"#cbd5e1", fillOpacity:0.35, strokeColor:"#94a3b8", strokeWeight:1, strokeOpacity:0.8, clickable:true };
+const COLOR_CORRECT   = { fillColor:"#86efac", fillOpacity:0.75, strokeColor:"#16a34a", strokeWeight:2, strokeOpacity:1 };
+const COLOR_WRONGPICK = { fillColor:"#fca5a5", fillOpacity:0.75, strokeColor:"#dc2626", strokeWeight:2, strokeOpacity:1 };
+/* 구 문제용: 동 내부 경계선을 숨기기 위해 테두리 투명 */
+const COLOR_CANDIDATE_NB = { fillColor:"#cbd5e1", fillOpacity:0.4, strokeColor:"#cbd5e1", strokeWeight:0, strokeOpacity:0, clickable:true };
+const COLOR_CORRECT_NB   = { fillColor:"#86efac", fillOpacity:0.8, strokeColor:"#86efac", strokeWeight:0, strokeOpacity:0 };
+const COLOR_WRONGPICK_NB = { fillColor:"#fca5a5", fillOpacity:0.8, strokeColor:"#fca5a5", strokeWeight:0, strokeOpacity:0 };
+
+/* 구(gu) 폴리곤 오버레이 스타일 (네이버 Polygon 옵션 형식) */
+const GU_STYLE_CANDIDATE = { fillColor:"#cbd5e1", fillOpacity:0.4, strokeColor:"#94a3b8", strokeWeight:1.5, strokeOpacity:0.85 };
+const GU_STYLE_GU        = { fillColor:"#f97316", fillOpacity:0.55, strokeColor:"#ea580c", strokeWeight:2.5, strokeOpacity:0.95 };
+const GU_STYLE_CORRECT   = { fillColor:"#86efac", fillOpacity:0.7,  strokeColor:"#16a34a", strokeWeight:2.5, strokeOpacity:1 };
+const GU_STYLE_WRONGPICK = { fillColor:"#fca5a5", fillOpacity:0.7,  strokeColor:"#dc2626", strokeWeight:2.5, strokeOpacity:1 };
+
+const LS_BEST = "kgq_best_score";
+const LS_NICK = "kgq_nick";
+
+const koCmp = (a, b) => String(a).localeCompare(String(b), "ko", { numeric: true });
+
+const ADJ_GRID = 0.007;
+const MANUAL_ADJ_ADD = [];
+const MANUAL_ADJ_REMOVE = [];
+
+const ISLAND_NOTE = {
+  "옹진군": "인천 앞바다에 흩어져 있는 섬들로만 이루어진 군이에요. 백령도·연평도·대청도·덕적도·자월도 등이 속하며, 육지와 바다로 분리되어 있어 경계가 맞닿은 구·군이 없습니다."
+};
+</script>
+
+<script>
+/* ===========================================================
+   DB (구·시·군 목록)
+   ※ 더 이상 손으로 적지 않고, gu 파일 로드 후 buildDbFromGu()에서
+     자동 생성한다. 초기값은 빈 배열.
+     각 항목 형식: { sgg, sgg_nm, full_nm, sido, sidonm,
+                     name, matchName, group, sggCode }
+     - name      : full_nm (화면 표시용)
+     - matchName  : sgg_nm (기존 참조 호환용)
+     - group      : 같은 시(예: 수원시) 단위 오답 후보 그룹
+     - sggCode    : sgg 코드 (기존 코드 호환용)
+=========================================================== */
+let DB = [];
+
+const SIDO_TO_REGION = { "11":"seoul", "28":"incheon", "41":"gg" };
+
+/* 경기 북부 시·군 (한강 이북). 나머지 경기 시·군은 모두 남부. */
+const GG_NORTH = ["고양시","의정부시","남양주시","파주시","구리시","양주시","포천시","동두천시","가평군","연천군"];
+
+/* group 형식 "41-평택시" 에서 시 이름을 추출해 권역 키 반환. 경기(41)가 아니면 null. */
+function ggZoneOfGroup(group) {
+  if (!group) return null;
+  const parts = group.split("-");
+  if (parts[0] !== "41") return null;
+  const city = parts[1] || "";
+  return GG_NORTH.some((n) => city.indexOf(n) === 0) ? "gg-north" : "gg-south";
+}
+
+/* 같은 권역(gg-north/gg-south)에 속한 구·시·군 코드 목록 */
+function guCodesForZone(zone) {
+  return DB.filter((d) => d.sggCode && ggZoneOfGroup(d.group) === zone).map((d) => d.sggCode);
+}
+
+/* ===========================================================
+   전역 상태
+=========================================================== */
+let map = null, centerMarker = null;
+let highlightedFeatures = [];
+const featuresBySgg = {}, codeByKey = {}, featuresBySi = {};
+const dongList = [], dongsBySgg = {};
+const dongByFeature = new Map();
+
+const guAdj = {};
+const dongAdj = {};
+const guNameByCode = {};
+
+/* 구(gu) 폴리곤 오버레이 관련 */
+const guPolyByCode = {};   // sgg코드 -> 네이버 Polygon 객체 배열
+const guRingsByCode = {};  // sgg코드 -> [[ [lng,lat], ... ], ...] 외곽 링 배열 (point-in-polygon용)
+const guPropsByCode = {};  // sgg코드 -> { sgg, sgg_nm, sido, sidonm, full_nm }
+let guOverlays = [];       // 현재 지도에 표시중인 구 오버레이 Polygon 배열
+
+const SIDO_NAME = { "11":"서울특별시", "28":"인천광역시", "41":"경기도" };
+
+let quizSet = [], currentIndex = 0, score = 0, answered = false;
+let answerLog = [];
+let totalQuestions = 10;
+let settings = { dir:"name", region:"all", type:"mix", count:10, timer:"off" };
+let timerId = null, timerLeft = 0;
+
+let learnRegion = "seoul";
+let expandedGu = null;
+let selectedDongName = null;
+let mapClickListener = null;
+let guClickListener = null;
+
+/* appMode: "none" | "learn-explore" | "learn-locate" | "game" */
+let appMode = "none";
+let candidateFeatures = [];
+
+/* 학습 locate 연습 상태 */
+let locateRegion = "seoul";
+let locateType = "gu";
+let locateCurrent = null;
+
+function siNameOf(sggnm) {
+  const m = sggnm.match(/^(.*?[시군])/);
+  return m ? m[1] : sggnm;
+}
+
+function dongKeyOf(dong) { return dong.sgg + "|" + dong.dongName; }
+
+function showScreen(name) {
+  ["start","learn","quiz","result","rank"].forEach((s) => {
+    document.getElementById(s + "-screen").classList.toggle("hidden", s !== name);
+  });
+}
+
+/* ===========================================================
+   지도 초기화 + 클릭 라우팅
+=========================================================== */
+function initMap() {
+  map = new naver.maps.Map("map-container", {
+    center: new naver.maps.LatLng(37.5642, 127.0016),
+    zoom: 10, minZoom: 8, maxZoom: 15,
+    mapTypes: new naver.maps.MapTypeRegistry({
+      "normal_no_labels": naver.maps.NaverStyleMapTypeOptions.getNormalMap({ overlayType: "bg.ol" })
+    }),
+    mapTypeId: "normal_no_labels",
+    scaleControl: false, logoControl: true, mapDataControl: false, zoomControl: false
+  });
+
+  mapClickListener = naver.maps.Event.addListener(map.data, "click", (e) => {
+    const feature = e.feature;
+    if (appMode === "learn-explore") {
+      const dong = dongByFeature.get(feature);
+      if (dong) onMapDongClick(dong);
+    } else if (appMode === "learn-locate") {
+      // 동 문제만 bjd feature 클릭으로 판정 (구 문제는 gu 폴리곤/맵 클릭으로 처리)
+      if (locateCurrent && locateCurrent.qtype === "dong") {
+        handleLocateClick(feature, "learn");
+      }
+    } else if (appMode === "game") {
+      const q = quizSet[currentIndex];
+      if (q && q.dir === "locate" && q.qtype === "dong") handleLocateClick(feature, "game");
+    }
+  });
+
+  // 구(gu) 문제의 "이름→위치"는 지도 전체 클릭 좌표를 point-in-polygon으로 판정한다.
+  guClickListener = naver.maps.Event.addListener(map, "click", (e) => {
+    const latlng = e.coord;
+    if (!latlng) return;
+    if (appMode === "learn-locate") {
+      if (locateCurrent && locateCurrent.qtype === "gu") {
+        handleGuLocateClick(latlng, "learn");
+      }
+    } else if (appMode === "game") {
+      const q = quizSet[currentIndex];
+      if (q && q.dir === "locate" && q.qtype === "gu") {
+        handleGuLocateClick(latlng, "game");
+      }
+    }
+  });
+}
+
+/* ===========================================================
+   IndexedDB 캐싱 레이어
+=========================================================== */
+const IDB_NAME = "kgq_geo_cache";
+const IDB_STORE = "regions";
+const IDB_VERSION = 1;
+const DATA_SCHEMA_VERSION = "gu-v5";
+
+function idbOpen() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) { reject(new Error("no-indexeddb")); return; }
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbGet(key) {
+  try {
+    const db = await idbOpen();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, "readonly");
+      const req = tx.objectStore(IDB_STORE).get(key);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) { console.warn("idbGet 실패, 네트워크로 진행:", e); return null; }
+}
+
+async function idbSet(key, value) {
+  try {
+    const db = await idbOpen();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, "readwrite");
+      tx.objectStore(IDB_STORE).put(value, key);
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch (e) { console.warn("idbSet 실패(캐시 생략):", e); return false; }
+}
+
+/* ===========================================================
+   시군구 코드 -> 이름 매핑 (hjd에서 추출)
+=========================================================== */
+async function buildSggMapForSido(sidoCode) {
+  const url = REGION_FILES[sidoCode].hjd;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("행정동(hjd) 로드 실패: " + url);
+  const geo = await res.json();
+  const mp = {};
+  (geo.features || []).forEach((f) => {
+    const p = f.properties || {};
+    if (p.sgg && !mp[p.sgg]) {
+      mp[p.sgg] = { sido: p.sido, sidonm: p.sidonm, sggnm: p.sggnm };
+    }
+  });
+  return mp;
+}
+
+function normalizeBjd(geo, sggMap) {
+  (geo.features || []).forEach((f) => {
+    const p = f.properties || {};
+    const cdFront5 = p.EMD_CD ? String(p.EMD_CD).slice(0, 5) : "";
+    const colCode  = p.COL_ADM_SE || "";
+    const code5 = (cdFront5 && sggMap[cdFront5]) ? cdFront5 : (colCode || cdFront5);
+    const m = sggMap[code5] || SGG_MAP_FALLBACK[code5] || {};
+    p.sgg    = code5;
+    p.sido   = m.sido   || code5.slice(0, 2);
+    p.sidonm = m.sidonm || (SIDO_NAME[code5.slice(0, 2)] || "");
+    p.sggnm  = m.sggnm  || "";
+    p.adm_nm = [p.sidonm, p.sggnm, p.EMD_NM].filter(Boolean).join(" ");
+    p.adm_cd = p.EMD_CD || "";
+    f.properties = p;
+  });
+  return geo;
+}
+
+async function loadRegionGeo(sidoCode) {
+  const cacheKey = "bjd_" + sidoCode + "_" + DATA_SCHEMA_VERSION;
+  const cached = await idbGet(cacheKey);
+  if (cached && cached.geo && cached.sggMap) {
+    Object.assign(SGG_MAP, cached.sggMap);
+    return cached.geo;
+  }
+
+  const sggMap = await buildSggMapForSido(sidoCode);
+  Object.assign(SGG_MAP, sggMap);
+
+  const url = REGION_FILES[sidoCode].bjd;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("법정동(bjd) 로드 실패: " + url);
+  let geo = await res.json();
+  geo = normalizeBjd(geo, sggMap);
+
+  await idbSet(cacheKey, { geo, sggMap, savedAt: Date.now() });
+  return geo;
+}
+
+/* ===========================================================
+   구(gu) 데이터 로드 + 캐싱
+=========================================================== */
+async function loadGuGeo(sidoCode) {
+  const cacheKey = "gu_" + sidoCode + "_" + DATA_SCHEMA_VERSION;
+  const cached = await idbGet(cacheKey);
+  if (cached && cached.geo) return cached.geo;
+  const url = REGION_FILES[sidoCode].gu;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("구(gu) 로드 실패: " + url);
+  const geo = await res.json();
+  await idbSet(cacheKey, { geo, savedAt: Date.now() });
+  return geo;
+}
+
+/* ===========================================================
+   구(gu) 폴리곤 빌드
+   - gu GeoJSON을 읽어 네이버 Polygon 객체로 만들어 두고
+     guPolyByCode 에 저장 (처음엔 지도에 표시하지 않음).
+   - guPropsByCode 에 속성 저장, guRingsByCode 에 point-in-polygon용
+     좌표 링([lng,lat]) 저장.
+=========================================================== */
+function buildGuPolygons(geo) {
+  (geo.features || []).forEach((f) => {
+    const p = f.properties || {};
+    const code = p.sgg;
+    if (!code) return;
+    const geom = f.geometry;
+    if (!geom) return;
+
+    guPropsByCode[code] = {
+      sgg: code,
+      sgg_nm: p.sgg_nm || "",
+      sido: p.sido || code.slice(0, 2),
+      sidonm: p.sidonm || (SIDO_NAME[code.slice(0, 2)] || ""),
+      full_nm: p.full_nm || ""
+    };
+
+    if (!guPolyByCode[code]) guPolyByCode[code] = [];
+    if (!guRingsByCode[code]) guRingsByCode[code] = [];
+
+    // 폴리곤 1개 처리: rings = [outerRing, hole1, hole2, ...] (각 ring은 [lng,lat] 배열)
+    const handlePolygon = (rings) => {
+      // 네이버 Polygon paths: 외곽 + 홀 순서, 각 path는 LatLng 배열
+      const paths = rings.map((ring) =>
+        ring.map((c) => new naver.maps.LatLng(c[1], c[0]))
+      );
+      const poly = new naver.maps.Polygon({
+        map: null,
+        paths: paths,
+        fillColor: GU_STYLE_GU.fillColor,
+        fillOpacity: 0,
+        strokeColor: GU_STYLE_GU.strokeColor,
+        strokeWeight: 0,
+        strokeOpacity: 0,
+        clickable: false
+      });
+      guPolyByCode[code].push(poly);
+      // point-in-polygon은 외곽 링만 사용
+      if (rings.length) guRingsByCode[code].push(rings[0]);
+    };
+
+    if (geom.type === "Polygon") {
+      handlePolygon(geom.coordinates);
+    } else if (geom.type === "MultiPolygon") {
+      geom.coordinates.forEach((poly) => handlePolygon(poly));
+    }
+  });
+}
+
+/* ===========================================================
+   gu 파일로부터 DB(구 목록) 자동 생성
+   - 같은 시(예: 수원시) 단위 group 부여 → 오답 후보를 같은 시에서 우선.
+=========================================================== */
+function buildDbFromGu() {
+  DB = [];
+  Object.keys(guPropsByCode).forEach((code) => {
+    const p = guPropsByCode[code];
+    const sggnm = p.sgg_nm || "";
+    const fullNm = p.full_nm || "";
+    const parts = fullNm.split(/\s+/).filter(Boolean);
+    let si = "";
+    for (const part of parts) {
+      if (/[시군]$/.test(part)) { si = part; break; }
+    }
+    if (!si) si = siNameOf(sggnm);
+    // 같은 시(또는 구가 없는 단일 시·군)는 같은 group 으로 묶는다.
+    const group = (p.sido || "") + "-" + (si || sggnm);
+    const fullName = p.full_nm || ((p.sidonm ? p.sidonm + " " : "") + sggnm);
+    DB.push({
+      sgg: code,
+      sggCode: code,
+      sgg_nm: sggnm,
+      matchName: sggnm,
+      full_nm: fullName,
+      name: fullName,
+      sido: p.sido,
+      sidonm: p.sidonm,
+      group: group
+    });
+    guNameByCode[code] = sggnm;
+  });
+  DB.sort((a, b) => koCmp(a.full_nm, b.full_nm));
+}
+
+/* ===========================================================
+   데이터 로드 + 인덱스
+=========================================================== */
+async function loadAllGeoData() {
+  map.data.setStyle(() => ({ fillOpacity: 0, strokeWeight: 0, clickable: true }));
+
+  const loadingText = document.getElementById("loading-text");
+
+  const geos = [];
+  for (let i = 0; i < ACTIVE_SIDOS.length; i++) {
+    const code = ACTIVE_SIDOS[i];
+    if (loadingText) loadingText.textContent =
+      `경계 데이터를 불러오는 중… (${SIDO_NAME[code] || code}, ${i + 1}/${ACTIVE_SIDOS.length})`;
+    geos.push(await loadRegionGeo(code));
+  }
+  geos.forEach((g) => map.data.addGeoJson(g));
+
+  // 구(gu) 파일 로드 + 폴리곤 빌드 (bjd 로딩이 끝난 뒤)
+  for (let i = 0; i < ACTIVE_SIDOS.length; i++) {
+    const code = ACTIVE_SIDOS[i];
+    if (loadingText) loadingText.textContent =
+      `구 경계 데이터를 불러오는 중… (${SIDO_NAME[code] || code}, ${i + 1}/${ACTIVE_SIDOS.length})`;
+    const guGeo = await loadGuGeo(code);
+    buildGuPolygons(guGeo);
+  }
+  buildDbFromGu();
+
+  map.data.forEach((feature) => {
+    const sgg = feature.getProperty("sgg");
+    const sggnm = feature.getProperty("sggnm");
+    const sido = feature.getProperty("sido");
+    const adm_nm = feature.getProperty("adm_nm");
+    if (!sgg) return;
+
+    if (!featuresBySgg[sgg]) featuresBySgg[sgg] = [];
+    featuresBySgg[sgg].push(feature);
+    if (sggnm && sido) { codeByKey[sido + "|" + sggnm] = sgg; if (!guNameByCode[sgg]) guNameByCode[sgg] = sggnm; }
+
+    if (sggnm && sido) {
+      const siKey = sido + "|" + siNameOf(sggnm);
+      if (!featuresBySi[siKey]) featuresBySi[siKey] = [];
+      featuresBySi[siKey].push(feature);
+    }
+    const dongName = feature.getProperty("EMD_NM") ||
+      (adm_nm ? adm_nm.trim().split(/\s+/).pop() : null);
+    if (dongName) {
+      const dong = { dongName, sgg, sido, sggnm, feature };
+      dongList.push(dong);
+      dongByFeature.set(feature, dong);
+      if (!dongsBySgg[sgg]) dongsBySgg[sgg] = [];
+      dongsBySgg[sgg].push(dong);
+    }
+  });
+
+  Object.keys(dongsBySgg).forEach((sgg) => {
+    dongsBySgg[sgg].sort((a, b) => koCmp(a.dongName, b.dongName));
+  });
+
+  const adjKey = ADJ_CACHE_KEY + "_" + DATA_SCHEMA_VERSION + "_" + ACTIVE_SIDOS.join("-");
+  const cachedAdj = await idbGet(adjKey);
+  if (cachedAdj && cachedAdj.guAdj && cachedAdj.dongAdj) {
+    deserializeAdj(cachedAdj.guAdj, guAdj);
+    deserializeAdj(cachedAdj.dongAdj, dongAdj);
+  } else {
+    computeAdjacency();
+    await idbSet(adjKey, {
+      guAdj: serializeAdj(guAdj),
+      dongAdj: serializeAdj(dongAdj),
+      savedAt: Date.now()
+    });
+  }
+}
+
+/* ===========================================================
+   인접/인덱스 결과 캐싱 헬퍼
+=========================================================== */
+const ADJ_CACHE_KEY = "adj_v1";
+
+function serializeAdj(store) {
+  const out = {};
+  Object.keys(store).forEach((k) => { out[k] = [...store[k]]; });
+  return out;
+}
+function deserializeAdj(obj, target) {
+  Object.keys(obj).forEach((k) => { target[k] = new Set(obj[k]); });
+}
+
+/* ===========================================================
+   인접 계산 (격자 기반)
+   ※ 구 인접은 기존 bjd(법정동) 기반 격자 계산을 그대로 사용한다.
+     화성시 4구(만세·효행·병점·동탄)는 bjd 상 41590 하나로만 묶여 있어
+     gu 코드(41591/41593/41595/41597)별 인접 계산이 되지 않는다.
+     따라서 학습 모드 "인접 지역" 표시가 화성 4구에서는 비어 보일 수 있다.
+     (이번 작업에서는 별도 보정 없이 둔다.)
+=========================================================== */
+function computeAdjacency() {
+  const cellToDongs = new Map();
+  const cellToGus = new Map();
+
+  dongList.forEach((dong) => {
+    const dKey = dongKeyOf(dong);
+    const json = dong.feature.toGeoJson ? dong.feature.toGeoJson() : null;
+    if (!json || !json.geometry) return;
+    const seenCells = new Set();
+    collectCoords(json.geometry, (lng, lat) => {
+      const gx = Math.round(lng / ADJ_GRID);
+      const gy = Math.round(lat / ADJ_GRID);
+      const cell = gx + "," + gy;
+      if (seenCells.has(cell)) return;
+      seenCells.add(cell);
+      if (!cellToDongs.has(cell)) cellToDongs.set(cell, new Set());
+      cellToDongs.get(cell).add(dKey);
+      if (!cellToGus.has(cell)) cellToGus.set(cell, new Set());
+      cellToGus.get(cell).add(dong.sgg);
+    });
+  });
+
+  const addAdj = (store, a, b) => {
+    if (a === b) return;
+    if (!store[a]) store[a] = new Set();
+    if (!store[b]) store[b] = new Set();
+    store[a].add(b); store[b].add(a);
+  };
+  cellToDongs.forEach((set) => {
+    const arr = [...set];
+    for (let i = 0; i < arr.length; i++)
+      for (let j = i + 1; j < arr.length; j++) addAdj(dongAdj, arr[i], arr[j]);
+  });
+  cellToGus.forEach((set) => {
+    const arr = [...set];
+    for (let i = 0; i < arr.length; i++)
+      for (let j = i + 1; j < arr.length; j++) addAdj(guAdj, arr[i], arr[j]);
+  });
+
+  MANUAL_ADJ_ADD.forEach(([n1, n2]) => {
+    const c1 = findGuCodeByName(n1), c2 = findGuCodeByName(n2);
+    if (c1 && c2) addAdj(guAdj, c1, c2);
+  });
+  MANUAL_ADJ_REMOVE.forEach(([n1, n2]) => {
+    const c1 = findGuCodeByName(n1), c2 = findGuCodeByName(n2);
+    if (c1 && c2) { if (guAdj[c1]) guAdj[c1].delete(c2); if (guAdj[c2]) guAdj[c2].delete(c1); }
+  });
+}
+
+function findGuCodeByName(name) {
+  const item = DB.find((d) => (d.name === name || d.matchName === name) && d.sggCode);
+  return item ? item.sggCode : null;
+}
+
+function getGuAdjNames(sggCode) {
+  const set = guAdj[sggCode];
+  if (!set) return [];
+  const names = [];
+  set.forEach((code) => {
+    const item = DB.find((d) => d.sggCode === code);
+    names.push(item ? item.name : (guNameByCode[code] || code));
+  });
+  return [...new Set(names)].sort(koCmp);
+}
+
+function getDongAdjNames(dong) {
+  const set = dongAdj[dongKeyOf(dong)];
+  if (!set) return [];
+  const names = [];
+  set.forEach((key) => {
+    const [sgg, name] = key.split("|");
+    if (sgg === dong.sgg) names.push(name);
+    else {
+      const gnm = guNameByCode[sgg] || "";
+      names.push((gnm ? gnm + " " : "") + name);
+    }
+  });
+  return [...new Set(names)].sort(koCmp);
+}
+
+/* ===========================================================
+   구(gu) 폴리곤 오버레이 표시/판정 헬퍼
+=========================================================== */
+function applyGuStyle(poly, style) {
+  poly.setOptions({
+    fillColor: style.fillColor,
+    fillOpacity: style.fillOpacity,
+    strokeColor: style.strokeColor,
+    strokeWeight: style.strokeWeight,
+    strokeOpacity: style.strokeOpacity
+  });
+}
+
+function clearGuOverlays() {
+  guOverlays.forEach((poly) => poly.setMap(null));
+  guOverlays = [];
+}
+
+function showGuOverlay(code, style) {
+  (guPolyByCode[code] || []).forEach((poly) => {
+    applyGuStyle(poly, style);
+    poly.setMap(map);
+    guOverlays.push(poly);
+  });
+}
+
+/* 정답 구 하나를 진하게 표시 (위치→이름 구 문제용) */
+function highlightGuByCode(code) {
+  clearHighlight();
+  clearCandidates();
+  clearGuOverlays();
+  showGuOverlay(code, GU_STYLE_GU);
+  fitToGuCode(code);
+}
+
+function fitToGuCode(code) {
+  const rings = guRingsByCode[code] || [];
+  const b = new naver.maps.LatLngBounds(); let has = false;
+  rings.forEach((ring) => {
+    ring.forEach((c) => { b.extend(new naver.maps.LatLng(c[1], c[0])); has = true; });
+  });
+  if (has) map.fitBounds(b, { top: 40, right: 40, bottom: 40, left: 40 });
+}
+
+function fitToGuCodes(codes) {
+  const b = new naver.maps.LatLngBounds(); let has = false;
+  codes.forEach((code) => {
+    (guRingsByCode[code] || []).forEach((ring) => {
+      ring.forEach((c) => { b.extend(new naver.maps.LatLng(c[1], c[0])); has = true; });
+    });
+  });
+  if (has) map.fitBounds(b, { top: 40, right: 40, bottom: 40, left: 40 });
+}
+
+/* point-in-polygon (ray casting). ring: [[lng,lat], ...] */
+function pointInRing(lng, lat, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1];
+    const xj = ring[j][0], yj = ring[j][1];
+    const intersect = ((yi > lat) !== (yj > lat)) &&
+      (lng < (xj - xi) * (lat - yi) / ((yj - yi) || 1e-12) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+/* 클릭 좌표가 속한 구 코드 찾기 (지정 코드 후보 안에서) */
+function findGuCodeAtLatLng(latlng, candidateCodes) {
+  const lng = latlng.lng();
+  const lat = latlng.lat();
+  for (const code of candidateCodes) {
+    const rings = guRingsByCode[code] || [];
+    for (const ring of rings) {
+      if (pointInRing(lng, lat, ring)) return code;
+    }
+  }
+  return null;
+}
+
+/* ===========================================================
+   하이라이트
+=========================================================== */
+function clearHighlight() {
+  highlightedFeatures.forEach((f) => map.data.revertStyle(f));
+  highlightedFeatures = [];
+  if (centerMarker) { centerMarker.setMap(null); centerMarker = null; }
+}
+function clearCandidates() {
+  candidateFeatures.forEach((f) => map.data.revertStyle(f));
+  candidateFeatures = [];
+}
+function highlightGu(feats) {
+  clearHighlight();
+  feats.forEach((f) => { map.data.overrideStyle(f, COLOR_GU); highlightedFeatures.push(f); });
+  fitToFeatures(feats);
+}
+function highlightDong(dong) {
+  clearHighlight();
+  const siFeats = featuresBySi[dong.sido + "|" + siNameOf(dong.sggnm)] || [];
+  const guFeats = featuresBySgg[dong.sgg] || [];
+  siFeats.forEach((f) => { map.data.overrideStyle(f, COLOR_SI); highlightedFeatures.push(f); });
+  guFeats.forEach((f) => { map.data.overrideStyle(f, COLOR_GU); });
+  map.data.overrideStyle(dong.feature, COLOR_DONG);
+  if (!highlightedFeatures.includes(dong.feature)) highlightedFeatures.push(dong.feature);
+  fitToFeatures(guFeats.length ? guFeats : [dong.feature]);
+  const c = featureCenter(dong.feature);
+  if (c) centerMarker = new naver.maps.Marker({
+    position: c, map: map,
+    icon: { content: '<div style="width:16px;height:16px;background:#dc2626;border:3px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(0,0,0,.6);"></div>', anchor: new naver.maps.Point(8, 8) }
+  });
+}
+function featureCenter(f) {
+  const b = new naver.maps.LatLngBounds(); let has = false;
+  const json = f.toGeoJson ? f.toGeoJson() : null;
+  if (json && json.geometry) collectCoords(json.geometry, (lng, lat) => { b.extend(new naver.maps.LatLng(lat, lng)); has = true; });
+  return has ? b.getCenter() : null;
+}
+function fitToFeatures(feats) {
+  const b = new naver.maps.LatLngBounds(); let has = false;
+  feats.forEach((f) => {
+    const json = f.toGeoJson ? f.toGeoJson() : null;
+    if (!json || !json.geometry) return;
+    collectCoords(json.geometry, (lng, lat) => { b.extend(new naver.maps.LatLng(lat, lng)); has = true; });
+  });
+  if (!has) return;
+  map.fitBounds(b, { top: 40, right: 40, bottom: 40, left: 40 });
+}
+function collectCoords(geometry, cb) {
+  const t = geometry.type, c = geometry.coordinates;
+  const walk = (arr, depth) => { if (depth === 0) { cb(arr[0], arr[1]); return; } arr.forEach((a) => walk(a, depth - 1)); };
+  if (t === "Polygon") walk(c, 2); else if (t === "MultiPolygon") walk(c, 3);
+}
+
+/* ===========================================================
+   이름→위치 (클릭으로 맞히기) 공용 로직
+   - 학습/게임 양쪽에서 사용
+   - 구(gu) 문제: gu 폴리곤 오버레이 + point-in-polygon
+   - 동(dong) 문제: 기존 bjd feature 클릭 (변경 없음)
+=========================================================== */
+function regionSidos(region) {
+  if (region === "all") return ACTIVE_SIDOS.slice();
+  const code = Object.keys(SIDO_TO_REGION).find((k) => SIDO_TO_REGION[k] === region);
+  return code ? [code] : ACTIVE_SIDOS.slice();
+}
+
+/* 출제 지역의 구 코드 목록 */
+function guCodesForRegion(region) {
+  const sidos = regionSidos(region);
+  return DB.filter((d) => d.sggCode && sidos.indexOf(d.sido) !== -1).map((d) => d.sggCode);
+}
+
+/* 같은 시(group)에 속한 구 코드 목록 */
+function guCodesForGroup(group) {
+  return DB.filter((d) => d.sggCode && d.group === group).map((d) => d.sggCode);
+}
+
+/* 후보 영역 칠하기: 구 문제는 출제 지역 모든 구(gu 폴리곤), 동 문제는 해당 구의 모든 동 */
+function showLocateCandidates(q) {
+  clearHighlight();
+  clearCandidates();
+  clearGuOverlays();
+  if (q.qtype === "gu") {
+    const codes = q.guGroup ? guCodesForGroup(q.guGroup)
+                : q.guZone  ? guCodesForZone(q.guZone)
+                : guCodesForRegion(q.region);
+    codes.forEach((code) => showGuOverlay(code, GU_STYLE_CANDIDATE));
+    if (codes.length) fitToGuCodes(codes);
+  } else {
+    (dongsBySgg[q.sgg] || []).forEach((dg) => {
+      map.data.overrideStyle(dg.feature, COLOR_CANDIDATE);
+      candidateFeatures.push(dg.feature);
+    });
+    if (featuresBySgg[q.sgg]) fitToFeatures(featuresBySgg[q.sgg]);
+  }
+}
+
+/* 동(dong) 문제 클릭 판정. context: "learn" | "game" */
+function handleLocateClick(feature, context) {
+  if (context === "learn") {
+    if (!locateCurrent || locateCurrent.done) return;
+    judgeLocate(feature, locateCurrent, context);
+  } else {
+    if (answered) return;
+    const q = quizSet[currentIndex];
+    if (!q || q.dir !== "locate") return;
+    judgeLocate(feature, q, context);
+  }
+}
+
+/* 동 문제 판정 (bjd feature 기반) */
+function judgeLocate(feature, q, context) {
+  const clickedSgg = feature.getProperty("sgg");
+  const dong = dongByFeature.get(feature);
+  const isCorrect = !!(dong && dong.sgg === q.sgg && dong.dongName === q.dongName);
+
+  // 정답 동 칠하기
+  const ans = (dongsBySgg[q.sgg] || []).find((d) => d.dongName === q.dongName);
+  if (ans) map.data.overrideStyle(ans.feature, COLOR_CORRECT);
+  // 틀리게 누른 동 표시
+  if (!isCorrect) map.data.overrideStyle(feature, COLOR_WRONGPICK);
+
+  finishLocateJudge(isCorrect, q, context);
+}
+
+/* 구(gu) 문제 클릭 판정 (지도 좌표 기반 point-in-polygon) */
+function handleGuLocateClick(latlng, context) {
+  let q;
+  if (context === "learn") {
+    if (!locateCurrent || locateCurrent.done) return;
+    q = locateCurrent;
+  } else {
+    if (answered) return;
+    q = quizSet[currentIndex];
+    if (!q || q.dir !== "locate" || q.qtype !== "gu") return;
+  }
+
+  const codes = q.guGroup ? guCodesForGroup(q.guGroup)
+              : q.guZone  ? guCodesForZone(q.guZone)
+              : guCodesForRegion(q.region);
+  const clickedCode = findGuCodeAtLatLng(latlng, codes);
+  if (!clickedCode) return; // 후보 영역 밖 클릭은 무시
+
+  const isCorrect = (clickedCode === q.sgg);
+
+  // 정답 구 칠하기
+  clearGuOverlays();
+  // 후보를 다시 옅게 깔고 정답/오답을 강조
+  codes.forEach((code) => {
+    if (code === q.sgg) showGuOverlay(code, GU_STYLE_CORRECT);
+    else if (!isCorrect && code === clickedCode) showGuOverlay(code, GU_STYLE_WRONGPICK);
+    else showGuOverlay(code, GU_STYLE_CANDIDATE);
+  });
+
+  finishLocateJudge(isCorrect, q, context);
+}
+
+/* 정답/오답 처리 공용 (학습/게임 분기) */
+function finishLocateJudge(isCorrect, q, context) {
+  if (context === "learn") {
+    locateCurrent.done = true;
+    const fb = document.getElementById("locate-feedback");
+    fb.classList.remove("hidden");
+    fb.style.borderLeftColor = isCorrect ? "#22c55e" : "#ef4444";
+    fb.textContent = (isCorrect ? "✅ 정답! " : "❌ 아쉬워요. ") + q.answerFull + " 입니다. (초록=정답 위치)";
+  } else {
+    answered = true;
+    stopTimer();
+    if (isCorrect) score += 10;
+    const explainEl = document.getElementById("explain");
+    explainEl.classList.remove("hidden");
+    explainEl.style.borderLeftColor = isCorrect ? "#22c55e" : "#ef4444";
+    explainEl.textContent = (isCorrect ? "✅ 정답! " : "❌ 오답. ") + q.answerFull + " 입니다.";
+    answerLog.push({ type: q.qtype, dir:"locate", answer: q.answerFull, picked: isCorrect ? "정답 클릭" : "오답 클릭", correct: isCorrect, explain: q.answerFull + " 위치 맞히기", q: q });
+    document.getElementById("score-label").textContent = "점수 " + score;
+    const nextBtn = document.getElementById("next-btn");
+    nextBtn.disabled = false;
+    nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+/* ===========================================================
+   학습 모드 - 진입/방향선택
+=========================================================== */
+function openLearnMode() {
+  clearHighlight();
+  clearCandidates();
+  clearGuOverlays();
+  appMode = "none";
+  showScreen("learn");
+  document.getElementById("learn-dir-select").classList.remove("hidden");
+  document.getElementById("learn-explore").classList.add("hidden");
+  document.getElementById("locate-panel").classList.add("hidden");
+}
+function closeLearnMode() {
+  appMode = "none";
+  clearHighlight();
+  clearCandidates();
+  clearGuOverlays();
+  showScreen("start");
+}
+
+function openLearnExplore() {
+  appMode = "learn-explore";
+  document.getElementById("learn-dir-select").classList.add("hidden");
+  document.getElementById("learn-explore").classList.remove("hidden");
+  document.getElementById("locate-panel").classList.add("hidden");
+  document.getElementById("info-card").classList.add("hidden");
+  expandedGu = null; selectedDongName = null;
+  clearHighlight(); clearCandidates(); clearGuOverlays();
+  renderLearnList();
+}
+
+function openLearnLocate() {
+  appMode = "learn-locate";
+  document.getElementById("learn-dir-select").classList.add("hidden");
+  document.getElementById("learn-explore").classList.add("hidden");
+  document.getElementById("locate-panel").classList.remove("hidden");
+  document.getElementById("locate-feedback").classList.add("hidden");
+  document.getElementById("locate-question").textContent = '아래 "문제 시작 / 다음 문제"를 눌러 시작하세요.';
+  locateCurrent = null;
+  clearHighlight(); clearCandidates(); clearGuOverlays();
+}
+
+/* 학습 locate: 다음 문제 만들기 */
+function nextLearnLocate() {
+  clearHighlight(); clearCandidates(); clearGuOverlays();
+  document.getElementById("locate-feedback").classList.add("hidden");
+
+  const q = buildLocateQuestion(locateRegion, locateType);
+  if (!q) { alert("해당 조건에 맞는 문제를 만들 수 없습니다."); return; }
+  locateCurrent = q;
+  const badge = document.getElementById("q-badge-locate");
+  if (q.qtype === "gu") { badge.className = "badge gu"; badge.textContent = "구·시·군"; }
+  else { badge.className = "badge dong"; badge.textContent = "읍·면·동"; }
+  document.getElementById("locate-question").textContent = q.prompt;
+  showLocateCandidates(q);
+}
+
+/* 공용: locate 문제 객체 생성 */
+function buildLocateQuestion(region, qtype) {
+  const sidos = regionSidos(region);
+  if (qtype === "gu") {
+    const pool = DB.filter((d) => d.sggCode && sidos.indexOf(d.sido) !== -1);
+    if (!pool.length) return null;
+    const t = pool[Math.floor(Math.random() * pool.length)];
+    const guRegion = SIDO_TO_REGION[t.sido] || region;
+
+    // 후보 범위 결정:
+    //  - 같은 시(group)에 구가 2개 이상 → 통합시: 같은 시 후보(guGroup)
+    //  - 구가 1개뿐인 경기 시·군 → 같은 권역 후보(guZone: 남부/북부)
+    //  - 그 외(서울/인천 단일 자치구 등) → 시도 전체 후보(region만)
+    const groupCount = DB.filter((d) => d.sggCode && d.group === t.group).length;
+    const zone = ggZoneOfGroup(t.group);
+    const q = {
+      dir:"locate", qtype:"gu", region: guRegion, sgg: t.sggCode,
+      prompt: `"${t.name}" 은(는) 어디일까요? 지도에서 찾아 누르세요.`,
+      answerFull: t.full_nm || t.name,
+      done:false
+    };
+    if (groupCount >= 2) {
+      q.guGroup = t.group;
+    } else if (zone) {
+      q.guZone = zone;
+    }
+    return q;
+  } else {
+    let pool = dongList.filter((d) => sidos.indexOf(d.sido) !== -1);
+    if (!pool.length) return null;
+    const t = pool[Math.floor(Math.random() * pool.length)];
+    const si = siNameOf(t.sggnm);
+    const guLabel = (t.sggnm === si) ? si : t.sggnm;
+    return {
+      dir:"locate", qtype:"dong", region, sgg: t.sgg, dongName: t.dongName,
+      prompt: `"${guLabel} ${t.dongName}" 은(는) 어디일까요? 지도에서 찾아 누르세요.`,
+      answerFull: `${SIDO_NAME[t.sido]} ${guLabel} ${t.dongName}`,
+      done:false
+    };
+  }
+}
+
+/* ===========================================================
+   학습 모드 - 위치→이름 (탐색)
+=========================================================== */
+function renderLearnList() {
+  const listEl = document.getElementById("learn-list");
+  listEl.innerHTML = "";
+  const items = DB
+    .filter((d) => d.sggCode && SIDO_TO_REGION[d.sido] === learnRegion)
+    .slice()
+    .sort((a, b) => koCmp(a.name, b.name));
+
+  items.forEach((item) => {
+    const row = document.createElement("div");
+    row.className = "learn-item" + (expandedGu === item.sggCode ? " sel" : "");
+    row.innerHTML = `<span>${item.name}</span><span class="arrow">위치 보기 ▸</span>`;
+    row.addEventListener("click", () => selectLearnGu(item));
+    listEl.appendChild(row);
+
+    if (expandedGu === item.sggCode) {
+      const dongWrap = document.createElement("div");
+      dongWrap.className = "learn-dong-wrap";
+      const dongs = (dongsBySgg[item.sggCode] || []);
+      const seen = new Set();
+      dongs.forEach((dg) => {
+        if (seen.has(dg.dongName)) return;
+        seen.add(dg.dongName);
+        const d = document.createElement("div");
+        d.className = "learn-dong" + (selectedDongName === dg.dongName ? " sel" : "");
+        d.textContent = "· " + dg.dongName;
+        d.addEventListener("click", (e) => { e.stopPropagation(); selectLearnDong(dg, d); });
+        dongWrap.appendChild(d);
+      });
+      listEl.appendChild(dongWrap);
+    }
+  });
+
+  requestAnimationFrame(() => {
+    let target = null;
+    if (selectedDongName) {
+      const dongEls = listEl.querySelectorAll(".learn-dong");
+      dongEls.forEach((el) => { if (el.textContent === "· " + selectedDongName) target = el; });
+    }
+    if (!target && expandedGu) target = listEl.querySelector(".learn-item.sel");
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+}
+
+function selectLearnGu(item) {
+  // 구 외곽은 gu 폴리곤으로 매끈하게 표시
+  highlightGuByCode(item.sggCode);
+  expandedGu = (expandedGu === item.sggCode) ? null : item.sggCode;
+  selectedDongName = null;
+  renderLearnList();
+  showGuInfoCard(item);
+}
+
+function selectLearnDong(dg, el) {
+  selectedDongName = dg.dongName;
+  clearGuOverlays();
+  highlightDong(dg);
+  document.querySelectorAll(".learn-dong").forEach((x) => x.classList.remove("sel"));
+  if (el) el.classList.add("sel");
+  showDongInfoCard(dg);
+}
+
+function onMapDongClick(dong) {
+  const region = SIDO_TO_REGION[dong.sido];
+  if (region && region !== learnRegion) {
+    learnRegion = region;
+    document.querySelectorAll("#learn-region button").forEach((b) => {
+      b.classList.toggle("sel", b.getAttribute("data-val") === region);
+    });
+  }
+  expandedGu = dong.sgg;
+  selectedDongName = dong.dongName;
+  clearGuOverlays();
+  highlightDong(dong);
+  renderLearnList();
+  showDongInfoCard(dong);
+}
+
+function showGuInfoCard(item) {
+  const card = document.getElementById("info-card");
+  card.classList.remove("hidden");
+  const adj = getGuAdjNames(item.sggCode);
+  let adjHtml;
+  if (adj.length) adjHtml = adj.join(", ");
+  else if (ISLAND_NOTE[item.matchName]) adjHtml = `<span style="color:var(--text);">${ISLAND_NOTE[item.matchName]}</span>`;
+  else adjHtml = "<span class='ic-empty'>계산된 인접 구가 없어요.</span>";
+  card.innerHTML = `
+    <div class="ic-title">${item.name}</div>
+    <div class="ic-row"><span class="ic-label">소속</span>${SIDO_NAME[item.sido]}</div>
+    <div class="ic-row"><span class="ic-label">인접 지역</span>${adjHtml}</div>
+    <div class="ic-row"><span class="ic-label">특징</span><span class="ic-empty">아직 등록된 설명이 없어요. (다음 단계에서 추가됩니다)</span></div>
+  `;
+}
+
+function showDongInfoCard(dong) {
+  const card = document.getElementById("info-card");
+  card.classList.remove("hidden");
+  const si = siNameOf(dong.sggnm);
+  const belong = (dong.sggnm === si) ? `${SIDO_NAME[dong.sido]} ${si}` : `${SIDO_NAME[dong.sido]} ${dong.sggnm}`;
+  const adj = getDongAdjNames(dong);
+  const guItem = DB.find((d) => d.sggCode === dong.sgg);
+  const guName = (guItem && guItem.matchName) || dong.sggnm || "";
+  const islandKey = Object.keys(ISLAND_NOTE).find((k) => guName.indexOf(k) !== -1 || (dong.sggnm || "").indexOf(k) !== -1);
+  let adjHtml;
+  if (adj.length) adjHtml = adj.join(", ");
+  else if (islandKey) adjHtml = `<span style="color:var(--text);">${ISLAND_NOTE[islandKey]}</span>`;
+  else adjHtml = "<span class='ic-empty'>계산된 인접 동이 없어요.</span>";
+  card.innerHTML = `
+    <div class="ic-title">${dong.dongName}</div>
+    <div class="ic-row"><span class="ic-label">소속</span>${belong}</div>
+    <div class="ic-row"><span class="ic-label">인접 지역</span>${adjHtml}</div>
+    <div class="ic-row"><span class="ic-label">특징</span><span class="ic-empty">아직 등록된 설명이 없어요. (다음 단계에서 추가됩니다)</span></div>
+  `;
+}
+
+/* ===========================================================
+   전체 검증 / 인접 검증
+=========================================================== */
+function verifyAll() {
+  const out = document.getElementById("verify-result");
+  const problems = []; let okCount = 0;
+  DB.forEach((item) => {
+    if (!item.sggCode) { problems.push(`❌ [구/매칭실패] ${item.name}`); return; }
+    if (!guPolyByCode[item.sggCode] || !guPolyByCode[item.sggCode].length) {
+      problems.push(`❌ [구/gu경계없음] ${item.name}`); return;
+    }
+    okCount++;
+  });
+  let html = `<div style="color:#22c55e; font-weight:700;">✅ 구(gu) 정상: ${okCount} / ${DB.length}</div>`;
+  html += `<div style="color:#22c55e; margin-top:4px;">✅ 읍·면·동(법정동) 총: ${dongList.length}개</div>`;
+  const hasHwaseong = ["41591","41593","41595","41597"].every((c) => guPropsByCode[c]);
+  html += `<div style="color:${hasHwaseong ? "#22c55e" : "#fca5a5"}; margin-top:4px;">${hasHwaseong ? "✅" : "⚠"} 화성시 4구(만세·효행·병점·동탄) ${hasHwaseong ? "정상 분리됨" : "일부 누락"}</div>`;
+  if (problems.length) {
+    html += `<div style="color:#fca5a5; margin-top:8px; max-height:260px; overflow-y:auto;">`;
+    problems.forEach((p) => { html += `<div>${p}</div>`; }); html += `</div>`;
+  } else html += `<div style="color:#22c55e; margin-top:6px;">🎉 모든 항목 정상!</div>`;
+  out.innerHTML = html;
+}
+
+function verifyAdjacency() {
+  const out = document.getElementById("verify-result");
+  const asym = [];
+  DB.forEach((a) => {
+    if (!a.sggCode) return;
+    const set = guAdj[a.sggCode] || new Set();
+    set.forEach((code) => {
+      const back = guAdj[code];
+      if (!back || !back.has(a.sggCode)) {
+        const b = DB.find((d) => d.sggCode === code);
+        asym.push(`${a.name} → ${b ? b.name : code} (역방향 없음)`);
+      }
+    });
+  });
+  const isolated = DB.filter((d) => d.sggCode && (!guAdj[d.sggCode] || guAdj[d.sggCode].size === 0)).map((d) => d.name);
+
+  let html = `<div style="color:#38bdf8; font-weight:700;">🔗 인접 검증 결과</div>`;
+  html += `<div style="color:#94a3b8; margin-top:4px;">격자 크기 ADJ_GRID = ${ADJ_GRID}</div>`;
+  if (isolated.length) html += `<div style="color:#fca5a5; margin-top:8px;">⚠ 인접 구 0개 (의심, 화성 4구 포함 가능): ${isolated.join(", ")}</div>`;
+  else html += `<div style="color:#22c55e; margin-top:8px;">✅ 인접 0개인 구 없음</div>`;
+  if (asym.length) {
+    html += `<div style="color:#fbbf24; margin-top:8px;">⚠ 비대칭 쌍 ${asym.length}건:</div>`;
+    html += `<div style="color:#fca5a5; max-height:220px; overflow-y:auto; margin-top:4px;">`;
+    asym.forEach((s) => { html += `<div>${s}</div>`; }); html += `</div>`;
+  } else html += `<div style="color:#22c55e; margin-top:8px;">✅ 비대칭 쌍 없음 (구 인접 정상 대칭)</div>`;
+  html += `<div style="color:#64748b; margin-top:8px; font-size:11px;">※ 이 결과를 복사해 보내주시면 함께 보정합니다.</div>`;
+  out.innerHTML = html;
+}
+
+/* ===========================================================
+   게임 퀴즈 로직
+=========================================================== */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function filteredGuPool() {
+  let pool = DB.filter((d) => d.sggCode);
+  if (settings.region !== "all") pool = pool.filter((d) => SIDO_TO_REGION[d.sido] === settings.region);
+  return pool;
+}
+function filteredDongPool() {
+  let pool = dongList;
+  if (settings.region !== "all") pool = pool.filter((d) => SIDO_TO_REGION[d.sido] === settings.region);
+  return pool;
+}
+
+function startGame() {
+  appMode = "game";
+  totalQuestions = settings.count;
+  quizSet = []; answerLog = [];
+  const guPool = filteredGuPool();
+  const dongPool = filteredDongPool();
+
+  if ((settings.type === "gu" && !guPool.length) ||
+      (settings.type === "dong" && !dongPool.length) ||
+      (settings.type === "mix" && !guPool.length && !dongPool.length)) {
+    alert("선택한 조건에 맞는 문제가 없습니다. 지역/유형을 바꿔주세요.");
+    return;
+  }
+
+  for (let i = 0; i < totalQuestions; i++) {
+    // 방향 결정
+    let dir;
+    if (settings.dir === "name") dir = "name";
+    else if (settings.dir === "locate") dir = "locate";
+    else dir = Math.random() < 0.5 ? "name" : "locate";
+
+    // 유형 결정
+    let useDong;
+    if (settings.type === "gu") useDong = false;
+    else if (settings.type === "dong") useDong = true;
+    else useDong = Math.random() < DONG_RATIO;
+    if (useDong && !dongPool.length) useDong = false;
+    if (!useDong && !guPool.length) useDong = true;
+
+    if (dir === "name") {
+      quizSet.push(useDong ? makeDongQuestion(dongPool) : makeGuQuestion(guPool));
+    } else {
+      const q = buildLocateQuestion(settings.region, useDong ? "dong" : "gu");
+      quizSet.push(q || (useDong ? makeDongQuestion(dongPool) : makeGuQuestion(guPool)));
+    }
+  }
+
+  currentIndex = 0; score = 0;
+  document.getElementById("max-score").textContent = totalQuestions * 10;
+  showScreen("quiz");
+  loadQuestion();
+}
+
+function retryWrongOnly() {
+  const wrongQs = answerLog.filter((a) => !a.correct).map((a) => a.q);
+  if (!wrongQs.length) { alert("틀린 문제가 없습니다! 🎉"); return; }
+  appMode = "game";
+  quizSet = shuffle(wrongQs);
+  totalQuestions = quizSet.length;
+  answerLog = [];
+  currentIndex = 0; score = 0;
+  document.getElementById("max-score").textContent = totalQuestions * 10;
+  showScreen("quiz");
+  loadQuestion();
+}
+
+function makeGuQuestion(validGu) {
+  const target = validGu[Math.floor(Math.random() * validGu.length)];
+  // 오답 후보: 같은 group(같은 시) 우선
+  let pool = DB.filter((d) => d.group === target.group && d.sggCode !== target.sggCode && d.sggCode);
+  let wrongs = shuffle(pool).slice(0, 3);
+  if (wrongs.length < 3) {
+    const extra = shuffle(DB.filter((d) => d.sggCode && d.sggCode !== target.sggCode && !wrongs.includes(d))).slice(0, 3 - wrongs.length);
+    wrongs = wrongs.concat(extra);
+  }
+  return {
+    dir:"name", type:"gu", qtype:"gu", sgg: target.sggCode, answerLabel: target.name, feats: featuresBySgg[target.sggCode],
+    options: shuffle([target.name, ...wrongs.map((w) => w.name)]),
+    explain: `${target.name}은(는) ${SIDO_NAME[target.sido]}에 속한 행정구역입니다.`
+  };
+}
+
+function makeDongQuestion(pool) {
+  const src = (pool && pool.length) ? pool : dongList;
+  const target = src[Math.floor(Math.random() * src.length)];
+  let siblings = (dongsBySgg[target.sgg] || []).filter((d) => d.dongName !== target.dongName);
+  let names = [...new Set(siblings.map((d) => d.dongName))];
+  let wrongs = shuffle(names).slice(0, 3);
+  if (wrongs.length < 3) {
+    const extra = shuffle([...new Set(dongList.map((d) => d.dongName))].filter((n) => n !== target.dongName && !wrongs.includes(n))).slice(0, 3 - wrongs.length);
+    wrongs = wrongs.concat(extra);
+  }
+  const si = siNameOf(target.sggnm);
+  const belong = (target.sggnm === si)
+    ? `${SIDO_NAME[target.sido]} ${si}`
+    : `${SIDO_NAME[target.sido]} ${si} ${target.sggnm.replace(si, "")}`;
+  return {
+    dir:"name", type:"dong", qtype:"dong", dong: target, answerLabel: target.dongName, feats:[target.feature],
+    options: shuffle([target.dongName, ...wrongs]),
+    explain: `${target.dongName}은(는) ${belong}에 속하는 법정동입니다.`
+  };
+}
+
+function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
+function startTimer() {
+  stopTimer();
+  if (settings.timer !== "on") { document.getElementById("timer-wrap").classList.add("hidden"); return; }
+  document.getElementById("timer-wrap").classList.remove("hidden");
+  timerLeft = TIMER_SECONDS;
+  const fill = document.getElementById("timer-fill");
+  const num = document.getElementById("timer-num");
+  fill.classList.remove("warn"); fill.style.width = "100%"; num.textContent = timerLeft;
+  timerId = setInterval(() => {
+    timerLeft--;
+    num.textContent = timerLeft;
+    fill.style.width = (timerLeft / TIMER_SECONDS * 100) + "%";
+    if (timerLeft <= 5) fill.classList.add("warn");
+    if (timerLeft <= 0) { stopTimer(); timeOut(); }
+  }, 1000);
+}
+function timeOut() {
+  if (answered) return;
+  answered = true;
+  const q = quizSet[currentIndex];
+  const explainEl = document.getElementById("explain");
+  if (q.dir === "name") {
+    const buttons = document.querySelectorAll(".option-btn");
+    buttons.forEach((b) => { b.disabled = true; if (b.textContent === q.answerLabel) b.classList.add("correct"); });
+    explainEl.textContent = "⏰ 시간 초과! " + q.explain;
+    answerLog.push({ type: q.qtype, dir:q.dir, answer: q.answerLabel, picked: "(시간초과)", correct: false, explain: q.explain, q: q });
+  } else {
+    // locate: 정답 위치 표시
+    if (q.qtype === "gu") {
+      clearGuOverlays();
+      const codes = q.guGroup ? guCodesForGroup(q.guGroup)
+                  : q.guZone  ? guCodesForZone(q.guZone)
+                  : guCodesForRegion(q.region);
+      codes.forEach((code) => showGuOverlay(code, code === q.sgg ? GU_STYLE_CORRECT : GU_STYLE_CANDIDATE));
+    } else {
+      const ans = (dongsBySgg[q.sgg] || []).find((d) => d.dongName === q.dongName); if (ans) map.data.overrideStyle(ans.feature, COLOR_CORRECT);
+    }
+    explainEl.textContent = "⏰ 시간 초과! " + q.answerFull + " 입니다.";
+    answerLog.push({ type: q.qtype, dir:q.dir, answer: q.answerFull, picked: "(시간초과)", correct: false, explain: q.answerFull + " 위치 맞히기", q: q });
+  }
+  explainEl.style.borderLeftColor = "#ef4444";
+  explainEl.classList.remove("hidden");
+  const nextBtn = document.getElementById("next-btn");
+  nextBtn.disabled = false;
+  nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function loadQuestion() {
+  answered = false;
+  clearHighlight();
+  clearCandidates();
+  clearGuOverlays();
+  const q = quizSet[currentIndex];
+  document.getElementById("q-counter").textContent = (currentIndex + 1) + " / " + totalQuestions;
+  document.getElementById("score-label").textContent = "점수 " + score;
+  document.getElementById("progress-fill").style.width = (currentIndex / totalQuestions * 100) + "%";
+
+  const badge = document.getElementById("q-badge");
+  const legend = document.getElementById("legend");
+  const optionsEl = document.getElementById("options");
+  const explainEl = document.getElementById("explain");
+  explainEl.classList.add("hidden"); explainEl.textContent = "";
+
+  if (q.dir === "name") {
+    // 위치→이름
+    optionsEl.classList.remove("hidden");
+    optionsEl.innerHTML = "";
+    if (q.qtype === "dong") {
+      badge.className = "badge dong"; badge.textContent = "읍·면·동";
+      document.getElementById("question").textContent = "빨간 점이 찍힌 이 읍·면·동의 이름은? (연주황=시, 진주황=구)";
+      legend.classList.remove("hidden");
+    } else {
+      badge.className = "badge gu"; badge.textContent = "구·시·군";
+      document.getElementById("question").textContent = "주황색으로 표시된 이 행정구역의 이름은?";
+      legend.classList.add("hidden");
+    }
+    q.options.forEach((optLabel) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.textContent = optLabel;
+      btn.addEventListener("click", () => selectAnswer(btn, optLabel, q));
+      optionsEl.appendChild(btn);
+    });
+    if (q.qtype === "dong") highlightDong(q.dong); else highlightGuByCode(q.sgg);
+  } else {
+    // 이름→위치 (클릭)
+    legend.classList.add("hidden");
+    optionsEl.innerHTML = "";
+    optionsEl.classList.add("hidden");
+    if (q.qtype === "dong") { badge.className = "badge dong"; badge.textContent = "읍·면·동 (클릭)"; }
+    else { badge.className = "badge gu"; badge.textContent = "구·시·군 (클릭)"; }
+    document.getElementById("question").textContent = q.prompt + " (지도에서 클릭)";
+    showLocateCandidates(q);
+  }
+
+  const nextBtn = document.getElementById("next-btn");
+  nextBtn.disabled = true;
+  nextBtn.textContent = currentIndex === totalQuestions - 1 ? "결과지 보기" : "다음 문제";
+  startTimer();
+}
+
+function selectAnswer(btn, optLabel, q) {
+  if (answered) return;
+  answered = true;
+  stopTimer();
+  const buttons = document.querySelectorAll(".option-btn");
+  buttons.forEach((b) => (b.disabled = true));
+
+  const isCorrect = optLabel === q.answerLabel;
+  if (isCorrect) { btn.classList.add("correct"); score += 10; }
+  else { btn.classList.add("wrong"); buttons.forEach((b) => { if (b.textContent === q.answerLabel) b.classList.add("correct"); }); }
+
+  const explainEl = document.getElementById("explain");
+  explainEl.textContent = (isCorrect ? "✅ 정답! " : "❌ 오답. ") + q.explain;
+  explainEl.style.borderLeftColor = isCorrect ? "#22c55e" : "#ef4444";
+  explainEl.classList.remove("hidden");
+
+  answerLog.push({ type: q.qtype, dir:q.dir, answer: q.answerLabel, picked: optLabel, correct: isCorrect, explain: q.explain, q: q });
+
+  document.getElementById("score-label").textContent = "점수 " + score;
+  const nextBtn = document.getElementById("next-btn");
+  nextBtn.disabled = false;
+  nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= totalQuestions) showResult();
+  else loadQuestion();
+}
+
+function replayQuestion(idx) {
+  const log = answerLog[idx];
+  if (!log || !log.q) return;
+  const q = log.q;
+  clearHighlight(); clearCandidates(); clearGuOverlays();
+  if (q.dir === "name") {
+    if (q.qtype === "dong") highlightDong(q.dong); else highlightGuByCode(q.sgg);
+  } else {
+    if (q.qtype === "gu") highlightGuByCode(q.sgg);
+    else { const ans = (dongsBySgg[q.sgg] || []).find((d) => d.dongName === q.dongName); if (ans) { highlightDong(ans); } }
+  }
+  document.querySelectorAll(".report-item").forEach((el) => el.classList.remove("active"));
+  const target = document.querySelector(`.report-item[data-idx="${idx}"]`);
+  if (target) target.classList.add("active");
+  document.getElementById("map-container").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function showResult() {
+  stopTimer();
+  clearHighlight(); clearCandidates(); clearGuOverlays();
+  appMode = "none";
+  showScreen("result");
+  const maxScore = totalQuestions * 10;
+  document.getElementById("final-score").textContent = score;
+  document.getElementById("max-score").textContent = maxScore;
+
+  const correctCnt = answerLog.filter((a) => a.correct).length;
+  const pct = score / maxScore;
+  const msg = pct >= 0.9 ? "🏆 전국 지리 마스터!" : pct >= 0.7 ? "👍 훌륭해요!" : pct >= 0.5 ? "🙂 절반은 넘겼어요." : "📚 조금 더 연습해봐요!";
+  document.getElementById("result-msg").textContent = `${msg}  (${totalQuestions}문제 중 ${correctCnt}개 정답)`;
+
+  const prevBest = parseInt(localStorage.getItem(LS_BEST) || "0", 10);
+  const newBestEl = document.getElementById("new-best");
+  if (score > prevBest) { localStorage.setItem(LS_BEST, String(score)); newBestEl.classList.remove("hidden"); }
+  else { newBestEl.classList.add("hidden"); }
+
+  const report = document.getElementById("report");
+  report.innerHTML = "";
+  answerLog.forEach((a, i) => {
+    const item = document.createElement("div");
+    item.className = "report-item " + (a.correct ? "ok" : "no");
+    item.setAttribute("data-idx", i);
+    const tag = (a.type === "dong" ? "읍·면·동" : "구·시·군") + (a.dir === "locate" ? "·위치" : "·이름");
+    const pickedLine = a.correct ? "" : `<div class="sub">내 답: ${a.picked}</div>`;
+    item.innerHTML = `
+      <div class="head">${i + 1}. ${a.correct ? "⭕" : "❌"} [${tag}] 정답: ${a.answer}</div>
+      ${pickedLine}
+      <div class="sub">${a.explain}</div>
+      <div class="replay">👆 눌러서 지도에서 위치 확인</div>`;
+    item.addEventListener("click", () => replayQuestion(i));
+    report.appendChild(item);
+  });
+
+  const statusEl = document.getElementById("rank-save-status");
+  if (!currentUser) {
+    statusEl.textContent = "ℹ️ 로그인하면 점수가 랭킹에 등록돼요. (처음 화면에서 로그인)";
+  } else if (!currentNick) {
+    statusEl.textContent = "ℹ️ 닉네임을 정하면 점수가 등록돼요. (처음 화면에서 닉네임 설정)";
+  } else {
+    statusEl.textContent = "랭킹에 점수 등록 중…";
+    const ok = await saveRankScore(score);
+    statusEl.textContent = ok ? "✅ 랭킹에 등록되었습니다!" : "⚠ 랭킹 등록 실패 (네트워크 문제)";
+    loadHomeRanking();
+  }
+}
+
+function renderRankList(list, listEl, statusEl) {
+  listEl.innerHTML = "";
+  if (list === null) { if (statusEl) { statusEl.classList.remove("hidden"); statusEl.textContent = "⚠ 랭킹을 불러오지 못했습니다."; } return; }
+  if (!list.length) { if (statusEl) { statusEl.classList.remove("hidden"); statusEl.textContent = "아직 등록된 점수가 없어요. 첫 주인공이 되어보세요! 🎯"; } return; }
+  if (statusEl) statusEl.classList.add("hidden");
+  const myNick = currentNick || localStorage.getItem(LS_NICK) || "";
+  const medals = ["🥇","🥈","🥉"];
+  list.forEach((r, i) => {
+    const div = document.createElement("div");
+    div.className = "rank-item" + (myNick && r.nick === myNick ? " me" : "");
+    const pos = i < 3 ? medals[i] : (i + 1);
+    div.innerHTML = `
+      <span class="pos">${pos}</span>
+      <span class="nick">${escapeHtml(r.nick || "익명")}</span>
+      <span class="date">${r.plays || 0}판</span>
+      <span class="pts">${r.total_score}점</span>`;
+    listEl.appendChild(div);
+  });
+}
+
+async function showRanking() {
+  showScreen("rank");
+  const statusEl = document.getElementById("rank-status");
+  const listEl = document.getElementById("rank-list");
+  statusEl.classList.remove("hidden");
+  statusEl.textContent = "불러오는 중…";
+  listEl.innerHTML = "";
+  const list = await fetchTopRanks();
+  renderRankList(list, listEl, statusEl);
+}
+
+async function loadHomeRanking() {
+  const statusEl = document.getElementById("home-rank-status");
+  const listEl = document.getElementById("home-rank-list");
+  statusEl.classList.remove("hidden");
+  statusEl.textContent = "불러오는 중…";
+  listEl.innerHTML = "";
+  const list = await fetchTopRanks();
+  renderRankList(list, listEl, statusEl);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+
+/* ===========================================================
+   세그먼트 버튼
+=========================================================== */
+function setupSegment(containerId, key) {
+  const cont = document.getElementById(containerId);
+  cont.querySelectorAll("button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      cont.querySelectorAll("button").forEach((b) => b.classList.remove("sel"));
+      btn.classList.add("sel");
+      let val = btn.getAttribute("data-val");
+      if (key === "count") val = parseInt(val, 10);
+      settings[key] = val;
+    });
+  });
+}
+function setupLearnRegionSegment() {
+  const cont = document.getElementById("learn-region");
+  cont.querySelectorAll("button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      cont.querySelectorAll("button").forEach((b) => b.classList.remove("sel"));
+      btn.classList.add("sel");
+      learnRegion = btn.getAttribute("data-val");
+      expandedGu = null;
+      selectedDongName = null;
+      document.getElementById("info-card").classList.add("hidden");
+      clearHighlight();
+      clearGuOverlays();
+      renderLearnList();
+    });
+  });
+}
+function setupLocateRegionSegment() {
+  const cont = document.getElementById("locate-region");
+  cont.querySelectorAll("button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      cont.querySelectorAll("button").forEach((b) => b.classList.remove("sel"));
+      btn.classList.add("sel");
+      locateRegion = btn.getAttribute("data-val");
+      locateCurrent = null;
+      document.getElementById("locate-feedback").classList.add("hidden");
+      document.getElementById("locate-question").textContent = '"문제 시작 / 다음 문제"를 눌러 시작하세요.';
+      clearHighlight(); clearCandidates(); clearGuOverlays();
+    });
+  });
+}
+function setupLocateTypeSegment() {
+  const cont = document.getElementById("locate-type");
+  cont.querySelectorAll("button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      cont.querySelectorAll("button").forEach((b) => b.classList.remove("sel"));
+      btn.classList.add("sel");
+      locateType = btn.getAttribute("data-val");
+      locateCurrent = null;
+      document.getElementById("locate-feedback").classList.add("hidden");
+      document.getElementById("locate-question").textContent = '"문제 시작 / 다음 문제"를 눌러 시작하세요.';
+      clearHighlight(); clearCandidates(); clearGuOverlays();
+    });
+  });
+}
+
+function setupTimerToggle() {
+  const tg = document.getElementById("timer-toggle");
+  tg.addEventListener("click", () => {
+    const on = tg.classList.toggle("on");
+    settings.timer = on ? "on" : "off";
+  });
+}
+
+/* ===========================================================
+   로그인 상태 초기화
+=========================================================== */
+async function initAuth() {
+  if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (session && session.user) {
+    currentUser = session.user;
+    currentNick = await fetchMyNick();
+    if (!currentNick) {
+      const saved = localStorage.getItem(LS_NICK);
+      if (saved) currentNick = saved;
+    }
+  }
+  refreshAuthUI();
+
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (session && session.user) {
+      currentUser = session.user;
+      currentNick = await fetchMyNick() || localStorage.getItem(LS_NICK) || null;
+    } else {
+      currentUser = null;
+      currentNick = null;
+    }
+    refreshAuthUI();
+  });
+}
+
+function closeSetupArea() {
+  const area = document.getElementById("setup-area");
+  const gameSetup = document.getElementById("game-setup");
+  const obtn = document.getElementById("open-setup-btn");
+  if (area) area.classList.add("hidden");
+  if (gameSetup) gameSetup.classList.add("hidden");
+  if (obtn) obtn.textContent = "▶️ 시작하기";
+}
+
+function updateInlineBest() {
+  const el = document.getElementById("inline-best-score");
+  if (el) el.textContent = localStorage.getItem(LS_BEST) || "0";
+}
+
+/* ===========================================================
+   부팅
+=========================================================== */
+window.addEventListener("load", async () => {
+  if (typeof naver === "undefined" || !naver.maps) {
+    document.getElementById("loading-text").textContent = "네이버 지도 인증 실패.";
+    return;
+  }
+  try {
+    initMap();
+    await loadAllGeoData();
+    document.getElementById("loading").classList.add("hidden");
+    const missing = DB.filter((d) => !d.sggCode).map((d) => d.name);
+    if (missing.length) document.getElementById("diag").textContent = "⚠ 구 매칭 실패: " + missing.join(", ");
+  } catch (e) {
+    console.error(e);
+    document.getElementById("loading-text").textContent = "데이터 로딩 실패: " + e.message;
+    return;
+  }
+
+  updateInlineBest();
+
+  setupSegment("seg-dir", "dir");
+  setupSegment("seg-region", "region");
+  setupSegment("seg-type", "type");
+  setupSegment("seg-count", "count");
+  setupLearnRegionSegment();
+  setupLocateRegionSegment();
+  setupLocateTypeSegment();
+  setupTimerToggle();
+
+  document.getElementById("google-login-btn").addEventListener("click", loginGoogle);
+  document.getElementById("kakao-login-btn").addEventListener("click", loginKakao);
+  document.getElementById("logout-btn").addEventListener("click", logout);
+  document.getElementById("nick-save-btn").addEventListener("click", async () => {
+    const v = document.getElementById("nick-input").value;
+    if (!v.trim()) { alert("닉네임을 입력해주세요."); return; }
+    const ok = await saveNick(v);
+    if (ok) refreshAuthUI();
+  });
+  document.getElementById("nick-edit-btn").addEventListener("click", () => {
+    document.getElementById("nick-input").value = currentNick || "";
+    currentNick = null;
+    refreshAuthUI();
+  });
+
+  document.getElementById("open-setup-btn").addEventListener("click", () => {
+    const area = document.getElementById("setup-area");
+    const btn = document.getElementById("open-setup-btn");
+    if (area.classList.contains("hidden")) {
+      area.classList.remove("hidden");
+      btn.textContent = "▲ 닫기";
+    } else {
+      area.classList.add("hidden");
+      document.getElementById("game-setup").classList.add("hidden");
+      btn.textContent = "▶️ 시작하기";
+    }
+  });
+
+  document.getElementById("game-mode-btn").addEventListener("click", () => {
+    const gameSetup = document.getElementById("game-setup");
+    gameSetup.classList.toggle("hidden");
+    if (!gameSetup.classList.contains("hidden")) {
+      gameSetup.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  });
+
+  document.getElementById("start-btn").addEventListener("click", startGame);
+  document.getElementById("restart-btn").addEventListener("click", () => {
+    showScreen("start"); updateInlineBest(); loadHomeRanking(); closeSetupArea();
+  });
+  document.getElementById("next-btn").addEventListener("click", nextQuestion);
+  document.getElementById("quit-btn").addEventListener("click", () => { stopTimer(); clearHighlight(); clearCandidates(); clearGuOverlays(); appMode = "none"; showScreen("start"); closeSetupArea(); });
+  document.getElementById("verify-btn").addEventListener("click", verifyAll);
+  document.getElementById("adj-verify-btn").addEventListener("click", verifyAdjacency);
+  document.getElementById("wrong-only-btn").addEventListener("click", retryWrongOnly);
+  document.getElementById("to-rank-btn").addEventListener("click", showRanking);
+  document.getElementById("rank-refresh-btn").addEventListener("click", showRanking);
+  document.getElementById("rank-back-btn").addEventListener("click", () => { showScreen("start"); loadHomeRanking(); closeSetupArea(); });
+
+  document.getElementById("learn-btn").addEventListener("click", openLearnMode);
+  document.getElementById("learn-dir-name").addEventListener("click", openLearnExplore);
+  document.getElementById("learn-dir-locate").addEventListener("click", openLearnLocate);
+  document.getElementById("locate-next-btn").addEventListener("click", nextLearnLocate);
+  document.getElementById("learn-back-btn").addEventListener("click", () => { closeLearnMode(); closeSetupArea(); });
+
+  window.addEventListener("resize", () => { if (map) naver.maps.Event.trigger(map, "resize"); });
+
+  /* ── 통합 지역 검색 ── */
+
+  /* 공용: 지역명 일치 항목 배열 반환 */
+  function buildSearchResults(q) {
+    const results = [];
+    /* 1) 구·시·군 */
+    DB.forEach((d) => {
+      if (!d.sggCode) return;
+      if (d.name.indexOf(q) !== -1 || (d.sgg_nm && d.sgg_nm.indexOf(q) !== -1)) {
+        const sidoLabel = SIDO_NAME[d.sido] || d.sidonm || "";
+        results.push({ type:"gu", sido:d.sido, sggCode:d.sggCode, dbItem:d, label:d.sgg_nm||d.name, sub:sidoLabel });
+      }
+    });
+    /* 2) 읍·면·동 (중복 제거) */
+    const dongSeen = new Set();
+    dongList.forEach((dong) => {
+      if (dong.dongName.indexOf(q) === -1) return;
+      const key = dong.sgg + "|" + dong.dongName;
+      if (dongSeen.has(key)) return;
+      dongSeen.add(key);
+      const guItem = DB.find((d) => d.sggCode === dong.sgg);
+      const guLabel = guItem ? (guItem.sgg_nm || guItem.name) : (dong.sggnm || "");
+      const sidoLabel = SIDO_NAME[dong.sido] || "";
+      results.push({ type:"dong", sido:dong.sido, dong:dong, label:dong.dongName, sub:sidoLabel + " " + guLabel });
+    });
+    return results.slice(0, 30);
+  }
+
+  /* 공용: 결과 리스트를 컨테이너에 렌더링 */
+  function renderSearchResults(results, containerEl, onClickFn) {
+    containerEl.innerHTML = "";
+    results.forEach((item) => {
+      const btn = document.createElement("button");
+      btn.className = "search-item";
+      btn.innerHTML = `<div class="si-name">${escapeHtml(item.label)}</div><div class="si-sub">${escapeHtml(item.sub.trim())}</div>`;
+      btn.addEventListener("click", () => onClickFn(item));
+      containerEl.appendChild(btn);
+    });
+  }
+
+  /* 공용: 항목 클릭 시 지도+정보카드 갱신 (mode: "start" | "learn") */
+  function applySearchItem(item, mode) {
+    const region = SIDO_TO_REGION[item.sido] || "seoul";
+    learnRegion = region;
+    /* learn-region 세그먼트 UI 동기화 */
+    document.querySelectorAll("#learn-region button").forEach((b) => {
+      b.classList.toggle("sel", b.getAttribute("data-val") === region);
+    });
+    if (mode === "start") {
+      /* 시작 화면에서: 학습 모드 탐색 화면으로 전환 */
+      openLearnMode();
+      openLearnExplore();
+    }
+    /* 이하는 두 모드 공통: 지도 및 정보카드 갱신 */
+    if (item.type === "gu") {
+      expandedGu = item.sggCode;
+      selectedDongName = null;
+      highlightGuByCode(item.sggCode);
+      renderLearnList();
+      showGuInfoCard(item.dbItem);
+    } else {
+      expandedGu = item.dong.sgg;
+      selectedDongName = item.dong.dongName;
+      clearGuOverlays();
+      highlightDong(item.dong);
+      renderLearnList();
+      showDongInfoCard(item.dong);
+    }
+  }
+
+  /* 시작 화면 검색창 */
+  (function setupSearch() {
+    const searchInput   = document.getElementById("search-input");
+    const searchResults = document.getElementById("search-results");
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.trim();
+      if (q.length < 1) { searchResults.innerHTML = ""; return; }
+      renderSearchResults(buildSearchResults(q), searchResults, (item) => {
+        searchResults.innerHTML = "";
+        searchInput.value = "";
+        applySearchItem(item, "start");
+      });
+    });
+  })();
+
+  /* 학습 탐색 화면 검색창 */
+  (function setupLearnSearch() {
+    const learnSearchInput   = document.getElementById("learn-search-input");
+    const learnSearchResults = document.getElementById("learn-search-results");
+    learnSearchInput.addEventListener("input", () => {
+      const q = learnSearchInput.value.trim();
+      if (q.length < 1) { learnSearchResults.innerHTML = ""; return; }
+      renderSearchResults(buildSearchResults(q), learnSearchResults, (item) => {
+        learnSearchResults.innerHTML = "";
+        learnSearchInput.value = "";
+        applySearchItem(item, "learn");
+      });
+    });
+  })();
+
+  await initAuth();
+  loadHomeRanking();
+});
+</script>
+</body>
+</html>
