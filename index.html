@@ -853,6 +853,7 @@ const guPolyByCode = {};   // sgg코드 -> 네이버 Polygon 객체 배열
 const guRingsByCode = {};  // sgg코드 -> [[ [lng,lat], ... ], ...] 외곽 링 배열 (point-in-polygon용)
 const guPropsByCode = {};  // sgg코드 -> { sgg, sgg_nm, sido, sidonm, full_nm }
 let guOverlays = [];       // 현재 지도에 표시중인 구 오버레이 Polygon 배열
+let guLabelMarkers = [];   // 구 이름표(라벨) 마커 배열
 
 const SIDO_NAME = { "11":"서울특별시", "28":"인천광역시", "41":"경기도" };
 
@@ -935,6 +936,9 @@ function initMap() {
       }
     }
   });
+
+  // 줌 레벨이 바뀔 때마다 구 이름표 표시/숨김 갱신
+  naver.maps.Event.addListener(map, "zoom_changed", updateGuLabels);
 }
 
 /* ===========================================================
@@ -1055,11 +1059,28 @@ async function loadGuGeo(sidoCode) {
 }
 
 /* ===========================================================
+   구(gu) 이름표(라벨) 헬퍼
+=========================================================== */
+/* 구 외곽 링들의 bounding box 중심 좌표 계산 */
+function getGuCenter(code) {
+  const rings = guRingsByCode[code] || [];
+  if (!rings.length) return null;
+  const b = new naver.maps.LatLngBounds();
+  rings.forEach((ring) => {
+    ring.forEach((c) => b.extend(new naver.maps.LatLng(c[1], c[0])));
+  });
+  return b.getCenter();
+}
+
+/* 줌 레벨에 따라 구 이름표 표시/숨김 (줌 11 이상일 때 표시) */
+function updateGuLabels() {
+  if (!map) return;
+  const show = map.getZoom() >= 11;
+  guLabelMarkers.forEach((m) => m.setMap(show ? map : null));
+}
+
+/* ===========================================================
    구(gu) 폴리곤 빌드
-   - gu GeoJSON을 읽어 네이버 Polygon 객체로 만들어 두고
-     guPolyByCode 에 저장 (처음엔 지도에 표시하지 않음).
-   - guPropsByCode 에 속성 저장, guRingsByCode 에 point-in-polygon용
-     좌표 링([lng,lat]) 저장.
 =========================================================== */
 function buildGuPolygons(geo) {
   (geo.features || []).forEach((f) => {
@@ -1105,6 +1126,21 @@ function buildGuPolygons(geo) {
       handlePolygon(geom.coordinates);
     } else if (geom.type === "MultiPolygon") {
       geom.coordinates.forEach((poly) => handlePolygon(poly));
+    }
+
+    // 구 이름표(라벨) 마커 생성 (처음엔 map:null, 줌에 따라 표시)
+    const center = getGuCenter(code);
+    if (center) {
+      const label = new naver.maps.Marker({
+        position: center,
+        map: null,
+        icon: {
+          content: `<div style="font-size:11px;font-weight:bold;color:#5f5749;background:rgba(255,255,255,0.78);padding:2px 6px;border-radius:5px;white-space:nowrap;pointer-events:none;font-family:'Jua',sans-serif;box-shadow:0 1px 3px rgba(0,0,0,.15);">${guPropsByCode[code].sgg_nm}</div>`,
+          anchor: new naver.maps.Point(0, 0)
+        },
+        clickable: false
+      });
+      guLabelMarkers.push(label);
     }
   });
 }
@@ -1170,6 +1206,7 @@ async function loadAllGeoData() {
     buildGuPolygons(guGeo);
   }
   buildDbFromGu();
+  updateGuLabels();   // 이름표 초기 표시 상태 맞추기 (기본 줌 10 → 처음엔 숨김)
 
   map.data.forEach((feature) => {
     const sgg = feature.getProperty("sgg");
