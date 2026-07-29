@@ -520,7 +520,7 @@
 
      <h2 style="font-size:22px; margin:28px 0 8px;">자주 묻는 질문 (FAQ)</h2>
      <p><strong>Q. 회원가입을 꼭 해야 하나요?</strong><br>
-     아니요, 로그인 없이도 모든 퀴즈를 자유롭게 즐길 수 있습니다. 다만 로그인 후 닉네임을 정하면 점수가 실시간 랭킹에 자동으로 등록됩니다.</p>
+     네, 구글 또는 카카오 계정으로 간편하게 로그인한 뒤 이용할 수 있습니다. 로그인 후 닉네임을 정하면 점수가 실시간 랭킹에 자동으로 등록됩니다. 별도의 복잡한 가입 절차는 없습니다.</p>
      <p><strong>Q. 어떤 지역까지 학습할 수 있나요?</strong><br>
      서울을 비롯한 여러 지역의 시·군·구 및 읍·면·동 단위까지 세부적으로 학습할 수 있으며, 지역은 계속 추가되고 있습니다.</p>
      <p><strong>Q. 모바일에서도 이용할 수 있나요?</strong><br>
@@ -665,6 +665,34 @@ async function fetchTopRanks() {
   }
 }
 
+/* ===========================================================
+   로그인 필수화: 로그인+닉네임 완료 여부 판정 & UI 잠금
+=========================================================== */
+function isUnlocked() {
+  return !!(currentUser && currentNick);
+}
+
+function applyLockUI() {
+  const unlocked = isUnlocked();
+  const lockIds = ["search-box", "open-setup-btn", "setup-area", "verify-btn", "adj-verify-btn", "diag", "verify-result"];
+  lockIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("hidden", !unlocked);
+  });
+  // 미완료 상태에서는 열려 있던 설정 영역도 확실히 닫는다.
+  if (!unlocked) {
+    const gameSetup = document.getElementById("game-setup");
+    if (gameSetup) gameSetup.classList.add("hidden");
+    const obtn = document.getElementById("open-setup-btn");
+    if (obtn) obtn.textContent = "시작하기";
+  }
+  // 로그인 안내 문구를 상황에 맞게 변경
+  const loginLabel = document.querySelector("#login-area .label");
+  if (loginLabel) {
+    loginLabel.textContent = unlocked ? "로그인하면 점수가 랭킹에 등록돼요" : "로그인해야 퀴즈를 시작할 수 있어요";
+  }
+}
+
 function refreshAuthUI() {
   const loginArea = document.getElementById("login-area");
   const nickSetup = document.getElementById("nick-setup");
@@ -691,6 +719,9 @@ function refreshAuthUI() {
       document.getElementById("inline-best-score").textContent = localStorage.getItem(LS_BEST) || "0";
     }
   }
+
+  // 로그인·닉네임 완료 여부에 따라 기능 UI 잠금/해제
+  applyLockUI();
 }
 
 /* ===========================================================
@@ -1528,6 +1559,7 @@ function finishLocateJudge(isCorrect, q, context) {
    학습 모드 - 진입/방향선택
 =========================================================== */
 function openLearnMode() {
+  if (!isUnlocked()) { alert("먼저 로그인하고 닉네임을 정해주세요."); return; }
   clearHighlight();
   clearCandidates();
   clearGuOverlays();
@@ -1815,6 +1847,7 @@ function filteredDongPool() {
 }
 
 function startGame() {
+  if (!isUnlocked()) { alert("먼저 로그인하고 닉네임을 정해주세요."); return; }
   appMode = "game";
   totalQuestions = settings.count;
   quizSet = []; answerLog = [];
@@ -2307,6 +2340,7 @@ window.addEventListener("load", async () => {
   });
 
   document.getElementById("open-setup-btn").addEventListener("click", () => {
+    if (!isUnlocked()) { alert("먼저 로그인하고 닉네임을 정해주세요."); return; }
     const area = document.getElementById("setup-area");
     const btn = document.getElementById("open-setup-btn");
     if (area.classList.contains("hidden")) {
