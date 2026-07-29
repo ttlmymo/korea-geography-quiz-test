@@ -296,11 +296,12 @@
             카카오 로그인
           </button>
         </div>
-        <div id="nick-setup" class="hidden">
-          <span class="label">랭킹에 표시할 닉네임을 정해주세요</span>
-          <input id="nick-input" class="nick-input" type="text" maxlength="10" placeholder="닉네임 (최대 10자)" />
-          <button id="nick-save-btn" class="primary" style="padding:12px;">닉네임 저장</button>
-        </div>
+<div id="nick-setup" class="hidden">
+  <span class="label">랭킹에 표시할 닉네임을 정해주세요</span>
+  <input id="nick-input" class="nick-input" type="text" maxlength="10" placeholder="닉네임 (최대 10자)" />
+  <button id="nick-save-btn" class="primary" style="padding:12px;">닉네임 저장</button>
+  <button id="nick-back-btn" style="background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-family:'Jua',sans-serif;font-size:14px;padding:4px;">← 로그인 화면으로 돌아가기</button>
+</div>
         <div id="user-info" class="hidden">
           <span class="uname">👤 <span id="user-nick">-</span></span>
           <span id="inline-best" class="hidden">
@@ -674,7 +675,7 @@ function isUnlocked() {
 
 function applyLockUI() {
   const unlocked = isUnlocked();
-  const lockIds = ["search-box", "open-setup-btn", "setup-area", "verify-btn", "adj-verify-btn", "diag", "verify-result"];
+  const lockIds = ["search-box", "open-setup-btn", "verify-btn", "adj-verify-btn", "diag", "verify-result"];
   lockIds.forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.classList.toggle("hidden", !unlocked);
@@ -683,6 +684,8 @@ function applyLockUI() {
   if (!unlocked) {
     const gameSetup = document.getElementById("game-setup");
     if (gameSetup) gameSetup.classList.add("hidden");
+    const setupArea = document.getElementById("setup-area");
+    if (setupArea) setupArea.classList.add("hidden");
     const obtn = document.getElementById("open-setup-btn");
     if (obtn) obtn.textContent = "시작하기";
   }
@@ -2260,17 +2263,13 @@ async function initAuth() {
   if (session && session.user) {
     currentUser = session.user;
     currentNick = await fetchMyNick();
-    if (!currentNick) {
-      const saved = localStorage.getItem(LS_NICK);
-      if (saved) currentNick = saved;
-    }
   }
   refreshAuthUI();
 
   sb.auth.onAuthStateChange(async (event, session) => {
     if (session && session.user) {
       currentUser = session.user;
-      currentNick = await fetchMyNick() || localStorage.getItem(LS_NICK) || null;
+      currentNick = await fetchMyNick();
     } else {
       currentUser = null;
       currentNick = null;
@@ -2333,6 +2332,7 @@ window.addEventListener("load", async () => {
     const ok = await saveNick(v);
     if (ok) refreshAuthUI();
   });
+  document.getElementById("nick-back-btn").addEventListener("click", logout);
   document.getElementById("nick-edit-btn").addEventListener("click", () => {
     document.getElementById("nick-input").value = currentNick || "";
     currentNick = null;
