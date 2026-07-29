@@ -632,6 +632,19 @@ async function saveNick(nick) {
           currentNick = null;
           return false;
         }
+      } else {
+        const { error } = await sb.from("ranking").insert({
+          user_id: currentUser.id,
+          nick: clean,
+          total_score: 0,
+          plays: 0,
+          best: 0
+        });
+        if (error) {
+          alert("이미 사용 중인 닉네임이에요. 다른 닉네임을 정해주세요.");
+          currentNick = null;
+          return false;
+        }
       }
     } catch (e) { console.error(e); }
   }
