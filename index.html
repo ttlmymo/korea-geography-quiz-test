@@ -1075,7 +1075,7 @@ function getGuCenter(code) {
 /* 줌 레벨에 따라 구 이름표 표시/숨김 (줌 11 이상일 때 표시) */
 function updateGuLabels() {
   if (!map) return;
-  const show = map.getZoom() >= 11;
+  const show = map.getZoom() >= 11 && appMode !== "game";
   guLabelMarkers.forEach((m) => m.setMap(show ? map : null));
 }
 
