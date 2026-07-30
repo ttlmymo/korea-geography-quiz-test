@@ -787,6 +787,8 @@ const GU_STYLE_CANDIDATE = { fillColor:"#cbd5e1", fillOpacity:0.4, strokeColor:"
 const GU_STYLE_GU        = { fillColor:"#f97316", fillOpacity:0.55, strokeColor:"#ea580c", strokeWeight:2.5, strokeOpacity:0.95 };
 const GU_STYLE_CORRECT   = { fillColor:"#86efac", fillOpacity:0.7,  strokeColor:"#16a34a", strokeWeight:2.5, strokeOpacity:1 };
 const GU_STYLE_WRONGPICK = { fillColor:"#fca5a5", fillOpacity:0.7,  strokeColor:"#dc2626", strokeWeight:2.5, strokeOpacity:1 };
+/* 6단계: 기본 상태에서 구를 은은하게 구분해줄 파스텔 색 팔레트 (베이지 톤에 어울리는 저채도) */
+const GU_BASE_PALETTE = ["#c9d8bf", "#e6cfa8", "#d6c3b0", "#bfd0d4", "#e0c9c2", "#d3cf9e"];
 
 const LS_BEST = "kgq_best_score";
 const LS_NICK = "kgq_nick";
@@ -1235,6 +1237,7 @@ async function loadAllGeoData() {
   }
   buildDbFromGu();
   updateGuLabels();   // 이름표 초기 표시 상태 맞추기 (기본 줌 10 → 처음엔 숨김)
+  showGuBaseColors(); // 6단계: 모든 구에 은은한 기본 색 깔기
 
   map.data.forEach((feature) => {
     const sgg = feature.getProperty("sgg");
@@ -1395,6 +1398,41 @@ function applyGuStyle(poly, style) {
     strokeWeight: style.strokeWeight,
     strokeOpacity: style.strokeOpacity
   });
+}
+
+/* 6단계: 구 코드별로 팔레트에서 색 하나를 안정적으로 배정 (코드 해시 기반) */
+function guBaseColor(code) {
+  let h = 0;
+  const s = String(code);
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return GU_BASE_PALETTE[h % GU_BASE_PALETTE.length];
+}
+
+/* 6단계: 모든 구에 은은한 기본 색을 깔아 경계를 구분해준다. */
+let guBaseShown = false;
+function showGuBaseColors() {
+  Object.keys(guPolyByCode).forEach((code) => {
+    const color = guBaseColor(code);
+    (guPolyByCode[code] || []).forEach((poly) => {
+      poly.setOptions({
+        fillColor: color,
+        fillOpacity: 0.28,
+        strokeColor: "#b6ac97",
+        strokeWeight: 1,
+        strokeOpacity: 0.6
+      });
+      poly.setMap(map);
+    });
+  });
+  guBaseShown = true;
+}
+
+/* 6단계: 기본 색을 모두 지운다 (문제 풀이 등으로 강조가 필요할 때). */
+function hideGuBaseColors() {
+  Object.keys(guPolyByCode).forEach((code) => {
+    (guPolyByCode[code] || []).forEach((poly) => poly.setMap(null));
+  });
+  guBaseShown = false;
 }
 
 function clearGuOverlays() {
