@@ -1109,6 +1109,16 @@ function updateGuLabels() {
   guLabelMarkers.forEach((m) => m.setMap(show ? map : null));
 }
 
+/* 6단계 보정: 이름표에 쓸 텍스트. full_nm에서 시·도 이름만 떼어 "화성시 만세구", "용인시 기흥구"처럼 통일 */
+function guLabelText(code) {
+  const p = guPropsByCode[code] || {};
+  const full = p.full_nm || "";
+  const sidonm = p.sidonm || SIDO_NAME[(p.sido || "").slice(0, 2)] || "";
+  let t = full;
+  if (sidonm && t.indexOf(sidonm) === 0) t = t.slice(sidonm.length).trim();
+  return t || p.sgg_nm || "";
+}
+
 /* ===========================================================
    구(gu) 폴리곤 빌드
 =========================================================== */
@@ -1160,12 +1170,13 @@ function buildGuPolygons(geo) {
 
     // 구 이름표(라벨) 마커 생성 (처음엔 map:null, 줌에 따라 표시)
     const center = getGuCenter(code);
+
     if (center) {
       const label = new naver.maps.Marker({
         position: center,
         map: null,
         icon: {
-          content: `<div style="transform:translate(-50%,-50%);font-size:11px;font-weight:bold;color:#5f5749;background:rgba(255,255,255,0.78);padding:2px 6px;border-radius:5px;white-space:nowrap;pointer-events:none;font-family:'Jua',sans-serif;box-shadow:0 1px 3px rgba(0,0,0,.15);">${guPropsByCode[code].sgg_nm}</div>`,
+          content: `<div style="transform:translate(-50%,-50%);font-size:11px;font-weight:bold;color:#5f5749;background:rgba(255,255,255,0.78);padding:2px 6px;border-radius:5px;white-space:nowrap;pointer-events:none;font-family:'Jua',sans-serif;box-shadow:0 1px 3px rgba(0,0,0,.15);">${guLabelText(code)}</div>`,
           anchor: new naver.maps.Point(0, 0)
         },
         clickable: false
@@ -1419,7 +1430,8 @@ function showGuBaseColors() {
         fillOpacity: 0.28,
         strokeColor: "#b6ac97",
         strokeWeight: 1,
-        strokeOpacity: 0.6
+        strokeOpacity: 0.6,
+        clickable: false
       });
       poly.setMap(map);
     });
@@ -1438,6 +1450,8 @@ function hideGuBaseColors() {
 function clearGuOverlays() {
   guOverlays.forEach((poly) => poly.setMap(null));
   guOverlays = [];
+  // 6단계: 강조를 지운 뒤 은은한 기본 색을 다시 복원
+  if (guBaseShown) showGuBaseColors();
 }
 
 function showGuOverlay(code, style) {
@@ -1977,6 +1991,7 @@ function filteredDongPool() {
 function startGame() {
   if (!isUnlocked()) { alert("먼저 로그인하고 닉네임을 정해주세요."); return; }
   appMode = "game";
+  hideGuBaseColors();   // 6단계: 게임 중에는 기본 색 끄기
   totalQuestions = settings.count;
   quizSet = []; answerLog = [];
   const guPool = filteredGuPool();
@@ -2410,6 +2425,7 @@ function closeSetupArea() {
   if (area) area.classList.add("hidden");
   if (gameSetup) gameSetup.classList.add("hidden");
   if (obtn) obtn.textContent = "▶️ 시작하기";
+  showGuBaseColors();   // 6단계: 처음 화면 복귀 시 기본 색 복원
 }
 
 function updateInlineBest() {
