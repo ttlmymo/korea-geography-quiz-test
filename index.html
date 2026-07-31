@@ -1282,15 +1282,21 @@ async function loadAllGeoData() {
   }
 }
 
-/* ★수정: geometry에서 외곽 링만 뽑아 [[ [lng,lat], ... ], ...] 형태로 반환 */
+/* ★수정: geometry에서 모든 링을 뽑아 [[ [lng,lat], ... ], ...] 형태로 반환.
+   (일부 동은 링 순서가 비표준이라 첫 링이 아닌 뒤쪽 링에 실제 경계가 담김 → 송산면 등.
+    구멍(hole)까지 포함되지만 클릭 판정 용도에선 문제 없음.) */
 function extractOuterRings(geometry) {
   const out = [];
   if (!geometry) return out;
   if (geometry.type === "Polygon") {
-    if (geometry.coordinates && geometry.coordinates[0]) out.push(geometry.coordinates[0]);
+    (geometry.coordinates || []).forEach((ring) => {
+      if (ring && ring.length) out.push(ring);
+    });
   } else if (geometry.type === "MultiPolygon") {
     (geometry.coordinates || []).forEach((poly) => {
-      if (poly && poly[0]) out.push(poly[0]);
+      (poly || []).forEach((ring) => {
+        if (ring && ring.length) out.push(ring);
+      });
     });
   }
   return out;
