@@ -905,6 +905,7 @@ function initMap() {
   guClickListener = naver.maps.Event.addListener(map, "click", (e) => {
     const latlng = e.coord;
     if (!latlng) return;
+    console.log("클릭좌표:", latlng.lat(), latlng.lng(), "→ 찾은동:", findDongAtLatLng(latlng, ACTIVE_SIDOS));
 
     if (appMode === "learn-explore") {
       // 클릭 좌표가 속한 동을 찾아 하이라이트
@@ -1556,7 +1557,7 @@ function highlightGu(feats) {
   feats.forEach((f) => { map.data.overrideStyle(f, COLOR_GU); highlightedFeatures.push(f); });
   fitToFeatures(feats);
 }
-function highlightDong(dong) {
+function highlightDong(dong, autoFit = true) {
   clearHighlight();
   const siFeats = featuresBySi[dong.sido + "|" + siNameOf(dong.sggnm)] || [];
   const guFeats = featuresBySgg[dong.sgg] || [];
@@ -1564,7 +1565,7 @@ function highlightDong(dong) {
   guFeats.forEach((f) => { map.data.overrideStyle(f, COLOR_GU); });
   map.data.overrideStyle(dong.feature, COLOR_DONG);
   if (!highlightedFeatures.includes(dong.feature)) highlightedFeatures.push(dong.feature);
-  fitToFeatures(guFeats.length ? guFeats : [dong.feature]);
+  if (autoFit) fitToFeatures(guFeats.length ? guFeats : [dong.feature]);
   const c = featureCenter(dong.feature);
   if (c) centerMarker = new naver.maps.Marker({
     position: c, map: map,
@@ -1886,7 +1887,7 @@ function onMapDongClick(dong) {
   expandedGu = dong.sgg;
   selectedDongName = dong.dongName;
   clearGuOverlays();
-  highlightDong(dong);
+  highlightDong(dong, false); // ★수정: 지도 클릭 시엔 자동 확대/축소 안 함 (현재 줌 유지)
   renderLearnList();
   showDongInfoCard(dong);
 }
