@@ -239,6 +239,10 @@
   #info-card .ic-row { margin-bottom:6px; }
   #info-card .ic-label { color:var(--sage-d); font-weight:400; margin-right:7px; }
   #info-card .ic-empty { color:var(--muted); font-size:13px; }
+  #info-card .ic-images { display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+  #info-card .ic-fig { margin:0; }
+  #info-card .ic-fig img { width:100%; border-radius:14px; display:block; box-shadow:var(--soft-sm); }
+  #info-card .ic-fig figcaption { font-size:12px; color:var(--muted); margin-top:5px; text-align:center; }
   #learn-hint { background:var(--card-2); border-radius:15px; padding:14px 16px; font-size:13px; color:var(--text); line-height:1.6; flex:none; box-shadow:var(--inset); }
 
   #locate-panel { display:flex; flex-direction:column; gap:14px; flex:1; min-height:0; }
@@ -1953,15 +1957,39 @@ function showGuInfoCard(item) {
   else if (ISLAND_NOTE[item.matchName]) adjHtml = `<span style="color:var(--text);">${ISLAND_NOTE[item.matchName]}</span>`;
   else adjHtml = "<span class='ic-empty'>계산된 인접 구가 없어요.</span>";
 
-  // ★추가: features.js의 특징 데이터에서 설명을 꺼내온다 (없으면 안내 문구)
+  // features.js의 특징 데이터
   const feat = (typeof GU_FEATURE !== "undefined" && (GU_FEATURE[item.matchName] || GU_FEATURE[item.sgg_nm])) || null;
-  const featHtml = (feat && feat.desc) ? feat.desc : "<span class='ic-empty'>아직 등록된 설명이 없어요.</span>";
+
+  // 특징(desc)
+  const descHtml = (feat && feat.desc) ? feat.desc : "<span class='ic-empty'>아직 등록된 설명이 없어요.</span>";
+
+  // 역사 (있을 때만)
+  const historyRow = (feat && feat.history)
+    ? `<div class="ic-row"><span class="ic-label">역사</span>${feat.history}</div>` : "";
+
+  // 인물·이야기 (있을 때만)
+  const peopleRow = (feat && feat.people)
+    ? `<div class="ic-row"><span class="ic-label">이야기</span>${feat.people}</div>` : "";
+
+  // 사진 (있을 때만)
+  let imagesHtml = "";
+  if (feat && Array.isArray(feat.images) && feat.images.length) {
+    imagesHtml = `<div class="ic-images">` + feat.images.map((img) =>
+      `<figure class="ic-fig">
+         <img src="${img.src}" alt="${(img.caption || "").replace(/"/g,'&quot;')}" loading="lazy" />
+         ${img.caption ? `<figcaption>${img.caption}</figcaption>` : ""}
+       </figure>`
+    ).join("") + `</div>`;
+  }
 
   card.innerHTML = `
     <div class="ic-title">${item.name}</div>
     <div class="ic-row"><span class="ic-label">소속</span>${SIDO_NAME[item.sido]}</div>
     <div class="ic-row"><span class="ic-label">인접 지역</span>${adjHtml}</div>
-    <div class="ic-row"><span class="ic-label">특징</span>${featHtml}</div>
+    <div class="ic-row"><span class="ic-label">특징</span>${descHtml}</div>
+    ${historyRow}
+    ${peopleRow}
+    ${imagesHtml}
   `;
 }
 
