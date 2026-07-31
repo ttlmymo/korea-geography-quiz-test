@@ -1779,6 +1779,7 @@ function closeLearnMode() {
 
 function openLearnExplore() {
   appMode = "learn-explore";
+  track("learn_explore"); // 위치→이름
   updateGuLabels(); /* ★수정: 탐색 모드는 이름표 표시 허용 */
   document.getElementById("learn-dir-select").classList.add("hidden");
   document.getElementById("learn-explore").classList.remove("hidden");
@@ -1791,6 +1792,7 @@ function openLearnExplore() {
 
 function openLearnLocate() {
   appMode = "learn-locate";
+  track("learn_locate"); // 이름→위치
   updateGuLabels(); /* ★수정: 이름→위치는 이름표 숨김 */
   document.getElementById("learn-dir-select").classList.add("hidden");
   document.getElementById("learn-explore").classList.add("hidden");
@@ -2089,6 +2091,12 @@ function startGame() {
 
   currentIndex = 0; score = 0;
   document.getElementById("max-score").textContent = totalQuestions * 10;
+  // GA4: 유형별로 각각 이벤트를 보내 이름만으로 집계되게 함
+  track("game_start_" + settings.region);   // game_start_seoul / _incheon / _gg / _all
+  track("game_type_" + settings.type);      // game_type_gu / _dong / _mix
+  track("game_dir_" + settings.dir);        // game_dir_name / _locate / _mix
+  track("game_count_" + settings.count);    // game_count_10 / _20
+  track("game_timer_" + settings.timer);    // game_timer_on / _off
   showScreen("quiz");
   loadQuestion();
 }
@@ -2301,6 +2309,7 @@ async function showResult() {
 
   const correctCnt = answerLog.filter((a) => a.correct).length;
   const pct = score / maxScore;
+  track("game_complete", { score: score, correct: correctCnt, total: totalQuestions });
   const msg = pct >= 0.9 ? "🏆 전국 지리 마스터!" : pct >= 0.7 ? "👍 훌륭해요!" : pct >= 0.5 ? "🙂 절반은 넘겼어요." : "📚 조금 더 연습해봐요!";
   document.getElementById("result-msg").textContent = `${msg}  (${totalQuestions}문제 중 ${correctCnt}개 정답)`;
 
@@ -2487,6 +2496,13 @@ function closeSetupArea() {
   updateGuLabels();   /* ★수정: 처음 화면 복귀 시 이름표 상태 갱신 */
 }
 
+/* GA4 맞춤 이벤트 전송 헬퍼 (gtag 없거나 실패해도 앱 동작엔 영향 없음) */
+function track(eventName, params) {
+  try {
+    if (typeof gtag === "function") gtag("event", eventName, params || {});
+  } catch (e) { /* 분석 실패는 무시 */ }
+}
+
 function updateInlineBest() {
   const el = document.getElementById("inline-best-score");
   if (el) el.textContent = localStorage.getItem(LS_BEST) || "0";
@@ -2618,6 +2634,7 @@ window.addEventListener("load", async () => {
   }
 
   function applySearchItem(item, mode) {
+    track("search_" + item.type); // search_gu / search_dong
     const region = SIDO_TO_REGION[item.sido] || "seoul";
     learnRegion = region;
     document.querySelectorAll("#learn-region button").forEach((b) => {
