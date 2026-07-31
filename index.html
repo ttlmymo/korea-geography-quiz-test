@@ -556,6 +556,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=kizfnbhv3q&submodules=geocoder"></script>
+<script src="https://cdn.jsdelivr.net/gh/ttlmymo/korea-geography-quiz@main/features.js"></script>
 <script>
 /* ===========================================================
    Supabase 초기화
@@ -1951,11 +1952,16 @@ function showGuInfoCard(item) {
   if (adj.length) adjHtml = adj.join(", ");
   else if (ISLAND_NOTE[item.matchName]) adjHtml = `<span style="color:var(--text);">${ISLAND_NOTE[item.matchName]}</span>`;
   else adjHtml = "<span class='ic-empty'>계산된 인접 구가 없어요.</span>";
+
+  // ★추가: features.js의 특징 데이터에서 설명을 꺼내온다 (없으면 안내 문구)
+  const feat = (typeof GU_FEATURE !== "undefined" && (GU_FEATURE[item.matchName] || GU_FEATURE[item.sgg_nm])) || null;
+  const featHtml = (feat && feat.desc) ? feat.desc : "<span class='ic-empty'>아직 등록된 설명이 없어요.</span>";
+
   card.innerHTML = `
     <div class="ic-title">${item.name}</div>
     <div class="ic-row"><span class="ic-label">소속</span>${SIDO_NAME[item.sido]}</div>
     <div class="ic-row"><span class="ic-label">인접 지역</span>${adjHtml}</div>
-    <div class="ic-row"><span class="ic-label">특징</span><span class="ic-empty">아직 등록된 설명이 없어요. (다음 단계에서 추가됩니다)</span></div>
+    <div class="ic-row"><span class="ic-label">특징</span>${featHtml}</div>
   `;
 }
 
