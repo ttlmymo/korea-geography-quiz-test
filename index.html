@@ -769,6 +769,22 @@ const SGG_MAP_FALLBACK = {
   "41590": { sido: "41", sidonm: "경기도", sggnm: "화성시" }
 };
 
+/* 화성시 동/면 → 실제 소속 구 코드 매핑 (bjd가 통합코드 41590만 가진 문제 근본 교정) */
+const HWASEONG_DONG_TO_GU = {
+  // 만세구 41591
+  "남양읍":"41591","장안면":"41591","팔탄면":"41591","향남읍":"41591","마도면":"41591",
+  "송산면":"41591","새솔동":"41591","양감면":"41591","서신면":"41591","우정읍":"41591",
+  // 효행구 41593
+  "봉담읍":"41593","기안동":"41593","정남면":"41593","매송면":"41593","비봉면":"41593","배양동":"41593",
+  // 병점구 41595
+  "안녕동":"41595","송산동":"41595","능동":"41595","반정동":"41595","반월동":"41595",
+  "병점동":"41595","진안동":"41595","기산동":"41595","황계동":"41595",
+  // 동탄구 41597
+  "산척동":"41597","석우동":"41597","영천동":"41597","금곡동":"41597","반송동":"41597",
+  "송동":"41597","오산동":"41597","신동":"41597","중동":"41597","청계동":"41597",
+  "목동":"41597","방교동":"41597","장지동":"41597"
+};
+
 const DONG_RATIO = 0.5;
 const TIMER_SECONDS = 15;
 
@@ -905,7 +921,6 @@ function initMap() {
   guClickListener = naver.maps.Event.addListener(map, "click", (e) => {
     const latlng = e.coord;
     if (!latlng) return;
-    console.log("클릭좌표:", latlng.lat(), latlng.lng(), "→ 찾은동:", findDongAtLatLng(latlng, ACTIVE_SIDOS));
 
     if (appMode === "learn-explore") {
       // 클릭 좌표가 속한 동을 찾아 하이라이트
@@ -934,7 +949,7 @@ function initMap() {
 const IDB_NAME = "kgq_geo_cache";
 const IDB_STORE = "regions";
 const IDB_VERSION = 1;
-const DATA_SCHEMA_VERSION = "gu-v5";
+const DATA_SCHEMA_VERSION = "gu-v6";
 
 function idbOpen() {
   return new Promise((resolve, reject) => {
@@ -996,17 +1011,36 @@ function normalizeBjd(geo, sggMap) {
     const p = f.properties || {};
     const cdFront5 = p.EMD_CD ? String(p.EMD_CD).slice(0, 5) : "";
     const colCode  = p.COL_ADM_SE || "";
-    const code5 = (cdFront5 && sggMap[cdFront5]) ? cdFront5 : (colCode || cdFront5);
+    let code5 = (cdFront5 && sggMap[cdFront5]) ? cdFront5 : (colCode || cdFront5);
+
+    // ★수정: 화성시 통합코드(41590) 동은 이름으로 실제 소속 구 코드로 교정
+    if (code5 === "41590") {
+      const guCode = HWASEONG_DONG_TO_GU[p.EMD_NM];
+      if (guCode) code5 = guCode;
+    }
+
     const m = sggMap[code5] || SGG_MAP_FALLBACK[code5] || {};
     p.sgg    = code5;
     p.sido   = m.sido   || code5.slice(0, 2);
     p.sidonm = m.sidonm || (SIDO_NAME[code5.slice(0, 2)] || "");
-    p.sggnm  = m.sggnm  || "";
+    // ★수정: 교정된 화성 4구는 sggMap엔 없을 수 있으니 "화성시 만세구"처럼 구 이름을 붙인다
+    p.sggnm  = m.sggnm  || guSggnmForCode(code5);
     p.adm_nm = [p.sidonm, p.sggnm, p.EMD_NM].filter(Boolean).join(" ");
     p.adm_cd = p.EMD_CD || "";
     f.properties = p;
   });
   return geo;
+}
+
+/* 화성 4구 코드 → "화성시 만세구" 형태 이름 (gu 데이터가 아직 안 로드됐을 때 대비 폴백 포함) */
+function guSggnmForCode(code) {
+  const HWA_NAMES = {
+    "41591":"화성시 만세구", "41593":"화성시 효행구",
+    "41595":"화성시 병점구", "41597":"화성시 동탄구"
+  };
+  if (HWA_NAMES[code]) return HWA_NAMES[code];
+  const gp = guPropsByCode[code];
+  return (gp && gp.sgg_nm) ? gp.sgg_nm : "";
 }
 
 async function loadRegionGeo(sidoCode) {
@@ -1839,7 +1873,16 @@ function renderLearnList() {
     if (expandedGu === item.sggCode) {
       const dongWrap = document.createElement("div");
       dongWrap.className = "learn-dong-wrap";
-      const dongs = (dongsBySgg[item.sggCode] || []);
+      // ★수정: 구 코드에 동이 없으면(화성 4구=41591~41597, 동 데이터는 통합코드 41590)
+      //        같은 시(市) 이름의 동들을 대신 가져온다.
+      let dongs = dongsBySgg[item.sggCode] || [];
+      if (!dongs.length) {
+        const siName = siNameOf(item.name.split(/\s+/).pop()); // "만세구" 앞의 시 이름 대신, full name 마지막 토큰에서 시 추출
+        // item.group은 "41-화성시" 형태라 여기서 시 이름을 뽑는 게 더 정확
+        const siFromGroup = (item.group || "").split("-")[1] || "";
+        const targetSi = siFromGroup || siName;
+        dongs = dongList.filter((d) => d.sido === item.sido && d.sggnm === targetSi);
+      }
       const seen = new Set();
       dongs.forEach((dg) => {
         if (seen.has(dg.dongName)) return;
