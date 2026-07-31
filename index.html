@@ -16,11 +16,11 @@
 
 <!-- 애드센스 메타 태그 (소유권 확인용) -->
 <meta name="google-adsense-account" content="ca-pub-1946710813485758">
-  
+
 <!-- 애드센스 코드 -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1946710813485758"
      crossorigin="anonymous"></script>
-  
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
@@ -280,6 +280,7 @@
   }
 </style>
 </head>
+
 <body>
 <div id="app">
   <div id="map-container"></div>
@@ -806,24 +807,14 @@ const ISLAND_NOTE = {
 
 <script>
 /* ===========================================================
-   DB (구·시·군 목록)
-   ※ 더 이상 손으로 적지 않고, gu 파일 로드 후 buildDbFromGu()에서
-     자동 생성한다. 초기값은 빈 배열.
-     각 항목 형식: { sgg, sgg_nm, full_nm, sido, sidonm,
-                     name, matchName, group, sggCode }
-     - name      : full_nm (화면 표시용)
-     - matchName  : sgg_nm (기존 참조 호환용)
-     - group      : 같은 시(예: 수원시) 단위 오답 후보 그룹
-     - sggCode    : sgg 코드 (기존 코드 호환용)
+   DB (구·시·군 목록) — buildDbFromGu()에서 자동 생성
 =========================================================== */
 let DB = [];
 
 const SIDO_TO_REGION = { "11":"seoul", "28":"incheon", "41":"gg" };
 
-/* 경기 북부 시·군 (한강 이북). 나머지 경기 시·군은 모두 남부. */
 const GG_NORTH = ["고양시","의정부시","남양주시","파주시","구리시","양주시","포천시","동두천시","가평군","연천군"];
 
-/* group 형식 "41-평택시" 에서 시 이름을 추출해 권역 키 반환. 경기(41)가 아니면 null. */
 function ggZoneOfGroup(group) {
   if (!group) return null;
   const parts = group.split("-");
@@ -832,7 +823,6 @@ function ggZoneOfGroup(group) {
   return GG_NORTH.some((n) => city.indexOf(n) === 0) ? "gg-north" : "gg-south";
 }
 
-/* 같은 권역(gg-north/gg-south)에 속한 구·시·군 코드 목록 */
 function guCodesForZone(zone) {
   return DB.filter((d) => d.sggCode && ggZoneOfGroup(d.group) === zone).map((d) => d.sggCode);
 }
@@ -846,16 +836,19 @@ const featuresBySgg = {}, codeByKey = {}, featuresBySi = {};
 const dongList = [], dongsBySgg = {};
 const dongByFeature = new Map();
 
+/* ★수정: 동(법정동) 외곽 링 캐시 (좌표 기반 point-in-polygon용) */
+const dongRingsList = []; // [{ dong, rings: [[ [lng,lat], ... ], ... ] }]
+const dongRingsBySgg = {}; // sgg코드 -> [{ dong, rings }, ...]  (2단계 탐색 최적화용)
+
 const guAdj = {};
 const dongAdj = {};
 const guNameByCode = {};
 
-/* 구(gu) 폴리곤 오버레이 관련 */
-const guPolyByCode = {};   // sgg코드 -> 네이버 Polygon 객체 배열
-const guRingsByCode = {};  // sgg코드 -> [[ [lng,lat], ... ], ...] 외곽 링 배열 (point-in-polygon용)
-const guPropsByCode = {};  // sgg코드 -> { sgg, sgg_nm, sido, sidonm, full_nm }
-let guOverlays = [];       // 현재 지도에 표시중인 구 오버레이 Polygon 배열
-let guLabelMarkers = [];   // 구 이름표(라벨) 마커 배열
+const guPolyByCode = {};
+const guRingsByCode = {};
+const guPropsByCode = {};
+let guOverlays = [];
+let guLabelMarkers = [];
 
 const SIDO_NAME = { "11":"서울특별시", "28":"인천광역시", "41":"경기도" };
 
@@ -875,7 +868,6 @@ let guClickListener = null;
 let appMode = "none";
 let candidateFeatures = [];
 
-/* 학습 locate 연습 상태 */
 let locateRegion = "seoul";
 let locateType = "gu";
 let locateCurrent = null;
@@ -895,6 +887,8 @@ function showScreen(name) {
 
 /* ===========================================================
    지도 초기화 + 클릭 라우팅
+   ★수정: 모든 클릭을 지도 전체 click(e.coord) 좌표 기반으로 일원화.
+          은은한 색 폴리곤이 아래 레이어 클릭을 막는 문제를 근본 해결.
 =========================================================== */
 function initMap() {
   map = new naver.maps.Map("map-container", {
@@ -907,35 +901,25 @@ function initMap() {
     scaleControl: false, logoControl: true, mapDataControl: false, zoomControl: false
   });
 
-  mapClickListener = naver.maps.Event.addListener(map.data, "click", (e) => {
-    const feature = e.feature;
-    if (appMode === "learn-explore") {
-      const dong = dongByFeature.get(feature);
-      if (dong) onMapDongClick(dong);
-    } else if (appMode === "learn-locate") {
-      // 동 문제만 bjd feature 클릭으로 판정 (구 문제는 gu 폴리곤/맵 클릭으로 처리)
-      if (locateCurrent && locateCurrent.qtype === "dong") {
-        handleLocateClick(feature, "learn");
-      }
-    } else if (appMode === "game") {
-      const q = quizSet[currentIndex];
-      if (q && q.dir === "locate" && q.qtype === "dong") handleLocateClick(feature, "game");
-    }
-  });
-
-  // 구(gu) 문제의 "이름→위치"는 지도 전체 클릭 좌표를 point-in-polygon으로 판정한다.
+  /* ★수정: 지도 전체 클릭 하나로 모든 판정 처리 (좌표 기반) */
   guClickListener = naver.maps.Event.addListener(map, "click", (e) => {
     const latlng = e.coord;
     if (!latlng) return;
-    if (appMode === "learn-locate") {
-      if (locateCurrent && locateCurrent.qtype === "gu") {
-        handleGuLocateClick(latlng, "learn");
-      }
+
+    if (appMode === "learn-explore") {
+      // 클릭 좌표가 속한 동을 찾아 하이라이트
+      const dong = findDongAtLatLng(latlng, ACTIVE_SIDOS);
+      if (dong) onMapDongClick(dong);
+    } else if (appMode === "learn-locate") {
+      if (!locateCurrent || locateCurrent.done) return;
+      if (locateCurrent.qtype === "gu") handleGuLocateClick(latlng, "learn");
+      else handleDongLocateClick(latlng, "learn");
     } else if (appMode === "game") {
+      if (answered) return;
       const q = quizSet[currentIndex];
-      if (q && q.dir === "locate" && q.qtype === "gu") {
-        handleGuLocateClick(latlng, "game");
-      }
+      if (!q || q.dir !== "locate") return;
+      if (q.qtype === "gu") handleGuLocateClick(latlng, "game");
+      else handleDongLocateClick(latlng, "game");
     }
   });
 
@@ -1063,12 +1047,10 @@ async function loadGuGeo(sidoCode) {
 /* ===========================================================
    구(gu) 이름표(라벨) 헬퍼
 =========================================================== */
-/* 구 외곽 링들의 bounding box 중심 좌표 계산 */
 function getGuCenter(code) {
   const rings = guRingsByCode[code] || [];
   if (!rings.length) return null;
 
-  // 가장 큰 외곽 링(면적 최대)을 골라 무게중심(centroid)을 계산한다.
   let bestRing = null, bestArea = -1;
   rings.forEach((ring) => {
     let a = 0;
@@ -1080,7 +1062,6 @@ function getGuCenter(code) {
   });
   if (!bestRing) return null;
 
-  // 폴리곤 무게중심 공식 (signed area 기반)
   let cx = 0, cy = 0, signedA = 0;
   for (let i = 0, j = bestRing.length - 1; i < bestRing.length; j = i++) {
     const x0 = bestRing[j][0], y0 = bestRing[j][1];
@@ -1092,7 +1073,6 @@ function getGuCenter(code) {
   }
   signedA /= 2;
   if (Math.abs(signedA) < 1e-12) {
-    // 면적이 0에 가까우면 기존 방식(사각형 중심)으로 대체
     const b = new naver.maps.LatLngBounds();
     bestRing.forEach((c) => b.extend(new naver.maps.LatLng(c[1], c[0])));
     return b.getCenter();
@@ -1102,14 +1082,15 @@ function getGuCenter(code) {
   return new naver.maps.LatLng(cy, cx);
 }
 
-/* 줌 레벨에 따라 구 이름표 표시/숨김 (줌 11 이상일 때 표시) */
+/* ★수정: 줌 11 이상 && (game/learn-locate가 아닐 때)만 이름표 표시.
+          정답 노출 방지를 위해 game·learn-locate에서는 항상 숨김. */
 function updateGuLabels() {
   if (!map) return;
-  const show = map.getZoom() >= 11 && appMode !== "game";
+  const modeHidesLabels = (appMode === "game" || appMode === "learn-locate");
+  const show = (map.getZoom() >= 11) && !modeHidesLabels;
   guLabelMarkers.forEach((m) => m.setMap(show ? map : null));
 }
 
-/* 6단계 보정: 이름표에 쓸 텍스트. full_nm에서 시·도 이름만 떼어 "화성시 만세구", "용인시 기흥구"처럼 통일 */
 function guLabelText(code) {
   const p = guPropsByCode[code] || {};
   const full = p.full_nm || "";
@@ -1141,9 +1122,7 @@ function buildGuPolygons(geo) {
     if (!guPolyByCode[code]) guPolyByCode[code] = [];
     if (!guRingsByCode[code]) guRingsByCode[code] = [];
 
-    // 폴리곤 1개 처리: rings = [outerRing, hole1, hole2, ...] (각 ring은 [lng,lat] 배열)
     const handlePolygon = (rings) => {
-      // 네이버 Polygon paths: 외곽 + 홀 순서, 각 path는 LatLng 배열
       const paths = rings.map((ring) =>
         ring.map((c) => new naver.maps.LatLng(c[1], c[0]))
       );
@@ -1158,7 +1137,6 @@ function buildGuPolygons(geo) {
         clickable: false
       });
       guPolyByCode[code].push(poly);
-      // point-in-polygon은 외곽 링만 사용
       if (rings.length) guRingsByCode[code].push(rings[0]);
     };
 
@@ -1168,9 +1146,7 @@ function buildGuPolygons(geo) {
       geom.coordinates.forEach((poly) => handlePolygon(poly));
     }
 
-    // 구 이름표(라벨) 마커 생성 (처음엔 map:null, 줌에 따라 표시)
     const center = getGuCenter(code);
-
     if (center) {
       const label = new naver.maps.Marker({
         position: center,
@@ -1188,7 +1164,6 @@ function buildGuPolygons(geo) {
 
 /* ===========================================================
    gu 파일로부터 DB(구 목록) 자동 생성
-   - 같은 시(예: 수원시) 단위 group 부여 → 오답 후보를 같은 시에서 우선.
 =========================================================== */
 function buildDbFromGu() {
   DB = [];
@@ -1202,7 +1177,6 @@ function buildDbFromGu() {
       if (/[시군]$/.test(part)) { si = part; break; }
     }
     if (!si) si = siNameOf(sggnm);
-    // 같은 시(또는 구가 없는 단일 시·군)는 같은 group 으로 묶는다.
     const group = (p.sido || "") + "-" + (si || sggnm);
     const fullName = p.full_nm || ((p.sidonm ? p.sidonm + " " : "") + sggnm);
     DB.push({
@@ -1225,7 +1199,7 @@ function buildDbFromGu() {
    데이터 로드 + 인덱스
 =========================================================== */
 async function loadAllGeoData() {
-  map.data.setStyle(() => ({ fillOpacity: 0, strokeWeight: 0, clickable: true }));
+  map.data.setStyle(() => ({ fillOpacity: 0, strokeWeight: 0, clickable: false })); /* ★수정: 클릭은 좌표 기반이므로 data 레이어 clickable 불필요 */
 
   const loadingText = document.getElementById("loading-text");
 
@@ -1238,7 +1212,6 @@ async function loadAllGeoData() {
   }
   geos.forEach((g) => map.data.addGeoJson(g));
 
-  // 구(gu) 파일 로드 + 폴리곤 빌드 (bjd 로딩이 끝난 뒤)
   for (let i = 0; i < ACTIVE_SIDOS.length; i++) {
     const code = ACTIVE_SIDOS[i];
     if (loadingText) loadingText.textContent =
@@ -1247,8 +1220,8 @@ async function loadAllGeoData() {
     buildGuPolygons(guGeo);
   }
   buildDbFromGu();
-  updateGuLabels();   // 이름표 초기 표시 상태 맞추기 (기본 줌 10 → 처음엔 숨김)
-  showGuBaseColors(); // 6단계: 모든 구에 은은한 기본 색 깔기
+  updateGuLabels();
+  showGuBaseColors();
 
   map.data.forEach((feature) => {
     const sgg = feature.getProperty("sgg");
@@ -1274,6 +1247,18 @@ async function loadAllGeoData() {
       dongByFeature.set(feature, dong);
       if (!dongsBySgg[sgg]) dongsBySgg[sgg] = [];
       dongsBySgg[sgg].push(dong);
+
+      /* ★수정: 좌표 기반 동 판정을 위해 외곽 링 캐싱 (구별로도 묶어 저장) */
+      const json = feature.toGeoJson ? feature.toGeoJson() : null;
+      if (json && json.geometry) {
+        const rings = extractOuterRings(json.geometry);
+        if (rings.length) {
+          const entry = { dong, rings };
+          dongRingsList.push(entry);
+          if (!dongRingsBySgg[dong.sgg]) dongRingsBySgg[dong.sgg] = [];
+          dongRingsBySgg[dong.sgg].push(entry);
+        }
+      }
     }
   });
 
@@ -1296,6 +1281,56 @@ async function loadAllGeoData() {
   }
 }
 
+/* ★수정: geometry에서 외곽 링만 뽑아 [[ [lng,lat], ... ], ...] 형태로 반환 */
+function extractOuterRings(geometry) {
+  const out = [];
+  if (!geometry) return out;
+  if (geometry.type === "Polygon") {
+    if (geometry.coordinates && geometry.coordinates[0]) out.push(geometry.coordinates[0]);
+  } else if (geometry.type === "MultiPolygon") {
+    (geometry.coordinates || []).forEach((poly) => {
+      if (poly && poly[0]) out.push(poly[0]);
+    });
+  }
+  return out;
+}
+
+/* ★수정(최적화): 먼저 클릭 좌표가 속한 '구'를 찾고(수십 개), 그 구의 '동'만 검사(수십 개).
+   전체 동(수천 개)을 훑던 방식보다 훨씬 빠름. 없으면 null */
+function findDongAtLatLng(latlng, sidos) {
+  const lng = latlng.lng();
+  const lat = latlng.lat();
+
+  // 1) 후보 시도(sidos) 안의 구 코드만 추림
+  const guCodes = Object.keys(guRingsByCode).filter((code) => {
+    if (!sidos) return true;
+    const sido = (guPropsByCode[code] && guPropsByCode[code].sido) || code.slice(0, 2);
+    return sidos.indexOf(sido) !== -1;
+  });
+
+  // 2) 클릭 좌표가 속한 구를 찾음
+  const hitGu = findGuCodeAtLatLng(latlng, guCodes);
+
+  // 3) 그 구에 속한 동만 검사
+  if (hitGu && dongRingsBySgg[hitGu]) {
+    for (const entry of dongRingsBySgg[hitGu]) {
+      for (const ring of entry.rings) {
+        if (pointInRing(lng, lat, ring)) return entry.dong;
+      }
+    }
+  }
+
+  // 4) 혹시 구를 못 찾았거나 그 구 안에서 동을 못 찾은 경우엔
+  //    안전하게 기존 전체 탐색으로 한 번 더 (경계 근처 예외 대비)
+  for (const entry of dongRingsList) {
+    if (sidos && sidos.indexOf(entry.dong.sido) === -1) continue;
+    for (const ring of entry.rings) {
+      if (pointInRing(lng, lat, ring)) return entry.dong;
+    }
+  }
+  return null;
+}
+
 /* ===========================================================
    인접/인덱스 결과 캐싱 헬퍼
 =========================================================== */
@@ -1312,11 +1347,6 @@ function deserializeAdj(obj, target) {
 
 /* ===========================================================
    인접 계산 (격자 기반)
-   ※ 구 인접은 기존 bjd(법정동) 기반 격자 계산을 그대로 사용한다.
-     화성시 4구(만세·효행·병점·동탄)는 bjd 상 41590 하나로만 묶여 있어
-     gu 코드(41591/41593/41595/41597)별 인접 계산이 되지 않는다.
-     따라서 학습 모드 "인접 지역" 표시가 화성 4구에서는 비어 보일 수 있다.
-     (이번 작업에서는 별도 보정 없이 둔다.)
 =========================================================== */
 function computeAdjacency() {
   const cellToDongs = new Map();
@@ -1411,7 +1441,6 @@ function applyGuStyle(poly, style) {
   });
 }
 
-/* 6단계: 구 코드별로 팔레트에서 색 하나를 안정적으로 배정 (코드 해시 기반) */
 function guBaseColor(code) {
   let h = 0;
   const s = String(code);
@@ -1419,7 +1448,6 @@ function guBaseColor(code) {
   return GU_BASE_PALETTE[h % GU_BASE_PALETTE.length];
 }
 
-/* 6단계: 모든 구에 은은한 기본 색을 깔아 경계를 구분해준다. */
 let guBaseShown = false;
 function showGuBaseColors() {
   Object.keys(guPolyByCode).forEach((code) => {
@@ -1439,7 +1467,6 @@ function showGuBaseColors() {
   guBaseShown = true;
 }
 
-/* 6단계: 기본 색을 모두 지운다 (문제 풀이 등으로 강조가 필요할 때). */
 function hideGuBaseColors() {
   Object.keys(guPolyByCode).forEach((code) => {
     (guPolyByCode[code] || []).forEach((poly) => poly.setMap(null));
@@ -1450,7 +1477,6 @@ function hideGuBaseColors() {
 function clearGuOverlays() {
   guOverlays.forEach((poly) => poly.setMap(null));
   guOverlays = [];
-  // 6단계: 강조를 지운 뒤 은은한 기본 색을 다시 복원
   if (guBaseShown) showGuBaseColors();
 }
 
@@ -1462,7 +1488,6 @@ function showGuOverlay(code, style) {
   });
 }
 
-/* 정답 구 하나를 진하게 표시 (위치→이름 구 문제용) */
 function highlightGuByCode(code) {
   clearHighlight();
   clearCandidates();
@@ -1490,7 +1515,6 @@ function fitToGuCodes(codes) {
   if (has) map.fitBounds(b, { top: 40, right: 40, bottom: 40, left: 40 });
 }
 
-/* point-in-polygon (ray casting). ring: [[lng,lat], ...] */
 function pointInRing(lng, lat, ring) {
   let inside = false;
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -1503,7 +1527,6 @@ function pointInRing(lng, lat, ring) {
   return inside;
 }
 
-/* 클릭 좌표가 속한 구 코드 찾기 (지정 코드 후보 안에서) */
 function findGuCodeAtLatLng(latlng, candidateCodes) {
   const lng = latlng.lng();
   const lat = latlng.lat();
@@ -1572,9 +1595,6 @@ function collectCoords(geometry, cb) {
 
 /* ===========================================================
    이름→위치 (클릭으로 맞히기) 공용 로직
-   - 학습/게임 양쪽에서 사용
-   - 구(gu) 문제: gu 폴리곤 오버레이 + point-in-polygon
-   - 동(dong) 문제: 기존 bjd feature 클릭 (변경 없음)
 =========================================================== */
 function regionSidos(region) {
   if (region === "all") return ACTIVE_SIDOS.slice();
@@ -1582,18 +1602,15 @@ function regionSidos(region) {
   return code ? [code] : ACTIVE_SIDOS.slice();
 }
 
-/* 출제 지역의 구 코드 목록 */
 function guCodesForRegion(region) {
   const sidos = regionSidos(region);
   return DB.filter((d) => d.sggCode && sidos.indexOf(d.sido) !== -1).map((d) => d.sggCode);
 }
 
-/* 같은 시(group)에 속한 구 코드 목록 */
 function guCodesForGroup(group) {
   return DB.filter((d) => d.sggCode && d.group === group).map((d) => d.sggCode);
 }
 
-/* 후보 영역 칠하기: 구 문제는 출제 지역 모든 구(gu 폴리곤), 동 문제는 해당 구의 모든 동 */
 function showLocateCandidates(q) {
   clearHighlight();
   clearCandidates();
@@ -1613,30 +1630,29 @@ function showLocateCandidates(q) {
   }
 }
 
-/* 동(dong) 문제 클릭 판정. context: "learn" | "game" */
-function handleLocateClick(feature, context) {
+/* ★수정: 동(dong) 문제 클릭 판정 — 좌표 기반. context: "learn" | "game" */
+function handleDongLocateClick(latlng, context) {
+  let q;
   if (context === "learn") {
     if (!locateCurrent || locateCurrent.done) return;
-    judgeLocate(feature, locateCurrent, context);
+    q = locateCurrent;
   } else {
     if (answered) return;
-    const q = quizSet[currentIndex];
-    if (!q || q.dir !== "locate") return;
-    judgeLocate(feature, q, context);
+    q = quizSet[currentIndex];
+    if (!q || q.dir !== "locate" || q.qtype !== "dong") return;
   }
-}
 
-/* 동 문제 판정 (bjd feature 기반) */
-function judgeLocate(feature, q, context) {
-  const clickedSgg = feature.getProperty("sgg");
-  const dong = dongByFeature.get(feature);
-  const isCorrect = !!(dong && dong.sgg === q.sgg && dong.dongName === q.dongName);
+  // 클릭 좌표가 속한 동을 (해당 문제 지역 시도 안에서) 찾는다.
+  const clickedDong = findDongAtLatLng(latlng, regionSidos(q.region));
+  if (!clickedDong) return; // 후보 영역 밖 클릭은 무시
+
+  const isCorrect = (clickedDong.sgg === q.sgg && clickedDong.dongName === q.dongName);
 
   // 정답 동 칠하기
   const ans = (dongsBySgg[q.sgg] || []).find((d) => d.dongName === q.dongName);
   if (ans) map.data.overrideStyle(ans.feature, COLOR_CORRECT);
   // 틀리게 누른 동 표시
-  if (!isCorrect) map.data.overrideStyle(feature, COLOR_WRONGPICK);
+  if (!isCorrect && clickedDong.feature) map.data.overrideStyle(clickedDong.feature, COLOR_WRONGPICK);
 
   finishLocateJudge(isCorrect, q, context);
 }
@@ -1657,13 +1673,11 @@ function handleGuLocateClick(latlng, context) {
               : q.guZone  ? guCodesForZone(q.guZone)
               : guCodesForRegion(q.region);
   const clickedCode = findGuCodeAtLatLng(latlng, codes);
-  if (!clickedCode) return; // 후보 영역 밖 클릭은 무시
+  if (!clickedCode) return;
 
   const isCorrect = (clickedCode === q.sgg);
 
-  // 정답 구 칠하기
   clearGuOverlays();
-  // 후보를 다시 옅게 깔고 정답/오답을 강조
   codes.forEach((code) => {
     if (code === q.sgg) showGuOverlay(code, GU_STYLE_CORRECT);
     else if (!isCorrect && code === clickedCode) showGuOverlay(code, GU_STYLE_WRONGPICK);
@@ -1673,7 +1687,6 @@ function handleGuLocateClick(latlng, context) {
   finishLocateJudge(isCorrect, q, context);
 }
 
-/* 정답/오답 처리 공용 (학습/게임 분기) */
 function finishLocateJudge(isCorrect, q, context) {
   if (context === "learn") {
     locateCurrent.done = true;
@@ -1699,6 +1712,8 @@ function finishLocateJudge(isCorrect, q, context) {
 
 /* ===========================================================
    학습 모드 - 진입/방향선택
+   ★수정: hideGuBaseColors() 호출 제거 → 은은한 색 유지.
+          updateGuLabels()로 모드별 이름표 표시 갱신.
 =========================================================== */
 function openLearnMode() {
   if (!isUnlocked()) { alert("먼저 로그인하고 닉네임을 정해주세요."); return; }
@@ -1706,6 +1721,7 @@ function openLearnMode() {
   clearCandidates();
   clearGuOverlays();
   appMode = "none";
+  updateGuLabels();
   showScreen("learn");
   document.getElementById("learn-dir-select").classList.remove("hidden");
   document.getElementById("learn-explore").classList.add("hidden");
@@ -1716,11 +1732,13 @@ function closeLearnMode() {
   clearHighlight();
   clearCandidates();
   clearGuOverlays();
+  updateGuLabels();
   showScreen("start");
 }
 
 function openLearnExplore() {
   appMode = "learn-explore";
+  updateGuLabels(); /* ★수정: 탐색 모드는 이름표 표시 허용 */
   document.getElementById("learn-dir-select").classList.add("hidden");
   document.getElementById("learn-explore").classList.remove("hidden");
   document.getElementById("locate-panel").classList.add("hidden");
@@ -1732,6 +1750,7 @@ function openLearnExplore() {
 
 function openLearnLocate() {
   appMode = "learn-locate";
+  updateGuLabels(); /* ★수정: 이름→위치는 이름표 숨김 */
   document.getElementById("learn-dir-select").classList.add("hidden");
   document.getElementById("learn-explore").classList.add("hidden");
   document.getElementById("locate-panel").classList.remove("hidden");
@@ -1741,7 +1760,6 @@ function openLearnLocate() {
   clearHighlight(); clearCandidates(); clearGuOverlays();
 }
 
-/* 학습 locate: 다음 문제 만들기 */
 function nextLearnLocate() {
   clearHighlight(); clearCandidates(); clearGuOverlays();
   document.getElementById("locate-feedback").classList.add("hidden");
@@ -1756,7 +1774,6 @@ function nextLearnLocate() {
   showLocateCandidates(q);
 }
 
-/* 공용: locate 문제 객체 생성 */
 function buildLocateQuestion(region, qtype) {
   const sidos = regionSidos(region);
   if (qtype === "gu") {
@@ -1765,10 +1782,6 @@ function buildLocateQuestion(region, qtype) {
     const t = pool[Math.floor(Math.random() * pool.length)];
     const guRegion = SIDO_TO_REGION[t.sido] || region;
 
-    // 후보 범위 결정:
-    //  - 같은 시(group)에 구가 2개 이상 → 통합시: 같은 시 후보(guGroup)
-    //  - 구가 1개뿐인 경기 시·군 → 같은 권역 후보(guZone: 남부/북부)
-    //  - 그 외(서울/인천 단일 자치구 등) → 시도 전체 후보(region만)
     const groupCount = DB.filter((d) => d.sggCode && d.group === t.group).length;
     const zone = ggZoneOfGroup(t.group);
     const q = {
@@ -1846,7 +1859,6 @@ function renderLearnList() {
 }
 
 function selectLearnGu(item) {
-  // 구 외곽은 gu 폴리곤으로 매끈하게 표시
   highlightGuByCode(item.sggCode);
   expandedGu = (expandedGu === item.sggCode) ? null : item.sggCode;
   selectedDongName = null;
@@ -1991,7 +2003,7 @@ function filteredDongPool() {
 function startGame() {
   if (!isUnlocked()) { alert("먼저 로그인하고 닉네임을 정해주세요."); return; }
   appMode = "game";
-  hideGuBaseColors();   // 6단계: 게임 중에는 기본 색 끄기
+  updateGuLabels(); /* ★수정: 게임 모드는 이름표 숨김 (hideGuBaseColors 호출은 제거 — 은은한 색 유지) */
   totalQuestions = settings.count;
   quizSet = []; answerLog = [];
   const guPool = filteredGuPool();
@@ -2005,13 +2017,11 @@ function startGame() {
   }
 
   for (let i = 0; i < totalQuestions; i++) {
-    // 방향 결정
     let dir;
     if (settings.dir === "name") dir = "name";
     else if (settings.dir === "locate") dir = "locate";
     else dir = Math.random() < 0.5 ? "name" : "locate";
 
-    // 유형 결정
     let useDong;
     if (settings.type === "gu") useDong = false;
     else if (settings.type === "dong") useDong = true;
@@ -2037,6 +2047,7 @@ function retryWrongOnly() {
   const wrongQs = answerLog.filter((a) => !a.correct).map((a) => a.q);
   if (!wrongQs.length) { alert("틀린 문제가 없습니다! 🎉"); return; }
   appMode = "game";
+  updateGuLabels();
   quizSet = shuffle(wrongQs);
   totalQuestions = quizSet.length;
   answerLog = [];
@@ -2048,7 +2059,6 @@ function retryWrongOnly() {
 
 function makeGuQuestion(validGu) {
   const target = validGu[Math.floor(Math.random() * validGu.length)];
-  // 오답 후보: 같은 group(같은 시) 우선
   let pool = DB.filter((d) => d.group === target.group && d.sggCode !== target.sggCode && d.sggCode);
   let wrongs = shuffle(pool).slice(0, 3);
   if (wrongs.length < 3) {
@@ -2111,7 +2121,6 @@ function timeOut() {
     explainEl.textContent = "⏰ 시간 초과! " + q.explain;
     answerLog.push({ type: q.qtype, dir:q.dir, answer: q.answerLabel, picked: "(시간초과)", correct: false, explain: q.explain, q: q });
   } else {
-    // locate: 정답 위치 표시
     if (q.qtype === "gu") {
       clearGuOverlays();
       const codes = q.guGroup ? guCodesForGroup(q.guGroup)
@@ -2148,7 +2157,6 @@ function loadQuestion() {
   explainEl.classList.add("hidden"); explainEl.textContent = "";
 
   if (q.dir === "name") {
-    // 위치→이름
     optionsEl.classList.remove("hidden");
     optionsEl.innerHTML = "";
     if (q.qtype === "dong") {
@@ -2169,7 +2177,6 @@ function loadQuestion() {
     });
     if (q.qtype === "dong") highlightDong(q.dong); else highlightGuByCode(q.sgg);
   } else {
-    // 이름→위치 (클릭)
     legend.classList.add("hidden");
     optionsEl.innerHTML = "";
     optionsEl.classList.add("hidden");
@@ -2236,6 +2243,7 @@ async function showResult() {
   stopTimer();
   clearHighlight(); clearCandidates(); clearGuOverlays();
   appMode = "none";
+  updateGuLabels();
   showScreen("result");
   const maxScore = totalQuestions * 10;
   document.getElementById("final-score").textContent = score;
@@ -2425,7 +2433,8 @@ function closeSetupArea() {
   if (area) area.classList.add("hidden");
   if (gameSetup) gameSetup.classList.add("hidden");
   if (obtn) obtn.textContent = "▶️ 시작하기";
-  showGuBaseColors();   // 6단계: 처음 화면 복귀 시 기본 색 복원
+  showGuBaseColors(); /* 처음 화면 복귀 시 기본 색 복원(이미 켜져 있으면 유지) */
+  updateGuLabels();   /* ★수정: 처음 화면 복귀 시 이름표 상태 갱신 */
 }
 
 function updateInlineBest() {
@@ -2507,7 +2516,7 @@ window.addEventListener("load", async () => {
     showScreen("start"); updateInlineBest(); loadHomeRanking(); closeSetupArea();
   });
   document.getElementById("next-btn").addEventListener("click", nextQuestion);
-  document.getElementById("quit-btn").addEventListener("click", () => { stopTimer(); clearHighlight(); clearCandidates(); clearGuOverlays(); appMode = "none"; showScreen("start"); closeSetupArea(); });
+  document.getElementById("quit-btn").addEventListener("click", () => { stopTimer(); clearHighlight(); clearCandidates(); clearGuOverlays(); appMode = "none"; updateGuLabels(); showScreen("start"); closeSetupArea(); });
   document.getElementById("verify-btn").addEventListener("click", verifyAll);
   document.getElementById("adj-verify-btn").addEventListener("click", verifyAdjacency);
   document.getElementById("wrong-only-btn").addEventListener("click", retryWrongOnly);
@@ -2524,11 +2533,8 @@ window.addEventListener("load", async () => {
   window.addEventListener("resize", () => { if (map) naver.maps.Event.trigger(map, "resize"); });
 
   /* ── 통합 지역 검색 ── */
-
-  /* 공용: 지역명 일치 항목 배열 반환 */
   function buildSearchResults(q) {
     const results = [];
-    /* 1) 구·시·군 */
     DB.forEach((d) => {
       if (!d.sggCode) return;
       if (d.name.indexOf(q) !== -1 || (d.sgg_nm && d.sgg_nm.indexOf(q) !== -1)) {
@@ -2536,7 +2542,6 @@ window.addEventListener("load", async () => {
         results.push({ type:"gu", sido:d.sido, sggCode:d.sggCode, dbItem:d, label:d.sgg_nm||d.name, sub:sidoLabel });
       }
     });
-    /* 2) 읍·면·동 (중복 제거) */
     const dongSeen = new Set();
     dongList.forEach((dong) => {
       if (dong.dongName.indexOf(q) === -1) return;
@@ -2551,7 +2556,6 @@ window.addEventListener("load", async () => {
     return results.slice(0, 30);
   }
 
-  /* 공용: 결과 리스트를 컨테이너에 렌더링 */
   function renderSearchResults(results, containerEl, onClickFn) {
     containerEl.innerHTML = "";
     results.forEach((item) => {
@@ -2563,20 +2567,16 @@ window.addEventListener("load", async () => {
     });
   }
 
-  /* 공용: 항목 클릭 시 지도+정보카드 갱신 (mode: "start" | "learn") */
   function applySearchItem(item, mode) {
     const region = SIDO_TO_REGION[item.sido] || "seoul";
     learnRegion = region;
-    /* learn-region 세그먼트 UI 동기화 */
     document.querySelectorAll("#learn-region button").forEach((b) => {
       b.classList.toggle("sel", b.getAttribute("data-val") === region);
     });
     if (mode === "start") {
-      /* 시작 화면에서: 학습 모드 탐색 화면으로 전환 */
       openLearnMode();
       openLearnExplore();
     }
-    /* 이하는 두 모드 공통: 지도 및 정보카드 갱신 */
     if (item.type === "gu") {
       expandedGu = item.sggCode;
       selectedDongName = null;
@@ -2593,7 +2593,6 @@ window.addEventListener("load", async () => {
     }
   }
 
-  /* 시작 화면 검색창 */
   (function setupSearch() {
     const searchInput   = document.getElementById("search-input");
     const searchResults = document.getElementById("search-results");
@@ -2608,7 +2607,6 @@ window.addEventListener("load", async () => {
     });
   })();
 
-  /* 학습 탐색 화면 검색창 */
   (function setupLearnSearch() {
     const learnSearchInput   = document.getElementById("learn-search-input");
     const learnSearchResults = document.getElementById("learn-search-results");
