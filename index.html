@@ -238,6 +238,7 @@
   #info-card .ic-title { font-size:21px; font-weight:400; margin-bottom:9px; }
   #info-card .ic-row { margin-bottom:6px; }
   #info-card .ic-label { color:var(--sage-d); font-weight:400; margin-right:7px; }
+  #info-card .ic-label.block { display:block; margin-bottom:5px; }
   #info-card .ic-empty { color:var(--muted); font-size:13px; }
   #info-card .ic-images { display:flex; flex-direction:column; gap:10px; margin-top:12px; }
   #info-card .ic-fig { margin:0; }
@@ -560,7 +561,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=kizfnbhv3q&submodules=geocoder"></script>
-<script src="features.js?v=3"></script>
+<script src="features.js?v=1"></script>
 <script>
 /* ===========================================================
    Supabase 초기화
@@ -1965,11 +1966,11 @@ function showGuInfoCard(item) {
 
   // 역사 (있을 때만)
   const historyRow = (feat && feat.history)
-    ? `<div class="ic-row"><span class="ic-label">역사</span>${feat.history}</div>` : "";
+    ? `<div class="ic-row"><span class="ic-label block">역사</span>${feat.history}</div>` : "";
 
   // 인물·이야기 (있을 때만)
   const peopleRow = (feat && feat.people)
-    ? `<div class="ic-row"><span class="ic-label">이야기</span>${feat.people}</div>` : "";
+    ? `<div class="ic-row"><span class="ic-label block">이야기</span>${feat.people}</div>` : "";
 
   // 사진 (있을 때만)
   let imagesHtml = "";
@@ -1986,7 +1987,7 @@ function showGuInfoCard(item) {
     <div class="ic-title">${item.name}</div>
     <div class="ic-row"><span class="ic-label">소속</span>${SIDO_NAME[item.sido]}</div>
     <div class="ic-row"><span class="ic-label">인접 지역</span>${adjHtml}</div>
-    <div class="ic-row"><span class="ic-label">특징</span>${descHtml}</div>
+    <div class="ic-row"><span class="ic-label block">특징</span>${descHtml}</div>
     ${historyRow}
     ${peopleRow}
     ${imagesHtml}
