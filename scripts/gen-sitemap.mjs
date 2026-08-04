@@ -8,6 +8,7 @@ const today = new Date().toISOString().slice(0, 10);
 
 const urls = [
   { loc: `${SITE_URL}/`, pri: "1.0", freq: "weekly" },
+  { loc: `${SITE_URL}/en/`, pri: "0.9", freq: "monthly" },
   { loc: `${SITE_URL}/seoul/`, pri: "0.9", freq: "monthly" }
 ];
 
