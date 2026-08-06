@@ -27,5 +27,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add seoul sitemap.xml
-          git diff --staged --quiet || git commit -m "chore: 지역 페이지 자동 생성"
+          git diff --staged --quiet && echo "변경 없음" && exit 0
+          git commit -m "chore: 지역 페이지 자동 생성"
+          git pull --rebase origin main
           git push
