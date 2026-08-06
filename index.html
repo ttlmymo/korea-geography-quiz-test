@@ -350,20 +350,21 @@
   <span class="label" data-i18n="nick.prompt">랭킹에 표시할 닉네임을 정해주세요</span>
   <input id="nick-input" class="nick-input" type="text" maxlength="10" data-i18n-ph="nick.placeholder" placeholder="닉네임 (최대 10자)" />
   <button id="nick-save-btn" class="primary" style="padding:12px;" data-i18n="nick.save">닉네임 저장</button>
-  <button id="nick-back-btn" data-i18n="nick.back" style="background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-family:'Jua',sans-serif;font-size:14px;padding:4px;">← 로그인 화면으로 돌아가기</button>
-        <div id="user-info" class="hidden">
-          <span class="uname">👤 <span id="user-nick">-</span></span>
-          <span id="inline-best" class="hidden">
-            <span class="ib-label" data-i18n="best.label">🏆 내 최고 점수</span>
-            <span class="ib-num"><span id="inline-best-score">0</span><span data-i18n="common.pts">점</span></span>
-          </span>
-          <div style="display:flex; gap:6px; align-items:center; flex:none;">
-            <button id="nick-edit-btn" data-i18n="nick.edit">닉네임 변경</button>
-            <button id="logout-btn" data-i18n="auth.logout">로그아웃</button>
-          </div>
-        </div>
-      </div>
+      <button id="nick-back-btn" data-i18n="nick.back" style="...">← 로그인 화면으로 돌아가기</button>
+    </div>
 
+    <div id="user-info" class="hidden">
+      <span class="uname">👤 <span id="user-nick">-</span></span>
+      <span id="inline-best" class="hidden">
+        <span class="ib-label" data-i18n="best.label">🏆 내 최고 점수</span>
+        <span class="ib-num"><span id="inline-best-score">0</span><span data-i18n="common.pts">점</span></span>
+      </span>
+      <div style="display:flex; gap:6px; align-items:center; flex:none;">
+        <button id="nick-edit-btn" data-i18n="nick.edit">닉네임 변경</button>
+        <button id="logout-btn" data-i18n="auth.logout">로그아웃</button>
+      </div>
+    </div>
+  </div>
 
       <button id="open-setup-btn" class="primary" data-i18n="home.start">시작하기</button>
 
@@ -669,7 +670,6 @@ const I18N = {
   "mode.game":         { ko:"🎮 게임 모드", en:"🎮 Game Mode" },
   "rank.top10":        { ko:"🏅 실시간 랭킹 TOP 10", en:"🏅 Live Leaderboard TOP 10" },
   "rank.loading":      { ko:"불러오는 중…", en:"Loading…" }
-};
 };
 
 /* 문구 하나 꺼내기.  T("q.locate", {name:"Gangnam-gu"}) 처럼 치환도 가능 */
