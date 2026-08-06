@@ -336,42 +336,41 @@
 
       <div id="auth-box">
         <div id="login-area">
-          <span class="label">로그인하면 점수가 랭킹에 등록돼요</span>
+          <span class="label" data-i18n="auth.rankNote">로그인하면 점수가 랭킹에 등록돼요</span>
           <button id="google-login-btn" class="login-btn google">
             <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-            구글 로그인
+            <span data-i18n="auth.google">구글 로그인</span>
           </button>
           <button id="kakao-login-btn" class="login-btn kakao">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#191600" d="M12 3C6.477 3 2 6.582 2 11c0 2.86 1.92 5.37 4.81 6.78-.21.74-.76 2.68-.87 3.1-.14.52.19.51.4.37.16-.11 2.6-1.77 3.66-2.49.64.09 1.31.14 2 .14 5.523 0 10-3.582 10-8S17.523 3 12 3z"/></svg>
-            카카오 로그인
+            <span data-i18n="auth.kakao">카카오 로그인</span>
           </button>
         </div>
 <div id="nick-setup" class="hidden">
-  <span class="label">랭킹에 표시할 닉네임을 정해주세요</span>
-  <input id="nick-input" class="nick-input" type="text" maxlength="10" placeholder="닉네임 (최대 10자)" />
-  <button id="nick-save-btn" class="primary" style="padding:12px;">닉네임 저장</button>
-  <button id="nick-back-btn" style="background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-family:'Jua',sans-serif;font-size:14px;padding:4px;">← 로그인 화면으로 돌아가기</button>
-</div>
+  <span class="label" data-i18n="nick.prompt">랭킹에 표시할 닉네임을 정해주세요</span>
+  <input id="nick-input" class="nick-input" type="text" maxlength="10" data-i18n-ph="nick.placeholder" placeholder="닉네임 (최대 10자)" />
+  <button id="nick-save-btn" class="primary" style="padding:12px;" data-i18n="nick.save">닉네임 저장</button>
+  <button id="nick-back-btn" data-i18n="nick.back" style="background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-family:'Jua',sans-serif;font-size:14px;padding:4px;">← 로그인 화면으로 돌아가기</button>
         <div id="user-info" class="hidden">
           <span class="uname">👤 <span id="user-nick">-</span></span>
           <span id="inline-best" class="hidden">
-            <span class="ib-label">🏆 내 최고 점수</span>
-            <span class="ib-num"><span id="inline-best-score">0</span>점</span>
+            <span class="ib-label" data-i18n="best.label">🏆 내 최고 점수</span>
+            <span class="ib-num"><span id="inline-best-score">0</span><span data-i18n="common.pts">점</span></span>
           </span>
           <div style="display:flex; gap:6px; align-items:center; flex:none;">
-            <button id="nick-edit-btn">닉네임 변경</button>
-            <button id="logout-btn">로그아웃</button>
+            <button id="nick-edit-btn" data-i18n="nick.edit">닉네임 변경</button>
+            <button id="logout-btn" data-i18n="auth.logout">로그아웃</button>
           </div>
         </div>
       </div>
 
 
-      <button id="open-setup-btn" class="primary">시작하기</button>
+      <button id="open-setup-btn" class="primary" data-i18n="home.start">시작하기</button>
 
       <div id="setup-area" class="hidden">
         <div id="mode-buttons">
-          <button id="learn-btn" class="primary">📚 학습 모드</button>
-          <button id="game-mode-btn" class="primary">🎮 게임 모드</button>
+          <button id="learn-btn" class="primary" data-i18n="learn.title">📚 학습 모드</button>
+          <button id="game-mode-btn" class="primary" data-i18n="mode.game">🎮 게임 모드</button>
         </div>
 
         <div id="game-setup" class="hidden">
@@ -423,8 +422,8 @@
       </div>
 
       <div id="home-rank">
-        <div class="hr-title">🏅 실시간 랭킹 TOP 10</div>
-        <div id="home-rank-status">불러오는 중…</div>
+        <div class="hr-title" data-i18n="rank.top10">🏅 실시간 랭킹 TOP 10</div>
+        <div id="home-rank-status" data-i18n="rank.loading">불러오는 중…</div>
         <div id="home-rank-list"></div>
       </div>
 
@@ -541,9 +540,9 @@
     </div>
 
     <div id="rank-screen" class="hidden">
-      <h2 style="font-size:18px; font-weight:400; color:var(--text);">🏅 실시간 랭킹 TOP 10</h2>
+      <h2 style="font-size:18px; font-weight:400; color:var(--text);" data-i18n="rank.top10">🏅 실시간 랭킹 TOP 10</h2>
       <div class="rank-wrap" style="margin-top:10px;">
-        <div id="rank-status" class="hidden">불러오는 중…</div>
+        <div id="rank-status" class="hidden" data-i18n="rank.loading">불러오는 중…</div>
         <div id="rank-list"></div>
       </div>
       <div id="rank-note">※ 전 세계 모든 플레이어의 점수가 실시간으로 반영됩니다. 로그인 후 닉네임을 정하고 게임하면 자동 등록돼요.</div>
@@ -651,7 +650,26 @@ const I18N = {
   "learn.dirLocate":   { ko:"📍 이름 → 위치", en:"📍 Name → Location" },
   "learn.dirLocateSub":{ ko:"이름을 보고 지도에서 위치를 직접 찾아요 (연습)",
                          en:"Read the name and find it on the map. (practice)" },
-  "common.home":       { ko:"← 처음으로", en:"← Back to Home" }
+  "common.home":       { ko:"← 처음으로", en:"← Back to Home" },
+  "common.home":       { ko:"← 처음으로", en:"← Back to Home" },
+  "auth.rankNote":     { ko:"로그인하면 점수가 랭킹에 등록돼요", en:"Sign in to post your score to the leaderboard." },
+  "auth.loginRequired":{ ko:"로그인해야 퀴즈를 시작할 수 있어요", en:"Please sign in to start the quiz." },
+  "auth.google":       { ko:"구글 로그인", en:"Sign in with Google" },
+  "auth.kakao":        { ko:"카카오 로그인", en:"Sign in with Kakao" },
+  "auth.logout":       { ko:"로그아웃", en:"Sign out" },
+  "nick.prompt":       { ko:"랭킹에 표시할 닉네임을 정해주세요", en:"Choose a nickname for the leaderboard." },
+  "nick.placeholder":  { ko:"닉네임 (최대 10자)", en:"Nickname (max 10 characters)" },
+  "nick.save":         { ko:"닉네임 저장", en:"Save Nickname" },
+  "nick.back":         { ko:"← 로그인 화면으로 돌아가기", en:"← Back to sign in" },
+  "nick.edit":         { ko:"닉네임 변경", en:"Edit name" },
+  "best.label":        { ko:"🏆 내 최고 점수", en:"🏆 My Best" },
+  "common.pts":        { ko:"점", en:" pts" },
+  "home.start":        { ko:"시작하기", en:"Start" },
+  "home.close":        { ko:"▲ 닫기", en:"▲ Close" },
+  "mode.game":         { ko:"🎮 게임 모드", en:"🎮 Game Mode" },
+  "rank.top10":        { ko:"🏅 실시간 랭킹 TOP 10", en:"🏅 Live Leaderboard TOP 10" },
+  "rank.loading":      { ko:"불러오는 중…", en:"Loading…" }
+};
 };
 
 /* 문구 하나 꺼내기.  T("q.locate", {name:"Gangnam-gu"}) 처럼 치환도 가능 */
@@ -903,12 +921,12 @@ function applyLockUI() {
     const setupArea = document.getElementById("setup-area");
     if (setupArea) setupArea.classList.add("hidden");
     const obtn = document.getElementById("open-setup-btn");
-    if (obtn) obtn.textContent = "시작하기";
+    if (obtn) obtn.textContent = T("home.start");
   }
   // 로그인 안내 문구를 상황에 맞게 변경
   const loginLabel = document.querySelector("#login-area .label");
   if (loginLabel) {
-    loginLabel.textContent = unlocked ? "로그인하면 점수가 랭킹에 등록돼요" : "로그인해야 퀴즈를 시작할 수 있어요";
+    loginLabel.textContent = unlocked ? T("auth.rankNote") : T("auth.loginRequired");
   }
 }
 
@@ -2608,7 +2626,7 @@ async function showRanking() {
   const statusEl = document.getElementById("rank-status");
   const listEl = document.getElementById("rank-list");
   statusEl.classList.remove("hidden");
-  statusEl.textContent = "불러오는 중…";
+  statusEl.textContent = T("rank.loading");
   listEl.innerHTML = "";
   const list = await fetchTopRanks();
   renderRankList(list, listEl, statusEl);
@@ -2618,7 +2636,7 @@ async function loadHomeRanking() {
   const statusEl = document.getElementById("home-rank-status");
   const listEl = document.getElementById("home-rank-list");
   statusEl.classList.remove("hidden");
-  statusEl.textContent = "불러오는 중…";
+  statusEl.textContent = T("rank.loading");
   listEl.innerHTML = "";
   const list = await fetchTopRanks();
   renderRankList(list, listEl, statusEl);
@@ -2726,7 +2744,7 @@ function closeSetupArea() {
   const obtn = document.getElementById("open-setup-btn");
   if (area) area.classList.add("hidden");
   if (gameSetup) gameSetup.classList.add("hidden");
-  if (obtn) obtn.textContent = "▶️ 시작하기";
+  if (obtn) obtn.textContent = T("home.start");
   showGuBaseColors(); /* 처음 화면 복귀 시 기본 색 복원(이미 켜져 있으면 유지) */
   updateGuLabels();   /* ★수정: 처음 화면 복귀 시 이름표 상태 갱신 */
 }
@@ -2796,11 +2814,11 @@ window.addEventListener("load", async () => {
     const btn = document.getElementById("open-setup-btn");
     if (area.classList.contains("hidden")) {
       area.classList.remove("hidden");
-      btn.textContent = "▲ 닫기";
+      btn.textContent = T("home.close");
     } else {
       area.classList.add("hidden");
       document.getElementById("game-setup").classList.add("hidden");
-      btn.textContent = "▶️ 시작하기";
+      btn.textContent = T("home.start");
     }
   });
 
