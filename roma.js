@@ -5,17 +5,38 @@
    - gen-pages.mjs: new Function(src + "\nreturn {...};")()
    ============================================================ */
 
-/* ── 1. 시·군·구 사전 ──
-   index.html 안에 있던 const ROMA = { ... } 블록을 통째로 여기로 옮기세요. */
+/* ── 1. 강제 지정 사전 ──
+   자동 변환으로 충분하므로 비워둬도 됩니다.
+   특정 지명을 반드시 이 표기로 고정하고 싶을 때만 추가하세요. */
 const ROMA = {
   // "강남구": "Gangnam-gu",
-  // "수원시": "Suwon-si",
-  // ... (index.html 인라인 내용 그대로)
 };
 
 /* ── 2. 예외 사전 ──
    자동 변환 결과가 공식 표기와 다른 지명만 등록. (스템 기준으로도 조회됨) */
 const ROMA_EXCEPTIONS = {
+  /* 시·도 (자동 변환하면 Seoulteukbyeol-si 처럼 나오므로 반드시 필요) */
+  "서울특별시": "Seoul",
+  "부산광역시": "Busan",
+  "대구광역시": "Daegu",
+  "인천광역시": "Incheon",
+  "광주광역시": "Gwangju",
+  "대전광역시": "Daejeon",
+  "울산광역시": "Ulsan",
+  "세종특별자치시": "Sejong",
+  "경기도": "Gyeonggi-do",
+  "강원특별자치도": "Gangwon-do",
+  "강원도": "Gangwon-do",
+  "충청북도": "Chungcheongbuk-do",
+  "충청남도": "Chungcheongnam-do",
+  "전북특별자치도": "Jeonbuk-do",
+  "전라북도": "Jeonbuk-do",
+  "전라남도": "Jeollanam-do",
+  "경상북도": "Gyeongsangbuk-do",
+  "경상남도": "Gyeongsangnam-do",
+  "제주특별자치도": "Jeju-do",
+
+  /* 동·로 단위 예외 */
   "남대문로": "Namdaemunno",   // 자동 변환: Namdaemullo
   "신문로":   "Sinmunno"       // 자동 변환: Sinmullo
 };
@@ -96,7 +117,8 @@ function romanizeHangul(str) {
 }
 
 /* ── 5. 행정구역 접미사 처리 ── */
-const _SUF = { '동':'dong', '리':'ri', '가':'ga', '읍':'eup', '면':'myeon' };
+const _SUF  = { '동':'dong', '리':'ri', '가':'ga', '읍':'eup', '면':'myeon' };
+const _SUF2 = { '구':'gu', '시':'si', '군':'gun', '도':'do' };   // ★ 추가
 const _cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 function romanizeDong(name) {
@@ -121,14 +143,27 @@ function romanizeDong(name) {
   return base + tail;
 }
 
-/* 구·시·군 등 일반 지명용 */
+/* ★ 수정: 구·시·군·도까지 처리하는 범용 변환 */
 function romanizePlace(name) {
   const raw = String(name || "").trim();
-  return ROMA_EXCEPTIONS[raw] || ROMA[raw] || _cap(romanizeHangul(raw));
+  if (!raw) return "";
+  if (ROMA_EXCEPTIONS[raw]) return ROMA_EXCEPTIONS[raw];
+  if (ROMA[raw]) return ROMA[raw];
+
+  // 동·리·가·읍·면 계열은 기존 로직에 위임
+  if (/(동|리|가|읍|면)$/.test(raw)) return romanizeDong(raw);
+
+  const m = raw.match(/^(.+?)(구|시|군|도)$/);
+  if (m) {
+    const base = ROMA_EXCEPTIONS[m[1]] || ROMA[m[1]] || _cap(romanizeHangul(m[1]));
+    return `${base}-${_SUF2[m[2]]}`;
+  }
+  return _cap(romanizeHangul(raw));
 }
 
 if (typeof window !== "undefined") {
   window.ROMA = ROMA;
+  window.romanizeHangul = romanizeHangul;
   window.romanizeDong = romanizeDong;
   window.romanizePlace = romanizePlace;
 }
