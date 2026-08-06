@@ -23,6 +23,16 @@ async function loadFeatures() {
   return new Function(src + "\nreturn GU_FEATURE;")();
 }
 
+async function loadFeaturesEn() {
+  const src = await readFile("features_en.js", "utf8");
+  return new Function(src + "\nreturn GU_FEATURE_EN;")();
+}
+
+async function loadRoma() {
+  const src = await readFile("roma.js", "utf8");
+  return new Function(src + "\nreturn ROMA;")();
+}
+
 /* 폴리곤 좌표 순회 */
 function eachCoord(geometry, cb) {
   const walk = (arr, depth) => {
