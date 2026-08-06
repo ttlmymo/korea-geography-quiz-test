@@ -705,38 +705,16 @@ function applyI18n(root) {
   });
 }
 
-/* ── 시도·시군구 로마자 사전 ── */
+/* ── 시도 영문명 (로마자 사전 ROMA는 roma.js 로 이동) ── */
 const SIDO_NAME_EN = { "11":"Seoul", "28":"Incheon", "41":"Gyeonggi-do" };
 
-const ROMA = {
-  "서울특별시":"Seoul","인천광역시":"Incheon","경기도":"Gyeonggi-do",
-  "종로구":"Jongno-gu","중구":"Jung-gu","용산구":"Yongsan-gu","성동구":"Seongdong-gu",
-  "광진구":"Gwangjin-gu","동대문구":"Dongdaemun-gu","중랑구":"Jungnang-gu","성북구":"Seongbuk-gu",
-  "강북구":"Gangbuk-gu","도봉구":"Dobong-gu","노원구":"Nowon-gu","은평구":"Eunpyeong-gu",
-  "서대문구":"Seodaemun-gu","마포구":"Mapo-gu","양천구":"Yangcheon-gu","강서구":"Gangseo-gu",
-  "구로구":"Guro-gu","금천구":"Geumcheon-gu","영등포구":"Yeongdeungpo-gu","동작구":"Dongjak-gu",
-  "관악구":"Gwanak-gu","서초구":"Seocho-gu","강남구":"Gangnam-gu","송파구":"Songpa-gu","강동구":"Gangdong-gu",
-  "동구":"Dong-gu","서구":"Seo-gu","미추홀구":"Michuhol-gu","연수구":"Yeonsu-gu","남동구":"Namdong-gu",
-  "부평구":"Bupyeong-gu","계양구":"Gyeyang-gu","강화군":"Ganghwa-gun","옹진군":"Ongjin-gun",
-  "수원시":"Suwon-si","장안구":"Jangan-gu","권선구":"Gwonseon-gu","팔달구":"Paldal-gu","영통구":"Yeongtong-gu",
-  "성남시":"Seongnam-si","수정구":"Sujeong-gu","중원구":"Jungwon-gu","분당구":"Bundang-gu",
-  "의정부시":"Uijeongbu-si","안양시":"Anyang-si","만안구":"Manan-gu","동안구":"Dongan-gu",
-  "부천시":"Bucheon-si","원미구":"Wonmi-gu","소사구":"Sosa-gu","오정구":"Ojeong-gu",
-  "광명시":"Gwangmyeong-si","평택시":"Pyeongtaek-si","동두천시":"Dongducheon-si",
-  "안산시":"Ansan-si","상록구":"Sangnok-gu","단원구":"Danwon-gu",
-  "고양시":"Goyang-si","덕양구":"Deogyang-gu","일산동구":"Ilsandong-gu","일산서구":"Ilsanseo-gu",
-  "과천시":"Gwacheon-si","구리시":"Guri-si","남양주시":"Namyangju-si","오산시":"Osan-si",
-  "시흥시":"Siheung-si","군포시":"Gunpo-si","의왕시":"Uiwang-si","하남시":"Hanam-si",
-  "용인시":"Yongin-si","처인구":"Cheoin-gu","기흥구":"Giheung-gu","수지구":"Suji-gu",
-  "파주시":"Paju-si","이천시":"Icheon-si","안성시":"Anseong-si","김포시":"Gimpo-si",
-  "화성시":"Hwaseong-si","광주시":"Gwangju-si","양주시":"Yangju-si","포천시":"Pocheon-si",
-  "만세구":"Manse-gu","효행구":"Hyohaeng-gu","병점구":"Byeongjeom-gu","동탄구":"Dongtan-gu",
-  "여주시":"Yeoju-si","연천군":"Yeoncheon-gun","가평군":"Gapyeong-gun","양평군":"Yangpyeong-gun"
-};
 
-/* "경기도 성남시 수정구" → "Sujeong-gu, Seongnam-si, Gyeonggi-do" */
+/* "경기도 성남시 수정구" → "Sujeong-gu, Seongnam-si, Gyeonggi-do"
+   "역삼동" → "Yeoksam-dong"  (roma.js의 romanizeDong 사용) */
 function romanizeFull(name) {
-  return String(name).trim().split(/\s+/).map((t) => ROMA[t] || t).reverse().join(", ");
+  return String(name).trim().split(/\s+/)
+    .map(t => (typeof romanizePlace === 'function' ? romanizePlace(t) : (ROMA[t] || t)))
+    .reverse().join(', ');
 }
 
 /* 검색 비교용 정규화: 소문자 + 하이픈·공백·쉼표·마침표 제거 */
@@ -2791,6 +2769,16 @@ window.addEventListener("load", async () => {
   setupLocateRegionSegment();
   setupLocateTypeSegment();
   setupTimerToggle();
+
+  /* 지역 상세 페이지 CTA(?region=seoul) → 해당 지역을 미리 선택 */
+  (function applyRegionParam() {
+    const r = new URLSearchParams(location.search).get("region");
+    if (!r || !/^[a-z]+$/.test(r)) return;
+    ["#seg-region", "#learn-region", "#locate-region"].forEach((sel) => {
+      const b = document.querySelector(`${sel} button[data-val="${r}"]`);
+      if (b) b.click();   // 기존 리스너가 settings.region / learnRegion / locateRegion 갱신
+    });
+  })();
 
   document.getElementById("google-login-btn").addEventListener("click", loginGoogle);
   document.getElementById("kakao-login-btn").addEventListener("click", loginKakao);
