@@ -30,7 +30,7 @@ async function loadFeaturesEn() {
 
 async function loadRoma() {
   const src = await readFile("roma.js", "utf8");
-  return new Function(src + "\nreturn ROMA;")();
+  return new Function(src + "\nreturn { ROMA, romanizeDong, romanizePlace };")();
 }
 
 /* 폴리곤 좌표 순회 */
