@@ -350,7 +350,7 @@
   <span class="label" data-i18n="nick.prompt">랭킹에 표시할 닉네임을 정해주세요</span>
   <input id="nick-input" class="nick-input" type="text" maxlength="10" data-i18n-ph="nick.placeholder" placeholder="닉네임 (최대 10자)" />
   <button id="nick-save-btn" class="primary" style="padding:12px;" data-i18n="nick.save">닉네임 저장</button>
-      <button id="nick-back-btn" data-i18n="nick.back" style="...">← 로그인 화면으로 돌아가기</button>
+  <button id="nick-back-btn" data-i18n="nick.back" style="background:none; border:none; color:var(--muted); font-size:13px; cursor:pointer; text-decoration:underline; padding:4px 0;">← 로그인 화면으로 돌아가기</button>
     </div>
 
     <div id="user-info" class="hidden">
@@ -592,7 +592,7 @@
      &nbsp;·&nbsp;
      <a href="mailto:koquiz.support@gmail.com" style="color:var(--muted); text-decoration:none;">문의하기</a>
      &nbsp;·&nbsp;
-     <a href="/korea-geography-quiz/privacy.html" style="color:var(--muted); text-decoration:none;">개인정보처리방침</a>
+<a href="https://ttlmymo.github.io/korea-geography-quiz/privacy.html" style="color:var(--muted); text-decoration:none;">개인정보처리방침</a>
      <div style="margin-top:4px;">Copyright 2026. koquiz.support@gmail.com All rights reserved.</div>
    </div>
   </div>
@@ -605,6 +605,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=kizfnbhv3q&submodules=geocoder"></script>
+<script src="roma.js?v=1"></script>
 <script src="features.js?v=1"></script>
 <script src="features_en.js?v=1"></script>
 
@@ -651,7 +652,6 @@ const I18N = {
   "learn.dirLocate":   { ko:"📍 이름 → 위치", en:"📍 Name → Location" },
   "learn.dirLocateSub":{ ko:"이름을 보고 지도에서 위치를 직접 찾아요 (연습)",
                          en:"Read the name and find it on the map. (practice)" },
-  "common.home":       { ko:"← 처음으로", en:"← Back to Home" },
   "common.home":       { ko:"← 처음으로", en:"← Back to Home" },
   "auth.rankNote":     { ko:"로그인하면 점수가 랭킹에 등록돼요", en:"Sign in to post your score to the leaderboard." },
   "auth.loginRequired":{ ko:"로그인해야 퀴즈를 시작할 수 있어요", en:"Please sign in to start the quiz." },
