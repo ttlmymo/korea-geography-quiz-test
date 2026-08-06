@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - 'features.js'
+      - 'features_en.js'
+      - 'roma.js'
       - 'scripts/**'
 
 permissions:
