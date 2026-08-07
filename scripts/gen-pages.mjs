@@ -115,6 +115,9 @@ function renderPage({ guName, slug, en, desc, history, people, images, dongs, ad
 ${IS_TEST ? '<meta name="robots" content="noindex, nofollow">' : ""}
 <meta name="description" content="${esc(metaDesc)}">
 <link rel="canonical" href="${url}">
+<link rel="alternate" hreflang="ko" href="${url}">
+<link rel="alternate" hreflang="en" href="${SITE_URL}/en/seoul/${slug}/">
+<link rel="alternate" hreflang="x-default" href="${url}">
 <meta name="theme-color" content="#9cb98f">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="전국 지리 마스터 퀴즈">
@@ -204,6 +207,9 @@ function renderIndex(list) {
 ${IS_TEST ? '<meta name="robots" content="noindex, nofollow">' : ""}
 <meta name="description" content="서울특별시 25개 자치구의 위치와 법정동 목록, 역사와 유래를 한눈에. 지도로 배우는 대한민국 행정구역 학습 자료입니다.">
 <link rel="canonical" href="${url}">
+<link rel="alternate" hreflang="ko" href="${url}">
+<link rel="alternate" hreflang="en" href="${SITE_URL}/en/seoul/">
+<link rel="alternate" hreflang="x-default" href="${url}">
 <meta property="og:title" content="서울특별시 25개 자치구 목록·지도">
 <meta property="og:url" content="${url}">
 <meta property="og:image" content="${OG_IMAGE}">
@@ -230,9 +236,191 @@ li span{display:block;font-size:12px;color:var(--muted)}
 </div></body></html>`;
 }
 
+/* ─── 영문 페이지 ─── */
+function renderPageEn({ guName, slug, en, desc, history, people, images, dongs, adjNames }) {
+  const url = `${SITE_URL}/en/seoul/${slug}/`;
+  const koUrl = `${SITE_URL}/seoul/${slug}/`;
+  const title = `${en}, Seoul — Map & Neighborhood List | Korea Geography Master Quiz`;
+  const metaDesc = `${en} is a district of Seoul, South Korea. Explore its location, ${dongs.length} legal neighborhoods (dong), adjacent districts, history and origin of its name.`;
+
+  const dongHtml = dongs.map((d) => `<li>${esc(romanizeDong(d))}</li>`).join("");
+  const adjHtml = adjNames.length
+    ? adjNames.map((n) => {
+        const s = SEOUL_SLUGS[n];
+        return s ? `<a href="${SITE_URL}/en/seoul/${s.slug}/">${esc(s.en)}</a>` : esc(n);
+      }).join(", ")
+    : "No adjacent district data available.";
+
+  const imgHtml = (images || []).map((im) =>
+    `<figure><img src="${esc(fixImg(im.src))}" alt="${esc(im.caption || en)}" loading="lazy">
+     ${im.caption ? `<figcaption>${esc(im.caption)}</figcaption>` : ""}</figure>`).join("");
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "BreadcrumbList", itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Korea Geography Master Quiz", item: `${SITE_URL}/en/` },
+        { "@type": "ListItem", position: 2, name: "Seoul", item: `${SITE_URL}/en/seoul/` },
+        { "@type": "ListItem", position: 3, name: en, item: url }
+      ]},
+      { "@type": "Place", name: `${en}, Seoul`, alternateName: `서울특별시 ${guName}`,
+        description: desc || metaDesc, url,
+        containedInPlace: { "@type": "AdministrativeArea", name: "Seoul" } }
+    ]
+  };
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(title)}</title>
+${IS_TEST ? '<meta name="robots" content="noindex, nofollow">' : ""}
+<meta name="description" content="${esc(metaDesc)}">
+<link rel="canonical" href="${url}">
+<link rel="alternate" hreflang="ko" href="${koUrl}">
+<link rel="alternate" hreflang="en" href="${url}">
+<link rel="alternate" hreflang="x-default" href="${koUrl}">
+<meta name="theme-color" content="#9cb98f">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Korea Geography Master Quiz">
+<meta property="og:title" content="${esc(en)} — Map &amp; Neighborhood List">
+<meta property="og:description" content="${esc(metaDesc)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${OG_IMAGE}">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${OG_IMAGE}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e8e2d5;--card:#f0ebe0;--line:#d8cfbd;--text:#5f5749;--muted:#a59c89;--sage:#9cb98f;--sage-d:#8aa97e;--peach:#e3a183}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Jua",-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.9}
+.wrap{max-width:820px;margin:0 auto;padding:28px 20px 60px}
+nav.bc{font-size:13px;color:var(--muted);margin-bottom:18px}
+nav.bc a{color:var(--muted);text-decoration:none}
+h1{font-size:29px;font-weight:400;margin-bottom:10px}
+.lead{font-size:15px;color:var(--muted);margin-bottom:22px}
+section{background:var(--card);border-radius:22px;padding:24px 26px;margin-top:20px;box-shadow:0 8px 20px rgba(150,135,108,.18)}
+section h2{font-size:20px;font-weight:400;margin-bottom:12px;color:var(--sage-d)}
+section p{font-size:15.5px;margin-bottom:12px}
+ul.dong{list-style:none;display:flex;flex-wrap:wrap;gap:9px;margin-top:6px}
+ul.dong li{background:var(--bg);border-radius:12px;padding:8px 14px;font-size:14.5px;box-shadow:inset 0 2px 5px rgba(150,135,108,.18)}
+figure{margin:14px 0 0}figure img{width:100%;border-radius:14px;display:block}
+figcaption{font-size:12px;color:var(--muted);margin-top:6px;text-align:center}
+.cta{display:inline-block;margin-top:8px;padding:15px 34px;background:var(--peach);color:#fff;font-size:17px;border-radius:16px;text-decoration:none;box-shadow:0 6px 14px rgba(150,135,108,.3)}
+.cta-wrap{text-align:center;margin-top:26px}
+a{color:var(--sage-d)}
+footer{text-align:center;margin-top:36px;padding-top:22px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+footer a{color:var(--muted);text-decoration:none}
+@media(max-width:600px){h1{font-size:23px}section{padding:19px 17px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="bc"><a href="${SITE_URL}/en/">Home</a> › <a href="${SITE_URL}/en/seoul/">Seoul</a> › ${esc(en)} · <a href="${koUrl}">한국어</a></nav>
+
+<h1>${esc(en)}, Seoul</h1>
+<p class="lead">${esc(guName)} · ${dongs.length} neighborhoods · Learn Korean administrative divisions with maps</p>
+
+<section>
+  <h2>About ${esc(en)}</h2>
+  <p>${esc(desc || `${en} is one of the 25 autonomous districts of Seoul, South Korea.`)}</p>
+</section>
+
+${history ? `<section><h2>History of ${esc(en)}</h2><p>${esc(history)}</p></section>` : ""}
+${people ? `<section><h2>People &amp; Stories</h2><p>${esc(people)}</p>${imgHtml}</section>` : imgHtml ? `<section>${imgHtml}</section>` : ""}
+
+<section>
+  <h2>Neighborhoods in ${esc(en)} (${dongs.length})</h2>
+  <ul class="dong">${dongHtml}</ul>
+</section>
+
+<section>
+  <h2>Districts bordering ${esc(en)}</h2>
+  <p>${adjHtml}</p>
+</section>
+
+<div class="cta-wrap">
+  <a class="cta" href="${SITE_URL}/?region=seoul">🎮 Play the Seoul geography quiz</a>
+</div>
+
+<footer>
+  <a href="${SITE_URL}/en/">Korea Geography Master Quiz</a> ·
+  <a href="${SITE_URL}/en/seoul/">All Seoul districts</a> ·
+  <a href="${koUrl}">한국어로 보기</a>
+  <div style="margin-top:4px">Copyright 2026. koquiz.support@gmail.com</div>
+</footer>
+</div>
+<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+</body>
+</html>`;
+}
+
+function renderIndexEn(list) {
+  const url = `${SITE_URL}/en/seoul/`;
+  const koUrl = `${SITE_URL}/seoul/`;
+  const items = list.map((g) =>
+    `<li><a href="${SITE_URL}/en/seoul/${g.slug}/">${esc(g.en)}</a> <span>${g.dongCount} neighborhoods</span></li>`).join("");
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 25 Districts of Seoul — List &amp; Map | Korea Geography Master Quiz</title>
+${IS_TEST ? '<meta name="robots" content="noindex, nofollow">' : ""}
+<meta name="description" content="A complete list of the 25 autonomous districts (gu) of Seoul, South Korea, with their neighborhoods, location and history.">
+<link rel="canonical" href="${url}">
+<link rel="alternate" hreflang="ko" href="${koUrl}">
+<link rel="alternate" hreflang="en" href="${url}">
+<link rel="alternate" hreflang="x-default" href="${koUrl}">
+<meta property="og:title" content="The 25 Districts of Seoul — List &amp; Map">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${OG_IMAGE}">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e8e2d5;--card:#f0ebe0;--text:#5f5749;--muted:#a59c89;--sage-d:#8aa97e;--peach:#e3a183}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Jua",sans-serif;background:var(--bg);color:var(--text);line-height:1.9}
+.wrap{max-width:820px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:28px;font-weight:400;margin-bottom:10px}
+p.lead{color:var(--muted);font-size:15px;margin-bottom:22px}
+ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:11px}
+li{background:var(--card);border-radius:16px;padding:14px 17px;box-shadow:0 6px 14px rgba(150,135,108,.16)}
+li a{color:var(--text);text-decoration:none;font-size:16px}
+li span{display:block;font-size:12px;color:var(--muted)}
+.cta{display:inline-block;margin-top:26px;padding:15px 34px;background:var(--peach);color:#fff;border-radius:16px;text-decoration:none}
+</style>
+</head>
+<body><div class="wrap">
+<h1>The 25 Districts of Seoul</h1>
+<p class="lead">Explore each district's location, neighborhoods, history and the origin of its name. · <a href="${koUrl}">한국어</a></p>
+<ul>${items}</ul>
+<div style="text-align:center"><a class="cta" href="${SITE_URL}/">🎮 Play the geography quiz</a></div>
+</div></body></html>`;
+}
+
 /* ─── 실행 ─── */
 const features = await loadFeatures();
 console.log("features.js 로드 완료:", Object.keys(features).length, "개 구");
+
+let featuresEn = {};
+try {
+  featuresEn = await loadFeaturesEn();
+  console.log("features_en.js 로드 완료:", Object.keys(featuresEn).length, "개 구");
+} catch (e) {
+  console.warn("⚠ features_en.js 로드 실패(영문 본문 생략):", e.message);
+}
+
+let romanizeDong = (s) => s;
+try {
+  ({ romanizeDong } = await loadRoma());
+  console.log("roma.js 로드 완료:", romanizeDong("역삼동"));
+} catch (e) {
+  console.warn("⚠ roma.js 로드 실패(동 이름 한글 유지):", e.message);
+}
 
 const [guGeo, bjdGeo] = await Promise.all([
   fetch(`${CDN}/gu/gu_11_seoul.geojson`).then((r) => r.json()),
@@ -263,6 +451,7 @@ for (const [code, guName] of Object.entries(nameByCode)) {
   if (!meta) { console.warn("⚠ 슬러그 없음:", guName); continue; }
 
   const f = features[guName] || {};
+  const fe = featuresEn[guName] || featuresEn[meta.en] || {};
   const dongs = [...(dongsByCode[code] || [])].sort(koCmp);
   const adjNames = [...(adj[code] || [])].map((c) => nameByCode[c]).filter(Boolean).sort(koCmp);
 
@@ -271,14 +460,29 @@ for (const [code, guName] of Object.entries(nameByCode)) {
     desc: f.desc, history: f.history, people: f.people, images: f.images,
     dongs, adjNames
   });
-
   const dir = path.join("seoul", meta.slug);
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, "index.html"), html, "utf8");
-  summary.push({ guName, slug: meta.slug, dongCount: dongs.length });
-  console.log(`✓ /seoul/${meta.slug}/  (동 ${dongs.length}개, 인접 ${adjNames.length}개)`);
+
+  const htmlEn = renderPageEn({
+    guName, slug: meta.slug, en: meta.en,
+    desc: fe.desc, history: fe.history, people: fe.people,
+    images: fe.images || f.images,
+    dongs, adjNames
+  });
+  const dirEn = path.join("en", "seoul", meta.slug);
+  await mkdir(dirEn, { recursive: true });
+  await writeFile(path.join(dirEn, "index.html"), htmlEn, "utf8");
+
+  summary.push({ guName, slug: meta.slug, en: meta.en, dongCount: dongs.length });
+  console.log(`✓ /seoul/${meta.slug}/ + /en/seoul/${meta.slug}/  (동 ${dongs.length}개, 인접 ${adjNames.length}개)`);
 }
 
 summary.sort((a, b) => koCmp(a.guName, b.guName));
 await writeFile(path.join("seoul", "index.html"), renderIndex(summary), "utf8");
-console.log(`\n완료: ${summary.length}개 구 페이지 + 목차 1개`);
+
+const summaryEn = [...summary].sort((a, b) => a.en.localeCompare(b.en, "en"));
+await mkdir(path.join("en", "seoul"), { recursive: true });
+await writeFile(path.join("en", "seoul", "index.html"), renderIndexEn(summaryEn), "utf8");
+
+console.log(`\n완료: 한글 ${summary.length}개 + 영문 ${summaryEn.length}개 페이지, 목차 각 1개`);
