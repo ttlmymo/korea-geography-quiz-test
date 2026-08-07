@@ -436,15 +436,17 @@
 
     <div id="learn-screen" class="hidden">
       <div class="row" style="margin-bottom:2px;">
-        <span style="font-size:18px; font-weight:400; color:var(--text);">📚 학습 모드</span>
+        <span style="font-size:18px; font-weight:400; color:var(--text);" data-i18n="learn.title">📚 학습 모드</span>
       </div>
 
       <div id="learn-dir-select">
-        <button class="dir-btn a" id="learn-dir-name">🗺️ 위치 → 이름
-          <span class="sub">지도에서 구·동을 골라 이름과 정보를 확인해요</span>
+        <button class="dir-btn a" id="learn-dir-name">
+          <span data-i18n="learn.dirName">🗺️ 위치 → 이름</span>
+          <span class="sub" data-i18n="learn.dirNameSub">지도에서 구·동을 골라 이름과 정보를 확인해요</span>
         </button>
-        <button class="dir-btn b" id="learn-dir-locate">📍 이름 → 위치
-          <span class="sub">이름을 보고 지도에서 위치를 직접 찾아요 (연습)</span>
+        <button class="dir-btn b" id="learn-dir-locate">
+          <span data-i18n="learn.dirLocate">📍 이름 → 위치</span>
+          <span class="sub" data-i18n="learn.dirLocateSub">이름을 보고 지도에서 위치를 직접 찾아요 (연습)</span>
         </button>
       </div>
 
@@ -457,11 +459,11 @@
         </div>
 
         <div class="setup-block" style="flex:none; margin-bottom:0;">
-          <span class="label">지역 선택</span>
+          <span class="label" data-i18n="region.select">지역 선택</span>
           <div class="seg" id="learn-region">
-            <button data-val="seoul" class="sel">서울</button>
-            <button data-val="incheon">인천</button>
-            <button data-val="gg">경기</button>
+            <button data-val="seoul" class="sel" data-i18n="region.seoul">서울</button>
+            <button data-val="incheon" data-i18n="region.incheon">인천</button>
+            <button data-val="gg" data-i18n="region.gg">경기</button>
           </div>
         </div>
 
@@ -471,27 +473,27 @@
 
       <div id="locate-panel" class="hidden">
         <div class="setup-block" style="flex:none; margin-bottom:0;">
-          <span class="label">지역 선택</span>
+          <span class="label" data-i18n="region.select">지역 선택</span>
           <div class="seg" id="locate-region">
-            <button data-val="seoul" class="sel">서울</button>
-            <button data-val="incheon">인천</button>
-            <button data-val="gg">경기</button>
+            <button data-val="seoul" class="sel" data-i18n="region.seoul">서울</button>
+            <button data-val="incheon" data-i18n="region.incheon">인천</button>
+            <button data-val="gg" data-i18n="region.gg">경기</button>
           </div>
         </div>
         <div class="setup-block" style="flex:none; margin-bottom:0;">
-          <span class="label">문제 유형</span>
+          <span class="label" data-i18n="type.label">문제 유형</span>
           <div class="seg" id="locate-type">
-            <button data-val="gu" class="sel">구·시·군</button>
-            <button data-val="dong">읍·면·동</button>
+            <button data-val="gu" class="sel" data-i18n="type.gu">구·시·군</button>
+            <button data-val="dong" data-i18n="type.dong">읍·면·동</button>
           </div>
         </div>
-        <span id="q-badge-locate" class="badge gu" style="align-self:flex-start;">구·시·군</span>
-        <div id="locate-question">아래 "다음 문제"를 눌러 시작하세요.</div>
+        <span id="q-badge-locate" class="badge gu" style="align-self:flex-start;" data-i18n="type.gu">구·시·군</span>
+        <div id="locate-question" data-i18n="locate.hint">아래 "문제 시작 / 다음 문제"를 눌러 시작하세요.</div>
         <div id="locate-feedback" class="hidden"></div>
-        <button id="locate-next-btn" class="primary" style="flex:none;">문제 시작 / 다음 문제</button>
+        <button id="locate-next-btn" class="primary" style="flex:none;" data-i18n="locate.next">문제 시작 / 다음 문제</button>
       </div>
 
-      <button id="learn-back-btn" class="primary" style="margin-top:10px; flex:none;">← 처음으로</button>
+      <button id="learn-back-btn" class="primary" style="margin-top:10px; flex:none;" data-i18n="common.home">← 처음으로</button>
     </div>
 
     <div id="quiz-screen" class="hidden">
@@ -502,7 +504,7 @@
       <div id="progress-bar"><div id="progress-fill"></div></div>
 
       <div id="timer-wrap" class="hidden">
-        <div class="row"><span>⏱ 남은 시간</span><span id="timer-num">15</span></div>
+        <div class="row"><span data-i18n="timer.left">⏱ 남은 시간</span><span id="timer-num">15</span></div>
         <div id="timer-bar-wrap"><div id="timer-fill"></div></div>
       </div>
 
@@ -511,14 +513,14 @@
         <div id="question"></div>
       </div>
       <div id="legend" class="hidden">
-        <div class="lg"><span class="sw" style="background:#fed7aa;"></span> 시 전체</div>
-        <div class="lg"><span class="sw" style="background:#f97316;"></span> 소속 구</div>
-        <div class="lg"><span class="sw" style="background:#7dd3fc;"></span> 정답 읍·면·동 (빨간 점)</div>
+        <div class="lg"><span class="sw" style="background:#fed7aa;"></span> <span data-i18n="legend.si">시 전체</span></div>
+        <div class="lg"><span class="sw" style="background:#f97316;"></span> <span data-i18n="legend.gu">소속 구</span></div>
+        <div class="lg"><span class="sw" style="background:#7dd3fc;"></span> <span data-i18n="legend.dong">정답 읍·면·동 (빨간 점)</span></div>
       </div>
       <div id="options"></div>
       <div id="explain" class="hidden"></div>
-      <button id="next-btn" class="primary" disabled>다음 문제</button>
-      <button id="quit-btn" class="secondary">그만두기</button>
+      <button id="next-btn" class="primary" disabled data-i18n="btn.next">다음 문제</button>
+      <button id="quit-btn" class="secondary" data-i18n="btn.quit">그만두기</button>
     </div>
 
     <div id="result-screen" class="hidden">
@@ -669,7 +671,63 @@ const I18N = {
   "home.close":        { ko:"▲ 닫기", en:"▲ Close" },
   "mode.game":         { ko:"🎮 게임 모드", en:"🎮 Game Mode" },
   "rank.top10":        { ko:"🏅 실시간 랭킹 TOP 10", en:"🏅 Live Leaderboard TOP 10" },
-  "rank.loading":      { ko:"불러오는 중…", en:"Loading…" }
+  "rank.loading":      { ko:"불러오는 중…", en:"Loading…" },
+
+  /* 학습 모드 공통 */
+  "learn.viewLoc":     { ko:"위치 보기 ▸", en:"View on map ▸" },
+  "learn.lockAlert":   { ko:"먼저 로그인하고 닉네임을 정해주세요.",
+                         en:"Please sign in and set a nickname first." },
+
+  /* 학습 - 이름→위치 */
+  "type.label":        { ko:"문제 유형", en:"Question Type" },
+  "type.gu":           { ko:"구·시·군", en:"Districts" },
+  "type.dong":         { ko:"읍·면·동", en:"Neighborhoods" },
+  "locate.hint":       { ko:'아래 "문제 시작 / 다음 문제"를 눌러 시작하세요.',
+                         en:'Tap "Start / Next Question" below to begin.' },
+  "locate.next":       { ko:"문제 시작 / 다음 문제", en:"Start / Next Question" },
+  "locate.prompt":     { ko:'"{name}" 은(는) 어디일까요? 지도에서 찾아 누르세요.',
+                         en:'Where is "{name}"? Find it on the map and tap it.' },
+  "locate.correct":    { ko:"✅ 정답! {answer} 입니다. (초록=정답 위치)",
+                         en:"✅ Correct! It is {answer}. (green = correct area)" },
+  "locate.wrong":      { ko:"❌ 아쉬워요. {answer} 입니다. (초록=정답 위치)",
+                         en:"❌ Not quite. It is {answer}. (green = correct area)" },
+  "locate.noQuestion": { ko:"해당 조건에 맞는 문제를 만들 수 없습니다.",
+                         en:"No question can be made with these settings." },
+
+  /* 동 정보 카드 */
+  "info.belong":       { ko:"소속", en:"Region" },
+  "info.adj":          { ko:"인접 지역", en:"Neighbors" },
+  "info.desc":         { ko:"특징", en:"Overview" },
+  "info.noAdjDong":    { ko:"계산된 인접 동이 없어요.", en:"No adjacent neighborhoods found." },
+  "info.noDesc":       { ko:"아직 등록된 설명이 없어요.", en:"No description yet." },
+
+  /* 게임 화면 */
+  "score.label":       { ko:"점수 {n}", en:"Score {n}" },
+  "timer.left":        { ko:"⏱ 남은 시간", en:"⏱ Time left" },
+  "legend.si":         { ko:"시 전체", en:"Whole city" },
+  "legend.gu":         { ko:"소속 구", en:"Parent district" },
+  "legend.dong":       { ko:"정답 읍·면·동 (빨간 점)", en:"Answer neighborhood (red dot)" },
+  "badge.guClick":     { ko:"구·시·군 (클릭)", en:"District (tap)" },
+  "badge.dongClick":   { ko:"읍·면·동 (클릭)", en:"Neighborhood (tap)" },
+  "q.guName":          { ko:"주황색으로 표시된 이 행정구역의 이름은?",
+                         en:"What is the name of the district highlighted in orange?" },
+  "q.dongName":        { ko:"빨간 점이 찍힌 이 읍·면·동의 이름은? (연주황=시, 진주황=구)",
+                         en:"What is the neighborhood marked with the red dot? (light orange = city, orange = district)" },
+  "q.mapClick":        { ko:" (지도에서 클릭)", en:" (tap it on the map)" },
+  "btn.next":          { ko:"다음 문제", en:"Next Question" },
+  "btn.result":        { ko:"결과지 보기", en:"See Results" },
+  "btn.quit":          { ko:"그만두기", en:"Quit" },
+  "fb.correct":        { ko:"✅ 정답! ", en:"✅ Correct! " },
+  "fb.wrong":          { ko:"❌ 오답. ", en:"❌ Wrong. " },
+  "fb.timeout":        { ko:"⏰ 시간 초과! ", en:"⏰ Time's up! " },
+  "fb.timeoutTag":     { ko:"(시간초과)", en:"(timed out)" },
+  "fb.pickCorrect":    { ko:"정답 클릭", en:"tapped correctly" },
+  "fb.pickWrong":      { ko:"오답 클릭", en:"tapped wrong area" },
+  "locate.answerIs":   { ko:"{answer} 입니다.", en:"It is {answer}." },
+  "locate.task":       { ko:"{answer} 위치 맞히기", en:"Find the location of {answer}" },
+  "game.noPool":       { ko:"선택한 조건에 맞는 문제가 없습니다. 지역/유형을 바꿔주세요.",
+                         en:"No questions match these settings. Try a different region or type." },
+  "game.noWrong":      { ko:"틀린 문제가 없습니다! 🎉", en:"You got everything right! 🎉" }
 };
 
 /* 문구 하나 꺼내기.  T("q.locate", {name:"Gangnam-gu"}) 처럼 치환도 가능 */
@@ -711,14 +769,24 @@ const SIDO_NAME_EN = { "11":"Seoul", "28":"Incheon", "41":"Gyeonggi-do" };
 
 /* "경기도 성남시 수정구" → "Sujeong-gu, Seongnam-si, Gyeonggi-do"
    "역삼동" → "Yeoksam-dong"  (roma.js의 romanizeDong 사용) */
+const SIDO_FULL_EN = { "서울특별시":"Seoul", "인천광역시":"Incheon", "경기도":"Gyeonggi-do" };
+
 function romanizeFull(name) {
   return String(name).trim().split(/\s+/)
-    .map(t => (typeof romanizePlace === 'function' ? romanizePlace(t) : (ROMA[t] || t)))
+    .map(t => SIDO_FULL_EN[t] || (typeof romanizePlace === 'function' ? romanizePlace(t) : (ROMA[t] || t)))
     .reverse().join(', ');
 }
 
 /* 검색 비교용 정규화: 소문자 + 하이픈·공백·쉼표·마침표 제거 */
 function normQ(s) { return String(s || "").toLowerCase().replace(/[-\s,.]/g, ""); }
+
+/* 로마자 변환 결과 캐시 (같은 지명을 매 타이핑마다 다시 변환하지 않도록) */
+const ROMA_NORM_CACHE = new Map();
+function normRoman(name) {
+  let v = ROMA_NORM_CACHE.get(name);
+  if (v === undefined) { v = normQ(romanizeFull(name)); ROMA_NORM_CACHE.set(name, v); }
+  return v;
+}
 
 /* 한글 원문과 로마자 양쪽으로 검색어를 비교한다 (S3-1) */
 function matchRegion(name, q) {
@@ -727,7 +795,7 @@ function matchRegion(name, q) {
   if (String(name).indexOf(raw) !== -1) return true;
   const nq = normQ(raw);
   if (!nq) return false;
-  return normQ(romanizeFull(name)).indexOf(nq) !== -1;
+  return normRoman(name).indexOf(nq) !== -1;
 }
 
 /* ── 부팅 ── */
@@ -1006,8 +1074,13 @@ const MANUAL_ADJ_ADD = [];
 const MANUAL_ADJ_REMOVE = [];
 
 const ISLAND_NOTE = {
-  "옹진군": "인천 앞바다에 흩어져 있는 섬들로만 이루어진 군이에요. 백령도·연평도·대청도·덕적도·자월도 등이 속하며, 육지와 바다로 분리되어 있어 경계가 맞닿은 구·군이 없습니다."
+  "옹진군": "인천 앞바다에 흩어진 섬들로만 이루어진 군이에요. 백령도·연평도·대청도·덕적도·자월도 등이 속해 있고, 바다로 나뉘어 있어 육지로 맞닿은 이웃 지역이 없습니다."
 };
+
+const ISLAND_NOTE_EN = {
+  "옹진군": "A county made up entirely of islands scattered off the coast of Incheon — Baengnyeongdo, Yeonpyeongdo, Daecheongdo, Deokjeokdo, Jawoldo and others. Separated by sea, it borders no other district by land."
+};
+function islandNote(k){ return isEn() ? (ISLAND_NOTE_EN[k] || ISLAND_NOTE[k]) : ISLAND_NOTE[k]; }
 </script>
 
 <script>
@@ -1923,7 +1996,7 @@ function finishLocateJudge(isCorrect, q, context) {
     const fb = document.getElementById("locate-feedback");
     fb.classList.remove("hidden");
     fb.style.borderLeftColor = isCorrect ? "#22c55e" : "#ef4444";
-    fb.textContent = (isCorrect ? "✅ 정답! " : "❌ 아쉬워요. ") + q.answerFull + " 입니다. (초록=정답 위치)";
+    fb.textContent = T(isCorrect ? "locate.correct" : "locate.wrong", { answer: q.answerFull });
   } else {
     answered = true;
     stopTimer();
@@ -1931,9 +2004,9 @@ function finishLocateJudge(isCorrect, q, context) {
     const explainEl = document.getElementById("explain");
     explainEl.classList.remove("hidden");
     explainEl.style.borderLeftColor = isCorrect ? "#22c55e" : "#ef4444";
-    explainEl.textContent = (isCorrect ? "✅ 정답! " : "❌ 오답. ") + q.answerFull + " 입니다.";
-    answerLog.push({ type: q.qtype, dir:"locate", answer: q.answerFull, picked: isCorrect ? "정답 클릭" : "오답 클릭", correct: isCorrect, explain: q.answerFull + " 위치 맞히기", q: q });
-    document.getElementById("score-label").textContent = "점수 " + score;
+    explainEl.textContent = (isCorrect ? T("fb.correct") : T("fb.wrong")) + T("locate.answerIs", { answer: q.answerFull });
+    answerLog.push({ type: q.qtype, dir:"locate", answer: q.answerFull, picked: isCorrect ? T("fb.pickCorrect") : T("fb.pickWrong"), correct: isCorrect, explain: T("locate.task", { answer: q.answerFull }), q: q });
+    document.getElementById("score-label").textContent = T("score.label", { n: score });
     const nextBtn = document.getElementById("next-btn");
     nextBtn.disabled = false;
     nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1946,7 +2019,7 @@ function finishLocateJudge(isCorrect, q, context) {
           updateGuLabels()로 모드별 이름표 표시 갱신.
 =========================================================== */
 function openLearnMode() {
-  if (!isUnlocked()) { alert("먼저 로그인하고 닉네임을 정해주세요."); return; }
+if (!isUnlocked()) { alert(T("learn.lockAlert")); return; }
   clearHighlight();
   clearCandidates();
   clearGuOverlays();
@@ -1987,7 +2060,7 @@ function openLearnLocate() {
   document.getElementById("learn-explore").classList.add("hidden");
   document.getElementById("locate-panel").classList.remove("hidden");
   document.getElementById("locate-feedback").classList.add("hidden");
-  document.getElementById("locate-question").textContent = '아래 "문제 시작 / 다음 문제"를 눌러 시작하세요.';
+document.getElementById("locate-question").textContent = T("locate.hint");
   locateCurrent = null;
   clearHighlight(); clearCandidates(); clearGuOverlays();
 }
@@ -1997,11 +2070,11 @@ function nextLearnLocate() {
   document.getElementById("locate-feedback").classList.add("hidden");
 
   const q = buildLocateQuestion(locateRegion, locateType);
-  if (!q) { alert("해당 조건에 맞는 문제를 만들 수 없습니다."); return; }
+  if (!q) { alert(T("locate.noQuestion")); return; }
   locateCurrent = q;
   const badge = document.getElementById("q-badge-locate");
-  if (q.qtype === "gu") { badge.className = "badge gu"; badge.textContent = "구·시·군"; }
-  else { badge.className = "badge dong"; badge.textContent = "읍·면·동"; }
+  if (q.qtype === "gu") { badge.className = "badge gu"; badge.textContent = T("type.gu"); }
+  else { badge.className = "badge dong"; badge.textContent = T("type.dong"); }
   document.getElementById("locate-question").textContent = q.prompt;
   showLocateCandidates(q);
 }
@@ -2016,10 +2089,11 @@ function buildLocateQuestion(region, qtype) {
 
     const groupCount = DB.filter((d) => d.sggCode && d.group === t.group).length;
     const zone = ggZoneOfGroup(t.group);
+    const fullKo = t.full_nm || t.name;
     const q = {
       dir:"locate", qtype:"gu", region: guRegion, sgg: t.sggCode,
-      prompt: `"${t.name}" 은(는) 어디일까요? 지도에서 찾아 누르세요.`,
-      answerFull: t.full_nm || t.name,
+      prompt: T("locate.prompt", { name: isEn() ? romanizeFull(t.name) : t.name }),
+      answerFull: isEn() ? romanizeFull(fullKo) : fullKo,
       done:false
     };
     if (groupCount >= 2) {
@@ -2034,10 +2108,12 @@ function buildLocateQuestion(region, qtype) {
     const t = pool[Math.floor(Math.random() * pool.length)];
     const si = siNameOf(t.sggnm);
     const guLabel = (t.sggnm === si) ? si : t.sggnm;
+    const nameKo = `${guLabel} ${t.dongName}`;
+    const fullKo = `${SIDO_NAME[t.sido]} ${guLabel} ${t.dongName}`;
     return {
       dir:"locate", qtype:"dong", region, sgg: t.sgg, dongName: t.dongName,
-      prompt: `"${guLabel} ${t.dongName}" 은(는) 어디일까요? 지도에서 찾아 누르세요.`,
-      answerFull: `${SIDO_NAME[t.sido]} ${guLabel} ${t.dongName}`,
+      prompt: T("locate.prompt", { name: isEn() ? romanizeFull(nameKo) : nameKo }),
+      answerFull: isEn() ? romanizeFull(fullKo) : fullKo,
       done:false
     };
   }
@@ -2057,7 +2133,9 @@ function renderLearnList() {
   items.forEach((item) => {
     const row = document.createElement("div");
     row.className = "learn-item" + (expandedGu === item.sggCode ? " sel" : "");
-    row.innerHTML = `<span>${item.name}</span><span class="arrow">위치 보기 ▸</span>`;
+    const nmKo = escapeHtml(item.name);
+    const nmEn = escapeHtml(romanizeFull(item.name));
+    row.innerHTML = `<span>${(isEn() && nmEn !== nmKo) ? bi(nmEn, nmKo) : nmKo}</span><span class="arrow">${T("learn.viewLoc")}</span>`;
     row.addEventListener("click", () => selectLearnGu(item));
     listEl.appendChild(row);
 
@@ -2080,7 +2158,10 @@ function renderLearnList() {
         seen.add(dg.dongName);
         const d = document.createElement("div");
         d.className = "learn-dong" + (selectedDongName === dg.dongName ? " sel" : "");
-        d.textContent = "· " + dg.dongName;
+        d.dataset.dong = dg.dongName;
+        const dKo = escapeHtml(dg.dongName);
+        const dEn = escapeHtml(romanizeFull(dg.dongName));
+        d.innerHTML = "· " + ((isEn() && dEn !== dKo) ? bi(dEn, dKo) : dKo);
         d.addEventListener("click", (e) => { e.stopPropagation(); selectLearnDong(dg, d); });
         dongWrap.appendChild(d);
       });
@@ -2092,7 +2173,7 @@ function renderLearnList() {
     let target = null;
     if (selectedDongName) {
       const dongEls = listEl.querySelectorAll(".learn-dong");
-      dongEls.forEach((el) => { if (el.textContent === "· " + selectedDongName) target = el; });
+      dongEls.forEach((el) => { if (el.dataset.dong === selectedDongName) target = el; });
     }
     if (!target && expandedGu) target = listEl.querySelector(".learn-item.sel");
     if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -2149,7 +2230,7 @@ function showGuInfoCard(item) {
   if (adj.length) adjHtml = en
     ? adj.map(n => `<span class="bi-chip">${bi(romanizeFull(n), n)}</span>`).join("")
     : adj.join(", ");
-  else if (ISLAND_NOTE[item.matchName]) adjHtml = `<span style="color:var(--text);">${ISLAND_NOTE[item.matchName]}</span>`;
+  else if (islandNote(item.matchName)) adjHtml = `<span style="color:var(--text);">${islandNote(item.matchName)}</span>`;
   else adjHtml = `<span class='ic-empty'>${L.noAdj}</span>`;
 
   const featKo = (typeof GU_FEATURE !== "undefined" &&
@@ -2191,6 +2272,7 @@ function showGuInfoCard(item) {
 }
 
 function showDongInfoCard(dong) {
+  const en = isEn();
   const card = document.getElementById("info-card");
   card.classList.remove("hidden");
   const si = siNameOf(dong.sggnm);
@@ -2200,14 +2282,16 @@ function showDongInfoCard(dong) {
   const guName = (guItem && guItem.matchName) || dong.sggnm || "";
   const islandKey = Object.keys(ISLAND_NOTE).find((k) => guName.indexOf(k) !== -1 || (dong.sggnm || "").indexOf(k) !== -1);
   let adjHtml;
-  if (adj.length) adjHtml = adj.join(", ");
-  else if (islandKey) adjHtml = `<span style="color:var(--text);">${ISLAND_NOTE[islandKey]}</span>`;
-  else adjHtml = "<span class='ic-empty'>계산된 인접 동이 없어요.</span>";
+  if (adj.length) adjHtml = en
+    ? adj.map((n) => `<span class="bi-chip">${bi(romanizeFull(n), n)}</span>`).join("")
+    : adj.join(", ");
+  else if (islandKey) adjHtml = `<span style="color:var(--text);">${islandNote(islandKey)}</span>`;
+  else adjHtml = `<span class='ic-empty'>${T("info.noAdjDong")}</span>`;
   card.innerHTML = `
-    <div class="ic-title">${dong.dongName}</div>
-    <div class="ic-row"><span class="ic-label">소속</span>${belong}</div>
-    <div class="ic-row"><span class="ic-label">인접 지역</span>${adjHtml}</div>
-    <div class="ic-row"><span class="ic-label">특징</span><span class="ic-empty">아직 등록된 설명이 없어요. (다음 단계에서 추가됩니다)</span></div>
+    <div class="ic-title">${en ? bi(romanizeFull(dong.dongName), dong.dongName) : dong.dongName}</div>
+    <div class="ic-row"><span class="ic-label">${T("info.belong")}</span>${en ? bi(romanizeFull(belong), belong) : belong}</div>
+    <div class="ic-row"><span class="ic-label">${T("info.adj")}</span>${adjHtml}</div>
+    <div class="ic-row"><span class="ic-label">${T("info.desc")}</span><span class="ic-empty">${T("info.noDesc")}</span></div>
   `;
 }
 
@@ -2284,7 +2368,7 @@ function filteredDongPool() {
 }
 
 function startGame() {
-  if (!isUnlocked()) { alert("먼저 로그인하고 닉네임을 정해주세요."); return; }
+  if (!isUnlocked()) { alert(T("learn.lockAlert")); return; }
   appMode = "game";
   updateGuLabels(); /* ★수정: 게임 모드는 이름표 숨김 (hideGuBaseColors 호출은 제거 — 은은한 색 유지) */
   totalQuestions = settings.count;
@@ -2295,7 +2379,7 @@ function startGame() {
   if ((settings.type === "gu" && !guPool.length) ||
       (settings.type === "dong" && !dongPool.length) ||
       (settings.type === "mix" && !guPool.length && !dongPool.length)) {
-    alert("선택한 조건에 맞는 문제가 없습니다. 지역/유형을 바꿔주세요.");
+    alert(T("game.noPool"));
     return;
   }
 
@@ -2334,7 +2418,7 @@ function startGame() {
 
 function retryWrongOnly() {
   const wrongQs = answerLog.filter((a) => !a.correct).map((a) => a.q);
-  if (!wrongQs.length) { alert("틀린 문제가 없습니다! 🎉"); return; }
+  if (!wrongQs.length) { alert(T("game.noWrong")); return; }
   appMode = "game";
   updateGuLabels();
   quizSet = shuffle(wrongQs);
@@ -2357,7 +2441,9 @@ function makeGuQuestion(validGu) {
   return {
     dir:"name", type:"gu", qtype:"gu", sgg: target.sggCode, answerLabel: target.name, feats: featuresBySgg[target.sggCode],
     options: shuffle([target.name, ...wrongs.map((w) => w.name)]),
-    explain: `${target.name}은(는) ${SIDO_NAME[target.sido]}에 속한 행정구역입니다.`
+    explain: isEn()
+      ? `${romanizeFull(target.name)} is a district of ${SIDO_NAME_EN[target.sido] || ""}.`
+      : `${target.name}은(는) ${SIDO_NAME[target.sido]}에 속한 행정구역입니다.`
   };
 }
 
@@ -2378,7 +2464,9 @@ function makeDongQuestion(pool) {
   return {
     dir:"name", type:"dong", qtype:"dong", dong: target, answerLabel: target.dongName, feats:[target.feature],
     options: shuffle([target.dongName, ...wrongs]),
-    explain: `${target.dongName}은(는) ${belong}에 속하는 법정동입니다.`
+    explain: isEn()
+      ? `${romanizeFull(target.dongName)} is a legal-status neighborhood (beopjeong-dong) in ${romanizeFull(belong)}.`
+      : `${target.dongName}은(는) ${belong}에 속하는 법정동입니다.`
   };
 }
 
@@ -2406,9 +2494,9 @@ function timeOut() {
   const explainEl = document.getElementById("explain");
   if (q.dir === "name") {
     const buttons = document.querySelectorAll(".option-btn");
-    buttons.forEach((b) => { b.disabled = true; if (b.textContent === q.answerLabel) b.classList.add("correct"); });
-    explainEl.textContent = "⏰ 시간 초과! " + q.explain;
-    answerLog.push({ type: q.qtype, dir:q.dir, answer: q.answerLabel, picked: "(시간초과)", correct: false, explain: q.explain, q: q });
+    buttons.forEach((b) => { b.disabled = true; if (b.dataset.val === q.answerLabel) b.classList.add("correct"); });
+    explainEl.textContent = T("fb.timeout") + q.explain;
+    answerLog.push({ type: q.qtype, dir:q.dir, answer: q.answerLabel, picked: T("fb.timeoutTag"), correct: false, explain: q.explain, q: q });
   } else {
     if (q.qtype === "gu") {
       clearGuOverlays();
@@ -2419,8 +2507,8 @@ function timeOut() {
     } else {
       const ans = (dongsBySgg[q.sgg] || []).find((d) => d.dongName === q.dongName); if (ans) map.data.overrideStyle(ans.feature, COLOR_CORRECT);
     }
-    explainEl.textContent = "⏰ 시간 초과! " + q.answerFull + " 입니다.";
-    answerLog.push({ type: q.qtype, dir:q.dir, answer: q.answerFull, picked: "(시간초과)", correct: false, explain: q.answerFull + " 위치 맞히기", q: q });
+    explainEl.textContent = T("fb.timeout") + T("locate.answerIs", { answer: q.answerFull });
+    answerLog.push({ type: q.qtype, dir:q.dir, answer: q.answerFull, picked: T("fb.timeoutTag"), correct: false, explain: T("locate.task", { answer: q.answerFull }), q: q });
   }
   explainEl.style.borderLeftColor = "#ef4444";
   explainEl.classList.remove("hidden");
@@ -2436,7 +2524,7 @@ function loadQuestion() {
   clearGuOverlays();
   const q = quizSet[currentIndex];
   document.getElementById("q-counter").textContent = (currentIndex + 1) + " / " + totalQuestions;
-  document.getElementById("score-label").textContent = "점수 " + score;
+  document.getElementById("score-label").textContent = T("score.label", { n: score });
   document.getElementById("progress-fill").style.width = (currentIndex / totalQuestions * 100) + "%";
 
   const badge = document.getElementById("q-badge");
@@ -2449,35 +2537,39 @@ function loadQuestion() {
     optionsEl.classList.remove("hidden");
     optionsEl.innerHTML = "";
     if (q.qtype === "dong") {
-      badge.className = "badge dong"; badge.textContent = "읍·면·동";
-      document.getElementById("question").textContent = "빨간 점이 찍힌 이 읍·면·동의 이름은? (연주황=시, 진주황=구)";
+      badge.className = "badge dong"; badge.textContent = T("type.dong");
+      document.getElementById("question").textContent = T("q.dongName");
       legend.classList.remove("hidden");
     } else {
-      badge.className = "badge gu"; badge.textContent = "구·시·군";
-      document.getElementById("question").textContent = "주황색으로 표시된 이 행정구역의 이름은?";
+      badge.className = "badge gu"; badge.textContent = T("type.gu");
+      document.getElementById("question").textContent = T("q.guName");
       legend.classList.add("hidden");
     }
     q.options.forEach((optLabel) => {
       const btn = document.createElement("button");
       btn.className = "option-btn";
-      btn.textContent = optLabel;
+      btn.dataset.val = optLabel;                    /* 정답 비교는 이 값으로 한다 */
+      const koTxt = escapeHtml(optLabel);
+      const enTxt = escapeHtml(romanizeFull(optLabel));
+      btn.innerHTML = (isEn() && enTxt !== koTxt) ? bi(enTxt, koTxt) : koTxt;
       btn.addEventListener("click", () => selectAnswer(btn, optLabel, q));
       optionsEl.appendChild(btn);
     });
+
     if (q.qtype === "dong") highlightDong(q.dong); else highlightGuByCode(q.sgg);
   } else {
     legend.classList.add("hidden");
     optionsEl.innerHTML = "";
     optionsEl.classList.add("hidden");
-    if (q.qtype === "dong") { badge.className = "badge dong"; badge.textContent = "읍·면·동 (클릭)"; }
-    else { badge.className = "badge gu"; badge.textContent = "구·시·군 (클릭)"; }
-    document.getElementById("question").textContent = q.prompt + " (지도에서 클릭)";
+    if (q.qtype === "dong") { badge.className = "badge dong"; badge.textContent = T("badge.dongClick"); }
+    else { badge.className = "badge gu"; badge.textContent = T("badge.guClick"); }
+    document.getElementById("question").textContent = q.prompt + T("q.mapClick");
     showLocateCandidates(q);
   }
 
   const nextBtn = document.getElementById("next-btn");
   nextBtn.disabled = true;
-  nextBtn.textContent = currentIndex === totalQuestions - 1 ? "결과지 보기" : "다음 문제";
+  nextBtn.textContent = currentIndex === totalQuestions - 1 ? T("btn.result") : T("btn.next");
   startTimer();
 }
 
@@ -2490,16 +2582,16 @@ function selectAnswer(btn, optLabel, q) {
 
   const isCorrect = optLabel === q.answerLabel;
   if (isCorrect) { btn.classList.add("correct"); score += 10; }
-  else { btn.classList.add("wrong"); buttons.forEach((b) => { if (b.textContent === q.answerLabel) b.classList.add("correct"); }); }
+  else { btn.classList.add("wrong"); buttons.forEach((b) => { if (b.dataset.val === q.answerLabel) b.classList.add("correct"); }); }
 
   const explainEl = document.getElementById("explain");
-  explainEl.textContent = (isCorrect ? "✅ 정답! " : "❌ 오답. ") + q.explain;
+  explainEl.textContent = (isCorrect ? T("fb.correct") : T("fb.wrong")) + q.explain;
   explainEl.style.borderLeftColor = isCorrect ? "#22c55e" : "#ef4444";
   explainEl.classList.remove("hidden");
 
   answerLog.push({ type: q.qtype, dir:q.dir, answer: q.answerLabel, picked: optLabel, correct: isCorrect, explain: q.explain, q: q });
 
-  document.getElementById("score-label").textContent = "점수 " + score;
+  document.getElementById("score-label").textContent = T("score.label", { n: score });
   const nextBtn = document.getElementById("next-btn");
   nextBtn.disabled = false;
   nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -2664,7 +2756,7 @@ function setupLocateRegionSegment() {
       locateRegion = btn.getAttribute("data-val");
       locateCurrent = null;
       document.getElementById("locate-feedback").classList.add("hidden");
-      document.getElementById("locate-question").textContent = '"문제 시작 / 다음 문제"를 눌러 시작하세요.';
+      document.getElementById("locate-question").textContent = T("locate.hint");
       clearHighlight(); clearCandidates(); clearGuOverlays();
     });
   });
@@ -2678,7 +2770,7 @@ function setupLocateTypeSegment() {
       locateType = btn.getAttribute("data-val");
       locateCurrent = null;
       document.getElementById("locate-feedback").classList.add("hidden");
-      document.getElementById("locate-question").textContent = '"문제 시작 / 다음 문제"를 눌러 시작하세요.';
+      document.getElementById("locate-question").textContent = T("locate.hint");
       clearHighlight(); clearCandidates(); clearGuOverlays();
     });
   });
@@ -2797,7 +2889,7 @@ window.addEventListener("load", async () => {
   });
 
   document.getElementById("open-setup-btn").addEventListener("click", () => {
-    if (!isUnlocked()) { alert("먼저 로그인하고 닉네임을 정해주세요."); return; }
+    if (!isUnlocked()) { alert(T("learn.lockAlert")); return; }
     const area = document.getElementById("setup-area");
     const btn = document.getElementById("open-setup-btn");
     if (area.classList.contains("hidden")) {
