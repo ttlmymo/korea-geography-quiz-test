@@ -602,7 +602,7 @@
 
 <div id="loading">
   <div class="spinner"></div>
-  <div id="loading-text">지도 및 경계 데이터를 불러오는 중…</div>
+  <div id="loading-text" data-i18n="load.init">지도 및 경계 데이터를 불러오는 중…</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -672,6 +672,18 @@ const I18N = {
   "mode.game":         { ko:"🎮 게임 모드", en:"🎮 Game Mode" },
   "rank.top10":        { ko:"🏅 실시간 랭킹 TOP 10", en:"🏅 Live Leaderboard TOP 10" },
   "rank.loading":      { ko:"불러오는 중…", en:"Loading…" },
+
+  /* 로딩 화면 */
+  "load.init":         { ko:"지도 및 경계 데이터를 불러오는 중…",
+                         en:"Loading map and boundary data…" },
+  "load.bjd":          { ko:"경계 데이터를 불러오는 중… ({name}, {i}/{n})",
+                         en:"Loading boundary data… ({name}, {i}/{n})" },
+  "load.gu":           { ko:"구 경계 데이터를 불러오는 중… ({name}, {i}/{n})",
+                         en:"Loading district boundaries… ({name}, {i}/{n})" },
+  "load.mapFail":      { ko:"네이버 지도 인증 실패.",
+                         en:"Naver Maps authentication failed." },
+  "load.dataFail":     { ko:"데이터 로딩 실패: {msg}",
+                         en:"Failed to load data: {msg}" },
 
   /* 학습 모드 공통 */
   "learn.viewLoc":     { ko:"위치 보기 ▸", en:"View on map ▸" },
@@ -1129,6 +1141,9 @@ let guOverlays = [];
 let guLabelMarkers = [];
 
 const SIDO_NAME = { "11":"서울특별시", "28":"인천광역시", "41":"경기도" };
+function sidoLabel(code) {
+  return (isEn() && SIDO_NAME_EN[code]) ? SIDO_NAME_EN[code] : (SIDO_NAME[code] || code);
+}
 
 let quizSet = [], currentIndex = 0, score = 0, answered = false;
 let answerLog = [];
@@ -1504,7 +1519,7 @@ async function loadAllGeoData() {
   for (let i = 0; i < ACTIVE_SIDOS.length; i++) {
     const code = ACTIVE_SIDOS[i];
     if (loadingText) loadingText.textContent =
-      `경계 데이터를 불러오는 중… (${SIDO_NAME[code] || code}, ${i + 1}/${ACTIVE_SIDOS.length})`;
+      T("load.bjd", { name: sidoLabel(code), i: i + 1, n: ACTIVE_SIDOS.length });
     geos.push(await loadRegionGeo(code));
   }
   geos.forEach((g) => map.data.addGeoJson(g));
@@ -1512,7 +1527,7 @@ async function loadAllGeoData() {
   for (let i = 0; i < ACTIVE_SIDOS.length; i++) {
     const code = ACTIVE_SIDOS[i];
     if (loadingText) loadingText.textContent =
-      `구 경계 데이터를 불러오는 중… (${SIDO_NAME[code] || code}, ${i + 1}/${ACTIVE_SIDOS.length})`;
+      T("load.gu", { name: sidoLabel(code), i: i + 1, n: ACTIVE_SIDOS.length });
     const guGeo = await loadGuGeo(code);
     buildGuPolygons(guGeo);
   }
@@ -2836,7 +2851,7 @@ function updateInlineBest() {
 =========================================================== */
 window.addEventListener("load", async () => {
   if (typeof naver === "undefined" || !naver.maps) {
-    document.getElementById("loading-text").textContent = "네이버 지도 인증 실패.";
+    document.getElementById("loading-text").textContent = T("load.mapFail");
     return;
   }
   try {
@@ -2847,7 +2862,7 @@ window.addEventListener("load", async () => {
     if (missing.length) document.getElementById("diag").textContent = "⚠ 구 매칭 실패: " + missing.join(", ");
   } catch (e) {
     console.error(e);
-    document.getElementById("loading-text").textContent = "데이터 로딩 실패: " + e.message;
+    document.getElementById("loading-text").textContent = T("load.dataFail", { msg: e.message });
     return;
   }
 
