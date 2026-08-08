@@ -376,49 +376,49 @@
 
         <div id="game-setup" class="hidden">
           <div class="setup-block">
-            <span class="label">출제 방향</span>
+            <span class="label" data-i18n="setup.dir">출제 방향</span>
             <div class="seg" id="seg-dir">
-              <button data-val="name" class="sel">위치→이름</button>
-              <button data-val="locate">이름→위치</button>
-              <button data-val="mix">혼합</button>
+              <button data-val="name" class="sel" data-i18n="setup.dirName">위치→이름</button>
+              <button data-val="locate" data-i18n="setup.dirLocate">이름→위치</button>
+              <button data-val="mix" data-i18n="setup.mix">혼합</button>
             </div>
           </div>
 
           <div class="setup-block">
-            <span class="label">출제 지역</span>
+            <span class="label" data-i18n="setup.region">출제 지역</span>
             <div class="seg" id="seg-region">
-              <button data-val="all" class="sel">전체</button>
-              <button data-val="seoul">서울</button>
-              <button data-val="incheon">인천</button>
-              <button data-val="gg">경기</button>
+              <button data-val="all" class="sel" data-i18n="region.all">전체</button>
+              <button data-val="seoul" data-i18n="region.seoul">서울</button>
+              <button data-val="incheon" data-i18n="region.incheon">인천</button>
+              <button data-val="gg" data-i18n="region.gg">경기</button>
             </div>
           </div>
 
           <div class="setup-block">
-            <span class="label">문제 유형</span>
+            <span class="label" data-i18n="type.label">문제 유형</span>
             <div class="seg" id="seg-type">
-              <button data-val="mix" class="sel">혼합</button>
-              <button data-val="gu">구·시·군만</button>
-              <button data-val="dong">읍·면·동만</button>
+              <button data-val="mix" class="sel" data-i18n="setup.mix">혼합</button>
+              <button data-val="gu" data-i18n="setup.typeGu">구·시·군만</button>
+              <button data-val="dong" data-i18n="setup.typeDong">읍·면·동만</button>
             </div>
           </div>
 
           <div class="setup-block">
-            <span class="label">문제 수</span>
+            <span class="label" data-i18n="setup.count">문제 수</span>
             <div class="seg" id="seg-count">
-              <button data-val="10" class="sel">10문제</button>
-              <button data-val="20">20문제</button>
+              <button data-val="10" class="sel" data-i18n="setup.count10">10문제</button>
+              <button data-val="20" data-i18n="setup.count20">20문제</button>
             </div>
           </div>
 
           <div class="setup-block">
             <div id="timer-toggle-row">
-              <span class="label">타이머 (문제당 15초)</span>
-              <button id="timer-toggle" class="toggle" aria-label="타이머 켜기/끄기"></button>
+              <span class="label" data-i18n="setup.timer">타이머 (문제당 15초)</span>
+              <button id="timer-toggle" class="toggle" data-i18n-aria="setup.timerAria" aria-label="타이머 켜기/끄기"></button>
             </div>
           </div>
 
-          <button id="start-btn" class="primary">🎮 게임 시작!</button>
+          <button id="start-btn" class="primary" data-i18n="setup.start">🎮 게임 시작!</button>
         </div>
       </div>
 
@@ -684,6 +684,22 @@ const I18N = {
                          en:"Naver Maps authentication failed." },
   "load.dataFail":     { ko:"데이터 로딩 실패: {msg}",
                          en:"Failed to load data: {msg}" },
+
+  /* 게임 설정 화면 */
+  "setup.dir":         { ko:"출제 방향", en:"Quiz Direction" },
+  "setup.dirName":     { ko:"위치→이름", en:"Location→Name" },
+  "setup.dirLocate":   { ko:"이름→위치", en:"Name→Location" },
+  "setup.mix":         { ko:"혼합", en:"Mixed" },
+  "setup.region":      { ko:"출제 지역", en:"Quiz Region" },
+  "region.all":        { ko:"전체", en:"All" },
+  "setup.typeGu":      { ko:"구·시·군만", en:"Districts only" },
+  "setup.typeDong":    { ko:"읍·면·동만", en:"Neighborhoods only" },
+  "setup.count":       { ko:"문제 수", en:"Questions" },
+  "setup.count10":     { ko:"10문제", en:"10 Questions" },
+  "setup.count20":     { ko:"20문제", en:"20 Questions" },
+  "setup.timer":       { ko:"타이머 (문제당 15초)", en:"Timer (15s per question)" },
+  "setup.timerAria":   { ko:"타이머 켜기/끄기", en:"Toggle timer" },
+  "setup.start":       { ko:"🎮 게임 시작!", en:"🎮 Start Game!" },
 
   /* 학습 모드 공통 */
   "learn.viewLoc":     { ko:"위치 보기 ▸", en:"View on map ▸" },
