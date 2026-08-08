@@ -428,8 +428,8 @@
         <div id="home-rank-list"></div>
       </div>
 
-      <button id="verify-btn" class="secondary">🔍 전체 검증 (구 + 읍·면·동)</button>
-      <button id="adj-verify-btn" class="secondary">🔗 인접 검증 (비대칭 의심 쌍)</button>
+      <button id="verify-btn" class="secondary" data-i18n="verify.all">🔍 전체 검증 (구 + 읍·면·동)</button>
+      <button id="adj-verify-btn" class="secondary" data-i18n="verify.adj">🔗 인접 검증 (비대칭 의심 쌍)</button>
       <div id="diag"></div>
       <div id="verify-result"></div>
     </div>
@@ -525,21 +525,21 @@
 
     <div id="result-screen" class="hidden">
       <div id="result">
-        <div style="text-align:center; color:var(--muted);">최종 점수</div>
+        <div style="text-align:center; color:var(--muted);" data-i18n="result.final">최종 점수</div>
         <div class="score"><span id="final-score">0</span> / <span id="max-score">100</span></div>
         <div id="result-msg"></div>
-        <div id="new-best" class="hidden" style="text-align:center; color:var(--sage-d); font-weight:400; margin-top:6px;">🎉 내 최고 점수 갱신!</div>
+        <div id="new-best" class="hidden" style="text-align:center; color:var(--sage-d); font-weight:400; margin-top:6px;" data-i18n="result.newBest">🎉 내 최고 점수 갱신!</div>
         <div id="rank-save-status" style="text-align:center; color:var(--muted); font-size:12px; margin-top:6px;"></div>
       </div>
 
       <div style="display:flex; gap:8px; margin-top:8px;">
-        <button id="wrong-only-btn" class="secondary" style="flex:1;">❌ 틀린 문제만</button>
-        <button id="to-rank-btn" class="secondary" style="flex:1;">🏅 랭킹 보기</button>
+        <button id="wrong-only-btn" class="secondary" style="flex:1;" data-i18n="result.wrongOnly">❌ 틀린 문제만</button>
+        <button id="to-rank-btn" class="secondary" style="flex:1;" data-i18n="result.toRank">🏅 랭킹 보기</button>
       </div>
 
-      <h2 style="font-size:16px; margin-top:8px; font-weight:400; color:var(--text);">📋 결과지 <span style="font-size:12px; color:var(--muted); font-weight:400;">(항목을 누르면 지도에 다시 표시)</span></h2>
+      <h2 style="font-size:16px; margin-top:8px; font-weight:400; color:var(--text);"><span data-i18n="result.report">📋 결과지</span> <span style="font-size:12px; color:var(--muted); font-weight:400;" data-i18n="result.reportHint">(항목을 누르면 지도에 다시 표시)</span></h2>
       <div id="report"></div>
-      <button id="restart-btn" class="primary" style="margin-top:8px;">다시 하기</button>
+      <button id="restart-btn" class="primary" style="margin-top:8px;" data-i18n="result.restart">다시 하기</button>
     </div>
 
     <div id="rank-screen" class="hidden">
@@ -548,9 +548,9 @@
         <div id="rank-status" class="hidden" data-i18n="rank.loading">불러오는 중…</div>
         <div id="rank-list"></div>
       </div>
-      <div id="rank-note">※ 전 세계 모든 플레이어의 점수가 실시간으로 반영됩니다. 로그인 후 닉네임을 정하고 게임하면 자동 등록돼요.</div>
-      <button id="rank-refresh-btn" class="secondary" style="margin-top:10px;">🔄 새로고침</button>
-      <button id="rank-back-btn" class="primary" style="margin-top:6px;">← 처음으로</button>
+      <div id="rank-note" data-i18n="rank.note">※ 전 세계 모든 플레이어의 점수가 실시간으로 반영됩니다. 로그인 후 닉네임을 정하고 게임하면 자동 등록돼요.</div>
+      <button id="rank-refresh-btn" class="secondary" style="margin-top:10px;" data-i18n="rank.refresh">🔄 새로고침</button>
+      <button id="rank-back-btn" class="primary" style="margin-top:6px;" data-i18n="common.home">← 처음으로</button>
     </div>
    </div>
 
@@ -585,17 +585,19 @@
 
    <!-- 지역 정보 페이지 링크 -->
    <div style="flex:none; max-width:820px; margin:0 auto; padding:18px 20px; background:var(--card); border-radius:var(--radius); box-shadow:var(--soft-sm); font-size:15px; line-height:1.8; color:var(--text);">
-     🗺️ 서울 25개 자치구의 위치·법정동 목록·역사가 궁금하다면?<br>
-     <a href="seoul/" style="color:var(--peach-d); font-weight:400;">서울 자치구 한눈에 보기 →</a>
+     <span data-i18n="link.seoulPrompt">🗺️ 서울 25개 자치구의 위치·법정동 목록·역사가 궁금하다면?</span><br>
+     <a href="seoul/" style="color:var(--peach-d); font-weight:400;" data-i18n="link.seoulCta">서울 자치구 한눈에 보기 →</a>
+   </div>
    </div>
 
    <div id="site-footer" style="text-align:center; margin-top:20px; padding:0 8px 8px; font-size:12px; color:var(--muted); line-height:2;">
      <a href="en/" style="color:var(--muted); text-decoration:none;">English</a>
      &nbsp;·&nbsp;
-     <a href="mailto:koquiz.support@gmail.com" style="color:var(--muted); text-decoration:none;">문의하기</a>
+     <a href="mailto:koquiz.support@gmail.com" style="color:var(--muted); text-decoration:none;" data-i18n="footer.contact">문의하기</a>
      &nbsp;·&nbsp;
-<a href="https://ttlmymo.github.io/korea-geography-quiz/privacy.html" style="color:var(--muted); text-decoration:none;">개인정보처리방침</a>
+     <a href="https://ttlmymo.github.io/korea-geography-quiz/privacy.html" style="color:var(--muted); text-decoration:none;" data-i18n="footer.privacy">개인정보처리방침</a>
      <div style="margin-top:4px;">Copyright 2026. koquiz.support@gmail.com All rights reserved.</div>
+   </div>
    </div>
   </div>
 </div>
@@ -700,6 +702,62 @@ const I18N = {
   "setup.timer":       { ko:"타이머 (문제당 15초)", en:"Timer (15s per question)" },
   "setup.timerAria":   { ko:"타이머 켜기/끄기", en:"Toggle timer" },
   "setup.start":       { ko:"🎮 게임 시작!", en:"🎮 Start Game!" },
+
+  /* 결과 화면 */
+  "result.final":      { ko:"최종 점수", en:"Final Score" },
+  "result.newBest":    { ko:"🎉 내 최고 점수 갱신!", en:"🎉 New personal best!" },
+  "result.wrongOnly":  { ko:"❌ 틀린 문제만", en:"❌ Wrong only" },
+  "result.toRank":     { ko:"🏅 랭킹 보기", en:"🏅 Leaderboard" },
+  "result.report":     { ko:"📋 결과지", en:"📋 Report" },
+  "result.reportHint": { ko:"(항목을 누르면 지도에 다시 표시)", en:"(tap an item to show it on the map)" },
+  "result.restart":    { ko:"다시 하기", en:"Play Again" },
+  "result.gradeA":     { ko:"🏆 전국 지리 마스터!", en:"🏆 Geography Master!" },
+  "result.gradeB":     { ko:"👍 훌륭해요!", en:"👍 Great job!" },
+  "result.gradeC":     { ko:"🙂 절반은 넘겼어요.", en:"🙂 More than half correct." },
+  "result.gradeD":     { ko:"📚 조금 더 연습해봐요!", en:"📚 Keep practicing!" },
+  "result.count":      { ko:"({total}문제 중 {correct}개 정답)",
+                         en:"({correct} of {total} correct)" },
+  "report.tagGu":      { ko:"구·시·군", en:"District" },
+  "report.tagDong":    { ko:"읍·면·동", en:"Neighborhood" },
+  "report.byLocate":   { ko:"·위치", en:" · location" },
+  "report.byName":     { ko:"·이름", en:" · name" },
+  "report.answer":     { ko:"정답: {answer}", en:"Answer: {answer}" },
+  "report.myAnswer":   { ko:"내 답: {picked}", en:"Your answer: {picked}" },
+  "report.replay":     { ko:"👆 눌러서 지도에서 위치 확인",
+                         en:"👆 Tap to see it on the map" },
+  "rank.needLogin":    { ko:"ℹ️ 로그인하면 점수가 랭킹에 등록돼요. (처음 화면에서 로그인)",
+                         en:"ℹ️ Sign in to post your score. (sign in on the home screen)" },
+  "rank.needNick":     { ko:"ℹ️ 닉네임을 정하면 점수가 등록돼요. (처음 화면에서 닉네임 설정)",
+                         en:"ℹ️ Set a nickname to post your score. (set it on the home screen)" },
+  "rank.saving":       { ko:"랭킹에 점수 등록 중…", en:"Submitting your score…" },
+  "rank.saved":        { ko:"✅ 랭킹에 등록되었습니다!", en:"✅ Score submitted!" },
+  "rank.saveFail":     { ko:"⚠ 랭킹 등록 실패 (네트워크 문제)",
+                         en:"⚠ Submission failed (network error)" },
+  "rank.loadFail":     { ko:"⚠ 랭킹을 불러오지 못했습니다.",
+                         en:"⚠ Failed to load the leaderboard." },
+  "rank.empty":        { ko:"아직 등록된 점수가 없어요. 첫 주인공이 되어보세요! 🎯",
+                         en:"No scores yet. Be the first! 🎯" },
+  "rank.anon":         { ko:"익명", en:"Anonymous" },
+  "rank.plays":        { ko:"{n}판", en:"{n} games" },
+  "rank.points":       { ko:"{n}점", en:"{n} pts" },
+  "rank.note":         { ko:"※ 전 세계 모든 플레이어의 점수가 실시간으로 반영됩니다. 로그인 후 닉네임을 정하고 게임하면 자동 등록돼요.",
+                         en:"※ Scores from players worldwide update in real time. Sign in, set a nickname, and your scores post automatically." },
+  "rank.refresh":      { ko:"🔄 새로고침", en:"🔄 Refresh" },
+  "nick.dup":          { ko:"이미 사용 중인 닉네임이에요. 다른 닉네임을 정해주세요.",
+                         en:"That nickname is already taken. Please choose another one." },
+  "nick.empty":        { ko:"닉네임을 입력해주세요.", en:"Please enter a nickname." },
+  "verify.all":        { ko:"🔍 전체 검증 (구 + 읍·면·동)",
+                         en:"🔍 Full check (districts + neighborhoods)" },
+  "verify.adj":        { ko:"🔗 인접 검증 (비대칭 의심 쌍)",
+                         en:"🔗 Adjacency check (asymmetric pairs)" },
+  "diag.guFail":       { ko:"⚠ 구 매칭 실패: {list}",
+                         en:"⚠ Unmatched districts: {list}" },
+  "link.seoulPrompt":  { ko:"🗺️ 서울 25개 자치구의 위치·법정동 목록·역사가 궁금하다면?",
+                         en:"🗺️ Curious about the location, neighborhoods, and history of Seoul's 25 districts?" },
+  "link.seoulCta":     { ko:"서울 자치구 한눈에 보기 →",
+                         en:"Browse all Seoul districts →" },
+  "footer.contact":    { ko:"문의하기", en:"Contact" },
+  "footer.privacy":    { ko:"개인정보처리방침", en:"Privacy Policy" },
 
   /* 학습 모드 공통 */
   "learn.viewLoc":     { ko:"위치 보기 ▸", en:"View on map ▸" },
@@ -910,7 +968,7 @@ async function saveNick(nick) {
         .neq("user_id", currentUser.id)
         .maybeSingle();
       if (dup) {
-        alert("이미 사용 중인 닉네임이에요. 다른 닉네임을 정해주세요.");
+        alert(T("nick.dup"));
         return false;
       }
     } catch (e) { console.error(e); }
@@ -923,7 +981,7 @@ async function saveNick(nick) {
       if (data) {
         const { error } = await sb.from("ranking").update({ nick: clean }).eq("user_id", currentUser.id);
         if (error) {
-          alert("이미 사용 중인 닉네임이에요. 다른 닉네임을 정해주세요.");
+          alert(T("nick.dup"));
           currentNick = null;
           return false;
         }
@@ -936,7 +994,7 @@ async function saveNick(nick) {
           best: 0
         });
         if (error) {
-          alert("이미 사용 중인 닉네임이에요. 다른 닉네임을 정해주세요.");
+          alert(T("nick.dup"));
           currentNick = null;
           return false;
         }
@@ -2664,8 +2722,9 @@ async function showResult() {
   const correctCnt = answerLog.filter((a) => a.correct).length;
   const pct = score / maxScore;
   track("game_complete", { score: score, correct: correctCnt, total: totalQuestions });
-  const msg = pct >= 0.9 ? "🏆 전국 지리 마스터!" : pct >= 0.7 ? "👍 훌륭해요!" : pct >= 0.5 ? "🙂 절반은 넘겼어요." : "📚 조금 더 연습해봐요!";
-  document.getElementById("result-msg").textContent = `${msg}  (${totalQuestions}문제 중 ${correctCnt}개 정답)`;
+  const msg = T(pct >= 0.9 ? "result.gradeA" : pct >= 0.7 ? "result.gradeB" : pct >= 0.5 ? "result.gradeC" : "result.gradeD");
+  document.getElementById("result-msg").textContent =
+    msg + "  " + T("result.count", { total: totalQuestions, correct: correctCnt });
 
   const prevBest = parseInt(localStorage.getItem(LS_BEST) || "0", 10);
   const newBestEl = document.getElementById("new-best");
@@ -2678,34 +2737,37 @@ async function showResult() {
     const item = document.createElement("div");
     item.className = "report-item " + (a.correct ? "ok" : "no");
     item.setAttribute("data-idx", i);
-    const tag = (a.type === "dong" ? "읍·면·동" : "구·시·군") + (a.dir === "locate" ? "·위치" : "·이름");
-    const pickedLine = a.correct ? "" : `<div class="sub">내 답: ${a.picked}</div>`;
+    const tag = T(a.type === "dong" ? "report.tagDong" : "report.tagGu")
+              + T(a.dir === "locate" ? "report.byLocate" : "report.byName");
+    const ansTxt = (isEn() && a.dir === "name") ? romanizeFull(a.answer) : a.answer;
+    const pickTxt = (isEn() && a.dir === "name") ? romanizeFull(a.picked) : a.picked;
+    const pickedLine = a.correct ? "" : `<div class="sub">${T("report.myAnswer", { picked: pickTxt })}</div>`;
     item.innerHTML = `
-      <div class="head">${i + 1}. ${a.correct ? "⭕" : "❌"} [${tag}] 정답: ${a.answer}</div>
+      <div class="head">${i + 1}. ${a.correct ? "⭕" : "❌"} [${tag}] ${T("report.answer", { answer: ansTxt })}</div>
       ${pickedLine}
       <div class="sub">${a.explain}</div>
-      <div class="replay">👆 눌러서 지도에서 위치 확인</div>`;
+      <div class="replay">${T("report.replay")}</div>`;
     item.addEventListener("click", () => replayQuestion(i));
     report.appendChild(item);
   });
 
   const statusEl = document.getElementById("rank-save-status");
   if (!currentUser) {
-    statusEl.textContent = "ℹ️ 로그인하면 점수가 랭킹에 등록돼요. (처음 화면에서 로그인)";
+    statusEl.textContent = T("rank.needLogin");
   } else if (!currentNick) {
-    statusEl.textContent = "ℹ️ 닉네임을 정하면 점수가 등록돼요. (처음 화면에서 닉네임 설정)";
+    statusEl.textContent = T("rank.needNick");
   } else {
-    statusEl.textContent = "랭킹에 점수 등록 중…";
+    statusEl.textContent = T("rank.saving");
     const ok = await saveRankScore(score);
-    statusEl.textContent = ok ? "✅ 랭킹에 등록되었습니다!" : "⚠ 랭킹 등록 실패 (네트워크 문제)";
+    statusEl.textContent = ok ? T("rank.saved") : T("rank.saveFail");
     loadHomeRanking();
   }
 }
 
 function renderRankList(list, listEl, statusEl) {
   listEl.innerHTML = "";
-  if (list === null) { if (statusEl) { statusEl.classList.remove("hidden"); statusEl.textContent = "⚠ 랭킹을 불러오지 못했습니다."; } return; }
-  if (!list.length) { if (statusEl) { statusEl.classList.remove("hidden"); statusEl.textContent = "아직 등록된 점수가 없어요. 첫 주인공이 되어보세요! 🎯"; } return; }
+  if (list === null) { if (statusEl) { statusEl.classList.remove("hidden"); statusEl.textContent = T("rank.loadFail"); } return; }
+  if (!list.length) { if (statusEl) { statusEl.classList.remove("hidden"); statusEl.textContent = T("rank.empty"); } return; }
   if (statusEl) statusEl.classList.add("hidden");
   const myNick = currentNick || localStorage.getItem(LS_NICK) || "";
   const medals = ["🥇","🥈","🥉"];
@@ -2715,9 +2777,9 @@ function renderRankList(list, listEl, statusEl) {
     const pos = i < 3 ? medals[i] : (i + 1);
     div.innerHTML = `
       <span class="pos">${pos}</span>
-      <span class="nick">${escapeHtml(r.nick || "익명")}</span>
-      <span class="date">${r.plays || 0}판</span>
-      <span class="pts">${r.total_score}점</span>`;
+      <span class="nick">${escapeHtml(r.nick || T("rank.anon"))}</span>
+      <span class="date">${T("rank.plays", { n: r.plays || 0 })}</span>
+      <span class="pts">${T("rank.points", { n: r.total_score })}</span>`;
     listEl.appendChild(div);
   });
 }
@@ -2875,7 +2937,7 @@ window.addEventListener("load", async () => {
     await loadAllGeoData();
     document.getElementById("loading").classList.add("hidden");
     const missing = DB.filter((d) => !d.sggCode).map((d) => d.name);
-    if (missing.length) document.getElementById("diag").textContent = "⚠ 구 매칭 실패: " + missing.join(", ");
+    if (missing.length) document.getElementById("diag").textContent = T("diag.guFail", { list: missing.join(", ") });
   } catch (e) {
     console.error(e);
     document.getElementById("loading-text").textContent = T("load.dataFail", { msg: e.message });
@@ -2908,7 +2970,7 @@ window.addEventListener("load", async () => {
   document.getElementById("logout-btn").addEventListener("click", logout);
   document.getElementById("nick-save-btn").addEventListener("click", async () => {
     const v = document.getElementById("nick-input").value;
-    if (!v.trim()) { alert("닉네임을 입력해주세요."); return; }
+    if (!v.trim()) { alert(T("nick.empty")); return; }
     const ok = await saveNick(v);
     if (ok) refreshAuthUI();
   });
