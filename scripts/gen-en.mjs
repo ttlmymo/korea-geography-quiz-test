@@ -33,8 +33,7 @@ const KO_URL  = canonM[1].replace(/\/*$/, "/");
 const EN_URL  = KO_URL + "en/";
 const NOINDEX = /<meta name="robots"[^>]*noindex/i.test(koHead);
 
-/* 영문 전용 OG 이미지가 준비되면 og-image-en.jpg 로 교체 */
-const OG_IMAGE = KO_URL + "social-image/og-image-ko.jpg";
+const OG_IMAGE = KO_URL + "social-image/og-image-en.jpg";
 
 /* ─────────────── 1. 영문 HEAD ─────────────── */
 const EN_TITLE = "Korea Geography Master Quiz";
