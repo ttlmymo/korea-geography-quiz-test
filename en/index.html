@@ -398,6 +398,21 @@
 .bi-ko{ display:block; font-size:0.78em; color:#9a9a9a; font-weight:400; line-height:1.25; margin-top:2px; letter-spacing:0; }
 .bi-chip{ display:inline-block; vertical-align:top; margin:0 12px 6px 0; }
 .ic-title .bi-ko{ font-size:0.62em; }
+
+/* ── S5-2 영문 텍스트 길이 대응 ── */
+
+/* ① 리더보드 닉네임: 최소 너비 확보 후 말줄임 */
+.nick{flex:1 1 auto;min-width:5em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ② 한글 보조문구 색 대비 개선(초록/주황 버튼 위에서 묻힘 방지) */
+.bi-ko{display:block;font-size:.72em;line-height:1.2;margin-top:2px;color:#4a4a4a;opacity:.85;}
+
+/* ③ 320px 이하: 영문 모드에서 한글 보조문구 숨김 */
+@media (max-width:360px){
+  html[lang="en"] .bi-ko{display:none;}
+  h1[data-i18n="app.title"]{font-size:1.05rem;line-height:1.25;}
+}
+
 </style>
 </head>
 
