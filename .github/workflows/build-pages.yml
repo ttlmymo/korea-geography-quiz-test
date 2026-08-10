@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - 'index.html'
       - 'features.js'
       - 'features_en.js'
       - 'roma.js'
@@ -27,6 +28,7 @@ jobs:
         with:
           node-version: '20'
       - run: node scripts/gen-pages.mjs
+      - run: node scripts/gen-en.mjs
       - run: node scripts/gen-sitemap.mjs
       - name: Commit generated files
         run: |
