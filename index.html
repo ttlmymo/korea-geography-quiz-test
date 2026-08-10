@@ -412,6 +412,10 @@
   h1[data-i18n="app.title"]{font-size:1.05rem;line-height:1.25;}
 }
 
+/* ④ 리더보드 우측 수치: 줄바꿈 금지 */
+.nick ~ span{white-space:nowrap;flex:0 0 auto;}
+.nick ~ span:not(:last-child){font-size:.8em;}
+
 </style>
 </head>
 
