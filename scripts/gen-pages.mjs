@@ -344,7 +344,7 @@ ${people ? `<section><h2>People &amp; Stories</h2><p>${esc(people)}</p>${imgHtml
 </section>
 
 <div class="cta-wrap">
-  <a class="cta" href="${SITE_URL}/?region=seoul">🎮 Play the Seoul geography quiz</a>
+  <a class="cta" href="${SITE_URL}/en/?region=seoul">🎮 Play the Seoul geography quiz</a>
 </div>
 
 <footer>
@@ -398,7 +398,7 @@ li span{display:block;font-size:12px;color:var(--muted)}
 <h1>The 25 Districts of Seoul</h1>
 <p class="lead">Explore each district's location, neighborhoods, history and the origin of its name. · <a href="${koUrl}">한국어</a></p>
 <ul>${items}</ul>
-<div style="text-align:center"><a class="cta" href="${SITE_URL}/">🎮 Play the geography quiz</a></div>
+<div style="text-align:center"><a class="cta" href="${SITE_URL}/en/?region=seoul">🎮 Play the geography quiz</a></div>
 </div></body></html>`;
 }
 
