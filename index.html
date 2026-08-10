@@ -698,6 +698,13 @@
 /* ⚠ 실서비스 이관 시 -test 를 지울 것 */
 const SITE_BASE = "/korea-geography-quiz-test/";
 
+/* features.js 이미지의 상대경로를 /en/ 에서도 깨지지 않게 절대경로로 (NEW-8) */
+function assetUrl(src) {
+  const s = String(src || "");
+  if (/^(https?:)?\/\//i.test(s) || s.startsWith("data:")) return s;
+  return SITE_BASE + s.replace(/^\/+/, "");
+}
+
 const LANG = (function () {
   if (location.pathname.indexOf("/en/") !== -1) return "en";
   return "ko";
@@ -1195,6 +1202,7 @@ function refreshAuthUI() {
 /* ===========================================================
    설정
 =========================================================== */
+/* ⚠ 이관 예외: 지오데이터는 운영 저장소(korea-geography-quiz)에 있으므로 -test 를 붙이지 말 것 */
 const CDN_BASE = "https://cdn.jsdelivr.net/gh/ttlmymo/korea-geography-quiz@main";
 
 const REGION_FILES = {
@@ -2429,10 +2437,13 @@ function showGuInfoCard(item) {
     ? `<div class="ic-row"><span class="ic-label block">${T("info.story")}</span>${feat.people}</div>` : "";
 
   let imagesHtml = "";
-  if (feat && Array.isArray(feat.images) && feat.images.length) {
-    imagesHtml = `<div class="ic-images">` + feat.images.map((img) =>
+  const imgs = (feat && Array.isArray(feat.images) && feat.images.length)
+    ? feat.images
+    : ((featKo && Array.isArray(featKo.images)) ? featKo.images : []);
+  if (imgs.length) {
+    imagesHtml = `<div class="ic-images">` + imgs.map((img) =>
       `<figure class="ic-fig">
-         <img src="${img.src}" alt="${(img.caption || "").replace(/"/g,'&quot;')}" loading="lazy" />
+         <img src="${assetUrl(img.src)}" alt="${(img.caption || "").replace(/"/g,'&quot;')}" loading="lazy" />
          ${img.caption ? `<figcaption>${img.caption}</figcaption>` : ""}
        </figure>`
     ).join("") + `</div>`;
