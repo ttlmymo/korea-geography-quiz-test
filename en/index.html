@@ -417,6 +417,12 @@
 .nick ~ span{white-space:nowrap;flex:0 0 auto;}
 .nick ~ span:not(:last-child){font-size:.8em;}
 
+/* ⑤ 320px 이하: 리더보드 행 여백 축소 */
+@media (max-width:340px){
+  .nick ~ span:last-child{font-size:.9em;}
+  .nick{min-width:4em;}
+}
+
 </style>
 </head>
 
