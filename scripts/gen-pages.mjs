@@ -10,8 +10,15 @@ const IS_TEST   = true;                            // 실서비스: false
 const ORIGIN   = "https://ttlmymo.github.io";
 const SITE_URL = ORIGIN + BASE_PATH;
 const CDN = "https://cdn.jsdelivr.net/gh/ttlmymo/korea-geography-quiz@main";
-const OG_IMAGE = `${SITE_URL}/social-image/og-image-ko.jpg`;
+const OG_IMAGE    = `${SITE_URL}/social-image/og-image-ko.jpg`;
+const OG_IMAGE_EN = `${SITE_URL}/social-image/og-image-en.jpg`;
 const ADJ_GRID = 0.007;
+
+const HEAD_COMMON = `
+<meta name="google-adsense-account" content="ca-pub-1946710813485758">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1946710813485758" crossorigin="anonymous"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E5PLVYPNS2"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-E5PLVYPNS2');</script>`;
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g,
   (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
@@ -111,6 +118,7 @@ function renderPage({ guName, slug, en, desc, history, people, images, dongs, ad
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+${HEAD_COMMON}
 <title>${esc(title)}</title>
 ${IS_TEST ? '<meta name="robots" content="noindex, nofollow">' : ""}
 <meta name="description" content="${esc(metaDesc)}">
@@ -185,7 +193,9 @@ ${people ? `<section><h2>인물과 이야기</h2><p>${esc(people)}</p>${imgHtml}
 
 <footer>
   <a href="${SITE_URL}/">전국 지리 마스터 퀴즈</a> ·
-  <a href="${SITE_URL}/seoul/">서울 자치구 전체 보기</a>
+  <a href="${SITE_URL}/seoul/">서울 자치구 전체 보기</a> ·
+  <a href="${SITE_URL}/privacy.html">개인정보처리방침</a> ·
+  <a href="mailto:koquiz.support@gmail.com">문의하기</a>
   <div style="margin-top:4px">Copyright 2026. koquiz.support@gmail.com</div>
 </footer>
 </div>
@@ -203,6 +213,7 @@ function renderIndex(list) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+${HEAD_COMMON}
 <title>서울특별시 25개 자치구 목록·지도 | 전국 지리 마스터 퀴즈</title>
 ${IS_TEST ? '<meta name="robots" content="noindex, nofollow">' : ""}
 <meta name="description" content="서울특별시 25개 자치구의 위치와 법정동 목록, 역사와 유래를 한눈에. 지도로 배우는 대한민국 행정구역 학습 자료입니다.">
@@ -251,9 +262,12 @@ function renderPageEn({ guName, slug, en, desc, history, people, images, dongs, 
       }).join(", ")
     : "No adjacent district data available.";
 
-  const imgHtml = (images || []).map((im) =>
-    `<figure><img src="${esc(fixImg(im.src))}" alt="${esc(im.caption || en)}" loading="lazy">
-     ${im.caption ? `<figcaption>${esc(im.caption)}</figcaption>` : ""}</figure>`).join("");
+  const imgHtml = (images || []).map((im) => {
+    const cap = im.captionEn || "";
+    return `<figure><img src="${esc(fixImg(im.src))}" alt="${esc(cap || `${en}, Seoul`)}" loading="lazy">
+     ${cap ? `<figcaption>${esc(cap)}</figcaption>`
+           : (im.caption ? `<figcaption lang="ko">${esc(im.caption)}</figcaption>` : "")}</figure>`;
+  }).join("");
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -274,6 +288,7 @@ function renderPageEn({ guName, slug, en, desc, history, people, images, dongs, 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+${HEAD_COMMON}
 <title>${esc(title)}</title>
 ${IS_TEST ? '<meta name="robots" content="noindex, nofollow">' : ""}
 <meta name="description" content="${esc(metaDesc)}">
@@ -287,17 +302,17 @@ ${IS_TEST ? '<meta name="robots" content="noindex, nofollow">' : ""}
 <meta property="og:title" content="${esc(en)} — Map &amp; Neighborhood List">
 <meta property="og:description" content="${esc(metaDesc)}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${OG_IMAGE}">
+<meta property="og:image" content="${OG_IMAGE_EN}">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="${OG_IMAGE}">
+<meta name="twitter:image" content="${OG_IMAGE_EN}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Jua&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#e8e2d5;--card:#f0ebe0;--line:#d8cfbd;--text:#5f5749;--muted:#a59c89;--sage:#9cb98f;--sage-d:#8aa97e;--peach:#e3a183}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"Jua",-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.9}
+body{font-family:"Fredoka","Jua",-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.9}
 .wrap{max-width:820px;margin:0 auto;padding:28px 20px 60px}
 nav.bc{font-size:13px;color:var(--muted);margin-bottom:18px}
 nav.bc a{color:var(--muted);text-decoration:none}
@@ -320,10 +335,10 @@ footer a{color:var(--muted);text-decoration:none}
 </head>
 <body>
 <div class="wrap">
-<nav class="bc"><a href="${SITE_URL}/en/">Home</a> › <a href="${SITE_URL}/en/seoul/">Seoul</a> › ${esc(en)} · <a href="${koUrl}">한국어</a></nav>
+<nav class="bc"><a href="${SITE_URL}/en/">Home</a> › <a href="${SITE_URL}/en/seoul/">Seoul</a> › ${esc(en)} · <a href="${koUrl}" lang="ko" hreflang="ko">한국어</a></nav>
 
 <h1>${esc(en)}, Seoul</h1>
-<p class="lead">${esc(guName)} · ${dongs.length} neighborhoods · Learn Korean administrative divisions with maps</p>
+<p class="lead"><span lang="ko">${esc(guName)}</span> · ${dongs.length} neighborhoods · Learn Korean administrative divisions with maps</p>
 
 <section>
   <h2>About ${esc(en)}</h2>
@@ -350,7 +365,9 @@ ${people ? `<section><h2>People &amp; Stories</h2><p>${esc(people)}</p>${imgHtml
 <footer>
   <a href="${SITE_URL}/en/">Korea Geography Master Quiz</a> ·
   <a href="${SITE_URL}/en/seoul/">All Seoul districts</a> ·
-  <a href="${koUrl}">한국어로 보기</a>
+  <a href="${SITE_URL}/privacy.html">Privacy Policy</a> ·
+  <a href="mailto:koquiz.support@gmail.com">Contact</a> ·
+  <a href="${koUrl}" lang="ko">한국어로 보기</a>
   <div style="margin-top:4px">Copyright 2026. koquiz.support@gmail.com</div>
 </footer>
 </div>
@@ -369,6 +386,7 @@ function renderIndexEn(list) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+${HEAD_COMMON}
 <title>The 25 Districts of Seoul — List &amp; Map | Korea Geography Master Quiz</title>
 ${IS_TEST ? '<meta name="robots" content="noindex, nofollow">' : ""}
 <meta name="description" content="A complete list of the 25 autonomous districts (gu) of Seoul, South Korea, with their neighborhoods, location and history.">
@@ -378,12 +396,12 @@ ${IS_TEST ? '<meta name="robots" content="noindex, nofollow">' : ""}
 <link rel="alternate" hreflang="x-default" href="${koUrl}">
 <meta property="og:title" content="The 25 Districts of Seoul — List &amp; Map">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${OG_IMAGE}">
-<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<meta property="og:image" content="${OG_IMAGE_EN}">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Jua&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#e8e2d5;--card:#f0ebe0;--text:#5f5749;--muted:#a59c89;--sage-d:#8aa97e;--peach:#e3a183}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"Jua",sans-serif;background:var(--bg);color:var(--text);line-height:1.9}
+body{font-family:"Fredoka","Jua",sans-serif;background:var(--bg);color:var(--text);line-height:1.9}
 .wrap{max-width:820px;margin:0 auto;padding:28px 20px 60px}
 h1{font-size:28px;font-weight:400;margin-bottom:10px}
 p.lead{color:var(--muted);font-size:15px;margin-bottom:22px}
@@ -396,7 +414,7 @@ li span{display:block;font-size:12px;color:var(--muted)}
 </head>
 <body><div class="wrap">
 <h1>The 25 Districts of Seoul</h1>
-<p class="lead">Explore each district's location, neighborhoods, history and the origin of its name. · <a href="${koUrl}">한국어</a></p>
+<p class="lead">Explore each district's location, neighborhoods, history and the origin of its name. · <a href="${koUrl}" lang="ko" hreflang="ko">한국어</a></p>
 <ul>${items}</ul>
 <div style="text-align:center"><a class="cta" href="${SITE_URL}/en/?region=seoul">🎮 Play the geography quiz</a></div>
 </div></body></html>`;
