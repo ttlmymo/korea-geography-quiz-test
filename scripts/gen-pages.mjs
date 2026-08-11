@@ -482,10 +482,14 @@ for (const [code, guName] of Object.entries(nameByCode)) {
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, "index.html"), html, "utf8");
 
+  const imagesEn = (fe.images && fe.images.length)
+    ? fe.images.map((im) => ({ src: im.src, captionEn: im.caption }))
+    : (f.images || []);
+
   const htmlEn = renderPageEn({
     guName, slug: meta.slug, en: meta.en,
     desc: fe.desc, history: fe.history, people: fe.people,
-    images: fe.images || f.images,
+    images: imagesEn,
     dongs, adjNames
   });
   const dirEn = path.join("en", "seoul", meta.slug);
