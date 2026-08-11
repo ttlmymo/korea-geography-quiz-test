@@ -702,7 +702,7 @@
      &nbsp;·&nbsp;
      <a href="mailto:koquiz.support@gmail.com" style="color:var(--muted); text-decoration:none;" data-i18n="footer.contact">문의하기</a>
      &nbsp;·&nbsp;
-     <a id="footer-privacy-link" href="privacy.html" style="color:var(--muted); text-decoration:none;" data-i18n="footer.privacy">개인정보처리방침</a>
+     <a id="footer-privacy-link" href="../privacy-en.html" hreflang="en" style="color:var(--muted); text-decoration:none;" data-i18n="footer.privacy">개인정보처리방침</a>
      <div style="margin-top:4px;">Copyright 2026. koquiz.support@gmail.com All rights reserved.</div>
    </div>
   </div>
@@ -1039,7 +1039,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const f = document.getElementById("footer-lang-link");
   if (f) { f.href = altLangHref(); f.textContent = isEn() ? "한국어" : "English"; }
   const pv = document.getElementById("footer-privacy-link");
-  if (pv) { pv.href = SITE_BASE + "privacy.html"; }
+  if (pv) {
+    pv.href = SITE_BASE + (isEn() ? "privacy-en.html" : "privacy.html");
+    pv.hreflang = isEn() ? "en" : "ko";
+  }
 });
 </script>
 
