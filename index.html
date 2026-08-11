@@ -702,7 +702,7 @@
      &nbsp;·&nbsp;
      <a href="mailto:koquiz.support@gmail.com" style="color:var(--muted); text-decoration:none;" data-i18n="footer.contact">문의하기</a>
      &nbsp;·&nbsp;
-     <a id="footer-privacy-link" href="../privacy-en.html" hreflang="en" style="color:var(--muted); text-decoration:none;" data-i18n="footer.privacy">개인정보처리방침</a>
+     <a id="footer-privacy-link" href="privacy.html" hreflang="ko" style="color:var(--muted); text-decoration:none;" data-i18n="footer.privacy">개인정보처리방침</a>
      <div style="margin-top:4px;">Copyright 2026. koquiz.support@gmail.com All rights reserved.</div>
    </div>
   </div>
@@ -2662,6 +2662,28 @@ function retryWrongOnly() {
   document.getElementById("max-score").textContent = totalQuestions * 10;
   showScreen("quiz");
   loadQuestion();
+}
+
+/* 받침 유무로 은/는 자동 선택 */
+function josaEunNeun(w) {
+  const s = String(w || "");
+  const last = s.charCodeAt(s.length - 1);
+  if (isNaN(last) || last < 0xac00 || last > 0xd7a3) return "은(는)";
+  return ((last - 0xac00) % 28) ? "은" : "는";
+}
+
+/* 구·시·군 해설: 상위 지역명이 두 번 나오지 않게 분리 */
+function guExplain(target) {
+  const parts = String(target.full_nm || target.name).trim().split(/\s+/);
+  const own  = parts[parts.length - 1];
+  const rest = parts.slice(0, -1).join(" ");
+  if (isEn()) {
+    const ownEn = romanizeFull(own);
+    return rest ? `${ownEn} is part of ${romanizeFull(rest)}.`
+                : `${ownEn} is one of Korea's administrative divisions.`;
+  }
+  const base = rest || SIDO_NAME[target.sido] || "";
+  return `${own}${josaEunNeun(own)} ${base}에 속한 행정구역입니다.`;
 }
 
 function makeGuQuestion(validGu) {
