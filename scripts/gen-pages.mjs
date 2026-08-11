@@ -365,7 +365,7 @@ ${people ? `<section><h2>People &amp; Stories</h2><p>${esc(people)}</p>${imgHtml
 <footer>
   <a href="${SITE_URL}/en/">Korea Geography Master Quiz</a> ·
   <a href="${SITE_URL}/en/seoul/">All Seoul districts</a> ·
-  <a href="${SITE_URL}/privacy.html">Privacy Policy</a> ·
+  <a href="${SITE_URL}/privacy-en.html">Privacy Policy</a> ·
   <a href="mailto:koquiz.support@gmail.com">Contact</a> ·
   <a href="${koUrl}" lang="ko">한국어로 보기</a>
   <div style="margin-top:4px">Copyright 2026. koquiz.support@gmail.com</div>
