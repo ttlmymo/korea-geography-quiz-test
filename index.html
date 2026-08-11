@@ -81,7 +81,7 @@
           "name": "회원가입을 꼭 해야 하나요?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "네, 구글 또는 카카오 계정으로 간편하게 로그인한 뒤 이용할 수 있습니다. 로그인 후 닉네임을 정하면 점수가 실시간 랭킹에 자동으로 등록됩니다. 별도의 복잡한 가입 절차는 없습니다."
+            "text": "구글 또는 카카오 계정으로 로그인한 뒤 닉네임을 정하면 바로 이용할 수 있습니다. 학습 모드와 게임 모드 모두 로그인이 필요하며, 점수는 실시간 랭킹에 자동으로 등록됩니다. 별도의 가입 절차나 비용은 없습니다."
           }
         },
         {
@@ -456,7 +456,7 @@
         </div>
 <div id="nick-setup" class="hidden">
   <span class="label" data-i18n="nick.prompt">랭킹에 표시할 닉네임을 정해주세요</span>
-  <input id="nick-input" class="nick-input" type="text" maxlength="10" data-i18n-ph="nick.placeholder" placeholder="닉네임 (최대 10자)" />
+  <input id="nick-input" class="nick-input" type="text" maxlength="16" data-i18n-ph="nick.placeholder" placeholder="닉네임 (최대 16자)" />
   <button id="nick-save-btn" class="primary" style="padding:12px;" data-i18n="nick.save">닉네임 저장</button>
   <button id="nick-back-btn" data-i18n="nick.back" style="background:none; border:none; color:var(--muted); font-size:13px; cursor:pointer; text-decoration:underline; padding:4px 0;">← 로그인 화면으로 돌아가기</button>
     </div>
@@ -682,7 +682,7 @@
 
      <h2 style="font-size:22px; margin:28px 0 8px;">자주 묻는 질문 (FAQ)</h2>
      <p><strong>Q. 회원가입을 꼭 해야 하나요?</strong><br>
-     네, 구글 또는 카카오 계정으로 간편하게 로그인한 뒤 이용할 수 있습니다. 로그인 후 닉네임을 정하면 점수가 실시간 랭킹에 자동으로 등록됩니다. 별도의 복잡한 가입 절차는 없습니다.</p>
+     구글 또는 카카오 계정으로 로그인한 뒤 닉네임을 정하면 바로 이용할 수 있습니다. 학습 모드와 게임 모드 모두 로그인이 필요하며, 점수는 실시간 랭킹에 자동으로 등록됩니다. 별도의 가입 절차나 비용은 없습니다.</p>
      <p><strong>Q. 어떤 지역까지 학습할 수 있나요?</strong><br>
      서울을 비롯한 여러 지역의 시·군·구 및 읍·면·동 단위까지 세부적으로 학습할 수 있으며, 지역은 계속 추가되고 있습니다.</p>
      <p><strong>Q. 모바일에서도 이용할 수 있나요?</strong><br>
@@ -776,7 +776,7 @@ const I18N = {
   "auth.kakao":        { ko:"카카오 로그인", en:"Sign in with Kakao" },
   "auth.logout":       { ko:"로그아웃", en:"Sign out" },
   "nick.prompt":       { ko:"랭킹에 표시할 닉네임을 정해주세요", en:"Choose a nickname for the leaderboard." },
-  "nick.placeholder":  { ko:"닉네임 (최대 10자)", en:"Nickname (max 10 characters)" },
+  "nick.placeholder":  { ko:"닉네임 (최대 16자)", en:"Nickname (up to 16 characters)" },
   "nick.save":         { ko:"닉네임 저장", en:"Save Nickname" },
   "nick.back":         { ko:"← 로그인 화면으로 돌아가기", en:"← Back to sign in" },
   "nick.edit":         { ko:"닉네임 변경", en:"Edit name" },
@@ -1101,7 +1101,7 @@ async function fetchMyNick() {
 }
 
 async function saveNick(nick) {
-  const clean = (nick || "").trim().slice(0, 10);
+  const clean = (nick || "").trim().slice(0, 16);
   if (!clean) return false;
   if (sb && currentUser) {
     try {
@@ -2672,9 +2672,7 @@ function makeGuQuestion(validGu) {
   return {
     dir:"name", type:"gu", qtype:"gu", sgg: target.sggCode, answerLabel: target.name, feats: featuresBySgg[target.sggCode],
     options: shuffle([target.name, ...wrongs.map((w) => w.name)]),
-    explain: isEn()
-      ? `${romanizeFull(target.name)} is a district of ${SIDO_NAME_EN[target.sido] || ""}.`
-      : `${target.name}은(는) ${SIDO_NAME[target.sido]}에 속한 행정구역입니다.`
+    explain: guExplain(target)
   };
 }
 
@@ -2689,15 +2687,13 @@ function makeDongQuestion(pool) {
     wrongs = wrongs.concat(extra);
   }
   const si = siNameOf(target.sggnm);
-  const belong = (target.sggnm === si)
-    ? `${SIDO_NAME[target.sido]} ${si}`
-    : `${SIDO_NAME[target.sido]} ${si} ${target.sggnm.replace(si, "")}`;
+  const belong = `${SIDO_NAME[target.sido]} ${target.sggnm}`.replace(/\s+/g, " ").trim();
   return {
     dir:"name", type:"dong", qtype:"dong", dong: target, answerLabel: target.dongName, feats:[target.feature],
     options: shuffle([target.dongName, ...wrongs]),
     explain: isEn()
-      ? `${romanizeFull(target.dongName)} is a legal-status neighborhood (beopjeong-dong) in ${romanizeFull(belong)}.`
-      : `${target.dongName}은(는) ${belong}에 속하는 법정동입니다.`
+      ? `${romanizeFull(target.dongName)} is a neighborhood (beopjeong-dong) of ${romanizeFull(belong)}.`
+      : `${target.dongName}${josaEunNeun(target.dongName)} ${belong}에 속하는 법정동입니다.`
   };
 }
 
